@@ -30,6 +30,11 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>8.10.1</version> <!-- 使用与你的项目兼容的版本 -->
+    </dependency>
   </dependencies>
 
   <build>
