@@ -33,7 +33,20 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>8.10.1</version> <!-- 使用与你的项目兼容的版本 -->
+      <version>9.9.2</version> <!-- 使用与你的项目兼容的版本 -->
+    </dependency>
+    <!-- Lucene解析库 -->
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>9.9.2</version>
+    </dependency>
+
+    <!-- Lucene附加的分析库 -->
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <version>8.9.0</version>
     </dependency>
   </dependencies>
 
