@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static java.util.Collections.unmodifiableMap;
 
-public enum RestStatus {
+public enum  RestStatus {
 
     CONTINUE(100),
 
