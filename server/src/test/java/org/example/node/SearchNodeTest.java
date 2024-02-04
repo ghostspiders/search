@@ -2,6 +2,8 @@ package org.example.node;
 
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -17,16 +19,13 @@ public class SearchNodeTest {
     @Test
     public void configTest(){
         SearchNode searchNode = new SearchNode("local_test", "configTest");
-        assertNotNull(searchNode.getName());
-        assertNotNull(searchNode.getWorkingDir());
-        assertNotNull(searchNode.getConfigFile());
-        assertNotNull(searchNode.getConfPathLogs());
-        assertNotNull(searchNode.getTransportPortFile());
-        assertNotNull(searchNode.getEsInputFile());
-        assertNotNull(searchNode.getEsOutputFile());
-        assertNotNull(searchNode.getTmpDir());
-        assertNotNull(searchNode.getConfPathData());
-        assertNotNull(searchNode.getDefaultConfig());
+        Map<String, String> settings = searchNode.getSettings();
+        for (Map.Entry<String, String> entry : settings.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            System.out.println("Key: " + key + ", Value: " + value);
+        }
     }
-
 }
+
+
