@@ -19,10 +19,10 @@
 
 package org.server.search.http.action.main;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.server.search.Version;
 import org.server.search.client.Client;
 import org.server.search.http.*;
@@ -51,7 +51,7 @@ public class HttpMainAction extends BaseHttpServerHandler {
         try {
             rootNode = Jackson.newObjectMapper().readValue(Classes.getDefaultClassLoader().getResourceAsStream("org/elasticsearch/http/action/main/quotes.json"), JsonNode.class);
             ArrayNode arrayNode = (ArrayNode) rootNode.get("quotes");
-            quotesSize = Iterators.size(arrayNode.getElements());
+            quotesSize = Iterators.size(arrayNode.elements());
         } catch (Exception e) {
             rootNode = null;
             quotesSize = -1;

@@ -19,15 +19,17 @@
 
 package org.server.search.http.netty;
 
-import org.jboss.netty.channel.*;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-
+import com.sun.jdi.event.ExceptionEvent;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * @author kimchy (Shay Banon)
  */
-@ChannelPipelineCoverage(ChannelPipelineCoverage.ALL)
-public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
+@ChannelHandler.Sharable
+public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
 
     private final NettyHttpServerTransport serverTransport;
 
@@ -35,13 +37,13 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         this.serverTransport = serverTransport;
     }
 
-    @Override public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        HttpRequest request = (HttpRequest) e.getMessage();
+    public void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
+        HttpRequest request = (HttpRequest) msg.getMessage();
         serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(e.getChannel(), request));
-        super.messageReceived(ctx, e);
+        super.messageReceived(ctx, msg);
     }
 
-    @Override public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        serverTransport.exceptionCaught(ctx, e);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        serverTransport.exceptionCaught(ctx, cause);
     }
 }

@@ -21,10 +21,6 @@ package org.server.search.http.netty;
 
 import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.http.HttpRequest;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +31,7 @@ import java.util.Set;
  */
 public class NettyHttpRequest implements HttpRequest {
 
-    private final org.jboss.netty.handler.codec.http.HttpRequest request;
+    private final HttpRequest request;
 
     private QueryStringDecoder queryStringDecoder;
 

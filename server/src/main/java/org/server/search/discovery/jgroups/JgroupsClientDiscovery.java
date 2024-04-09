@@ -20,6 +20,7 @@
 package org.server.search.discovery.jgroups;
 
 import com.google.inject.Inject;
+import io.netty.channel.ChannelException;
 import org.server.search.ElasticSearchException;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.cluster.ClusterName;

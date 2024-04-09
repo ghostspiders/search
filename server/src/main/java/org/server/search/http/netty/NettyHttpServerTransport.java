@@ -20,6 +20,7 @@
 package org.server.search.http.netty;
 
 import com.google.inject.Inject;
+import io.netty.channel.ChannelHandlerContext;
 import org.server.search.ElasticSearchException;
 import org.server.search.http.*;
 import org.server.search.threadpool.ThreadPool;
@@ -264,7 +265,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         httpServerAdapter.dispatchRequest(request, channel);
     }
 
-    void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+    void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
         if (e.getCause() instanceof ReadTimeoutException) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Connection timeout [{}]", ctx.getChannel().getRemoteAddress());

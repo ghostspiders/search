@@ -19,14 +19,15 @@
 
 package org.server.search.http.netty;
 
+import io.netty.channel.*;
 import org.server.search.util.concurrent.highscalelib.NonBlockingHashSet;
-import org.jboss.netty.channel.*;
+
 
 /**
  * @author kimchy (Shay Banon)
  */
-@ChannelPipelineCoverage(ChannelPipelineCoverage.ALL)
-public class OpenChannelsHandler implements ChannelUpstreamHandler {
+@ChannelHandler.Sharable
+public class OpenChannelsHandler extends ChannelInboundHandlerAdapter {
 
     private NonBlockingHashSet<Channel> openChannels = new NonBlockingHashSet<Channel>();
 
@@ -36,7 +37,7 @@ public class OpenChannelsHandler implements ChannelUpstreamHandler {
         }
     };
 
-    @Override public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ChannelStateEvent) {
             ChannelStateEvent evt = (ChannelStateEvent) e;
             if (evt.getState() == ChannelState.OPEN) {

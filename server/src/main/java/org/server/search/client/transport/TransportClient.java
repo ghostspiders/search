@@ -79,7 +79,7 @@ public class TransportClient implements Client {
 
 
     public TransportClient() throws ElasticSearchException {
-        this(Builder.EMPTY_SETTINGS, true);
+        this(ImmutableSettings.Builder.EMPTY_SETTINGS, true);
     }
 
     public TransportClient(Settings settings) {
