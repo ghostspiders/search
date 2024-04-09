@@ -19,7 +19,7 @@
 
 package org.server.search.search;
 
-import org.codehaus.jackson.JsonParser;
+import com.fasterxml.jackson.core.JsonParser;
 import org.server.search.search.internal.SearchContext;
 
 /**

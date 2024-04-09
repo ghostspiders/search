@@ -18,9 +18,8 @@
  */
 
 package org.server.search.search.fetch;
-
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.internal.SearchContext;
 
