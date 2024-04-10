@@ -20,10 +20,10 @@
 package org.server.search.index.analysis;
 
 import org.apache.lucene.util.NumericUtils;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author kimchy (Shay Banon)

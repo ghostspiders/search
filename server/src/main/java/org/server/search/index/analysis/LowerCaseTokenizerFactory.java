@@ -20,8 +20,7 @@
 package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.analysis.LowerCaseTokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.Tokenizer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
@@ -34,11 +33,11 @@ import java.io.Reader;
  */
 public class LowerCaseTokenizerFactory extends AbstractTokenizerFactory {
 
-    @Inject public LowerCaseTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    @Inject public LowerCaseTokenizerFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {
         super(index, indexSettings, name);
     }
 
     @Override public Tokenizer create(Reader reader) {
-        return new LowerCaseTokenizer(reader);
+        return new LowerCaseFilter(reader);
     }
 }

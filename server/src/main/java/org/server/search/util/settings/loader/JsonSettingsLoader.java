@@ -18,10 +18,9 @@
  */
 
 package org.server.search.util.settings.loader;
-
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.util.io.FastStringReader;
 import org.server.search.util.json.Jackson;
 

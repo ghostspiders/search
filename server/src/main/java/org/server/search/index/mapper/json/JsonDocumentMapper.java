@@ -19,11 +19,11 @@
 
 package org.server.search.index.mapper.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.index.mapper.*;
 import org.server.search.util.Nullable;
 import org.server.search.util.Preconditions;

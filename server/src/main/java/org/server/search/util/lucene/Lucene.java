@@ -19,12 +19,11 @@
 
 package org.server.search.util.lucene;
 
-import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.Version;
 import org.server.search.util.gnu.trove.TIntArrayList;

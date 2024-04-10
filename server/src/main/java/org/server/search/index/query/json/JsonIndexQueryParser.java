@@ -19,11 +19,11 @@
 
 package org.server.search.index.query.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.search.Query;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
 import org.server.search.ElasticSearchException;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;

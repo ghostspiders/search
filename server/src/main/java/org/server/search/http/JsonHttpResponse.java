@@ -29,21 +29,21 @@ import java.io.IOException;
  */
 public class JsonHttpResponse extends Utf8HttpResponse {
 
-    private static ThreadLocal<UnicodeUtil.UTF8Result> cache = new ThreadLocal<UnicodeUtil.UTF8Result>() {
-        @Override protected UnicodeUtil.UTF8Result initialValue() {
-            return new UnicodeUtil.UTF8Result();
+    private static ThreadLocal<UnicodeUtil.UTF8CodePoint> cache = new ThreadLocal<UnicodeUtil.UTF8CodePoint>() {
+        @Override protected UnicodeUtil.UTF8CodePoint initialValue() {
+            return new UnicodeUtil.UTF8CodePoint();
         }
     };
 
-    private static final UnicodeUtil.UTF8Result END_JSONP = new UnicodeUtil.UTF8Result();
+    private static final UnicodeUtil.UTF8CodePoint END_JSONP = new UnicodeUtil.UTF8CodePoint();
 
     static {
         UnicodeUtil.UTF16toUTF8(");", 0, ");".length(), END_JSONP);
     }
 
-    private static ThreadLocal<UnicodeUtil.UTF8Result> prefixCache = new ThreadLocal<UnicodeUtil.UTF8Result>() {
-        @Override protected UnicodeUtil.UTF8Result initialValue() {
-            return new UnicodeUtil.UTF8Result();
+    private static ThreadLocal<UnicodeUtil.UTF8CodePoint> prefixCache = new ThreadLocal<UnicodeUtil.UTF8CodePoint>() {
+        @Override protected UnicodeUtil.UTF8CodePoint initialValue() {
+            return new UnicodeUtil.UTF8CodePoint();
         }
     };
 
@@ -63,25 +63,25 @@ public class JsonHttpResponse extends Utf8HttpResponse {
         return "application/json; charset=UTF-8";
     }
 
-    private static UnicodeUtil.UTF8Result convert(String content) {
-        UnicodeUtil.UTF8Result result = cache.get();
+    private static UnicodeUtil.UTF8CodePoint convert(String content) {
+        UnicodeUtil.UTF8CodePoint result = cache.get();
         UnicodeUtil.UTF16toUTF8(content, 0, content.length(), result);
         return result;
     }
 
-    private static UnicodeUtil.UTF8Result startJsonp(HttpRequest request) {
+    private static UnicodeUtil.UTF8CodePoint startJsonp(HttpRequest request) {
         String callback = request.param("callback");
         if (callback == null) {
             return null;
         }
-        UnicodeUtil.UTF8Result result = prefixCache.get();
+        UnicodeUtil.UTF8CodePoint result = prefixCache.get();
         UnicodeUtil.UTF16toUTF8(callback, 0, callback.length(), result);
         result.result[result.length] = '(';
         result.length++;
         return result;
     }
 
-    private static UnicodeUtil.UTF8Result endJsonp(HttpRequest request) {
+    private static UnicodeUtil.UTF8CodePoint endJsonp(HttpRequest request) {
         String callback = request.param("callback");
         if (callback == null) {
             return null;

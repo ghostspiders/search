@@ -20,9 +20,9 @@
 package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
+import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -38,13 +38,13 @@ public class NGramTokenFilterFactory extends AbstractTokenFilterFactory {
     private final int maxGram;
 
 
-    @Inject public NGramTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    @Inject public NGramTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {
         super(index, indexSettings, name);
-        this.minGram = settings.getAsInt("minGram", NGramTokenFilter.DEFAULT_MIN_NGRAM_SIZE);
-        this.maxGram = settings.getAsInt("maxGram", NGramTokenFilter.DEFAULT_MAX_NGRAM_SIZE);
+        this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
+        this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {
-        return new NGramTokenFilter(tokenStream, minGram, maxGram);
+        return new NGramTokenFilter(tokenStream, minGram, maxGram,false);
     }
 }

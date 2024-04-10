@@ -19,8 +19,9 @@
 
 package org.server.search.util.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.lucene.util.UnicodeUtil;
-import org.codehaus.jackson.JsonFactory;
 import org.server.search.ElasticSearchException;
 import org.server.search.util.concurrent.NotThreadSafe;
 import org.server.search.util.io.FastCharArrayWriter;
@@ -78,9 +79,9 @@ public class JsonBuilder {
 
     private final JsonFactory factory;
 
-    private org.codehaus.jackson.JsonGenerator generator;
+    private JsonGenerator generator;
 
-    final UnicodeUtil.UTF8Result utf8Result = new UnicodeUtil.UTF8Result();
+    final UnicodeUtil.UTF8CodePoint utf8Result = new UnicodeUtil.UTF8CodePoint();
 
     public JsonBuilder() throws IOException {
         this(Jackson.defaultJsonFactory());
@@ -329,7 +330,7 @@ public class JsonBuilder {
      * Note, the result is shared within this instance, so copy the byte array if needed
      * or use {@link #utf8copied()}.
      */
-    public UnicodeUtil.UTF8Result utf8() throws IOException {
+    public UnicodeUtil.UTF8CodePoint utf8() throws IOException {
         flush();
 
         // ignore whitepsaces

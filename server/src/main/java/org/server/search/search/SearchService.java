@@ -19,12 +19,10 @@
 
 package org.server.search.search;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import org.apache.lucene.search.TopDocs;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.ElasticSearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.index.IndexService;

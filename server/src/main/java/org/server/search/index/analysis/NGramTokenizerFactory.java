@@ -20,7 +20,6 @@
 package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.server.search.index.Index;
@@ -38,7 +37,7 @@ public class NGramTokenizerFactory extends AbstractTokenizerFactory {
 
     private final int maxGram;
 
-    @Inject public NGramTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    @Inject public NGramTokenizerFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {
         super(index, indexSettings, name);
         this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
         this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);

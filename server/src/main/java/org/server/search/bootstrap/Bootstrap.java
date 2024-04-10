@@ -30,7 +30,6 @@ import org.server.search.server.ServerBuilder;
 import org.server.search.server.internal.InternalSettingsPerparer;
 import org.server.search.util.Classes;
 import org.server.search.util.Tuple;
-import org.server.search.util.jline.ANSI;
 import org.server.search.util.logging.Loggers;
 import org.server.search.util.logging.log4j.LogConfigurator;
 import org.server.search.util.settings.Settings;
@@ -40,7 +39,6 @@ import java.io.File;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.*;
-import static jline.ANSIBuffer.ANSICodes.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
@@ -53,7 +51,6 @@ public class Bootstrap {
 
     private void setup(boolean addShutdownHook) throws Exception {
         Tuple<Settings, Environment> tuple = InternalSettingsPerparer.prepareSettings(EMPTY_SETTINGS, true);
-
         try {
             Classes.getDefaultClassLoader().loadClass("org.apache.log4j.Logger");
             LogConfigurator.configure(tuple.v1());
@@ -143,15 +140,7 @@ public class Bootstrap {
                 logger = Loggers.getLogger(Bootstrap.class, bootstrap.server.settings().get("name"));
             }
             StringBuilder errorMessage = new StringBuilder("{").append(Version.full()).append("}: ");
-            try {
-                if (ANSI.isEnabled()) {
-                    errorMessage.append(attrib(ANSI.Code.FG_RED)).append(stage).append(" Failed ...").append(attrib(ANSI.Code.OFF)).append("\n");
-                } else {
-                    errorMessage.append(stage).append(" Failed ...\n");
-                }
-            } catch (Throwable t) {
-                errorMessage.append(stage).append(" Failed ...\n");
-            }
+            errorMessage.append(stage).append(" Failed ...\n");
             if (e instanceof CreationException) {
                 CreationException createException = (CreationException) e;
                 Set<String> seenMessages = newHashSet();

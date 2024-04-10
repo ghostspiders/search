@@ -19,8 +19,8 @@
 
 package org.server.search.micro.micro.deps.jackson;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.server.search.util.Preconditions;
 import org.server.search.util.StopWatch;
 import org.server.search.util.io.FastStringReader;

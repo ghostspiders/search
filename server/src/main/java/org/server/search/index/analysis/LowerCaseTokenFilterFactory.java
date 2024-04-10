@@ -20,7 +20,6 @@
 package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.server.search.index.Index;
@@ -32,7 +31,7 @@ import org.server.search.util.settings.Settings;
  */
 public class LowerCaseTokenFilterFactory extends AbstractTokenFilterFactory {
 
-    @Inject public LowerCaseTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    @Inject public LowerCaseTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, String name,Settings settings) {
         super(index, indexSettings, name);
     }
 
