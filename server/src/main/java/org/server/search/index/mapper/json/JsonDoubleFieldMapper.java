@@ -19,11 +19,11 @@
 
 package org.server.search.index.mapper.json;
 
+import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.index.analysis.NumericDoubleAnalyzer;
 import org.server.search.util.Numbers;
 
@@ -126,6 +126,6 @@ public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
     }
 
     @Override public int sortType() {
-        return SortField.DOUBLE;
+        return SortField.Type.DOUBLE.ordinal();
     }
 }

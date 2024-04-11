@@ -19,8 +19,8 @@
 
 package org.server.search.index.mapper.json;
 
+import com.fasterxml.jackson.core.JsonParser;
 import org.apache.lucene.document.Document;
-import org.codehaus.jackson.JsonParser;
 import org.server.search.util.concurrent.NotThreadSafe;
 
 /**

@@ -20,16 +20,17 @@
 package org.server.search.search.dfs;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.Similarity;
+import org.server.search.index.engine.Engine;
 
 import java.io.IOException;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class CachedDfSource extends Searcher {
+public class CachedDfSource extends Engine.Searcher {
 
     private final AggregatedDfs dfs;
 

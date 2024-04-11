@@ -19,12 +19,12 @@
 
 package org.server.search.index.query.json;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.google.inject.Inject;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.query.QueryParsingException;

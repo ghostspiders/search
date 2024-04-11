@@ -77,7 +77,7 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
                                         AnalysisService analysisService,
                                         @Nullable Map<String, JsonQueryParserFactory> jsonQueryParsers,
                                         @Nullable Map<String, JsonFilterParserFactory> jsonFilterParsers,
-                                        @Assisted String name, @Assisted @Nullable Settings settings) {
+                                        String name, @Nullable Settings settings) {
         super(index, indexSettings);
         this.name = name;
         this.mapperService = mapperService;

@@ -20,7 +20,6 @@
 package org.server.search.index.store.ram;
 
 import com.google.inject.Inject;
-import org.apache.lucene.store.RAMDirectory;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.shard.ShardId;
 import org.server.search.index.store.support.AbstractStore;

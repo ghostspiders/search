@@ -26,7 +26,6 @@ import org.apache.lucene.store.SingleInstanceLockFactory;
 import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
 import org.server.search.util.concurrent.highscalelib.NonBlockingHashMap;
-import sun.nio.ch.DirectBuffer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

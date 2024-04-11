@@ -19,10 +19,10 @@
 
 package org.server.search.index.mapper.json;
 
+import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
-import org.codehaus.jackson.JsonToken;
 
 import java.io.IOException;
 

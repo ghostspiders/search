@@ -21,8 +21,8 @@ package org.server.search.search.facets;
 
 import com.google.common.collect.Lists;
 import org.apache.lucene.search.Query;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.index.query.json.JsonIndexQueryParser;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.SearchParseException;

@@ -19,9 +19,9 @@
 
 package org.server.search.index.mapper.json;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.ImmutableMap;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.index.mapper.FieldMapper;
 import org.server.search.index.mapper.FieldMapperListener;

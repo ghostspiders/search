@@ -25,7 +25,6 @@ import com.google.common.collect.Maps;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.ShardFieldDocSortedHitQueue;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.util.PriorityQueue;
 import org.server.search.ElasticSearchIllegalStateException;

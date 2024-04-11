@@ -342,6 +342,7 @@ public class SearchServiceTransportAction {
         @Override public void messageReceived(QuerySearchRequest request, TransportChannel channel) throws Exception {
             QuerySearchResult result = searchService.executeQueryPhase(request);
             channel.sendResponse(result);
+
         }
     }
 

@@ -20,7 +20,6 @@
 package org.server.search.index.store.fs;
 
 import com.google.inject.Inject;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.server.search.env.Environment;
 import org.server.search.index.LocalNodeId;
 import org.server.search.index.settings.IndexSettings;

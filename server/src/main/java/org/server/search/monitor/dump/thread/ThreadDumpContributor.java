@@ -20,7 +20,6 @@
 package org.server.search.monitor.dump.thread;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import org.server.search.monitor.dump.Dump;
 import org.server.search.monitor.dump.DumpContributionFailedException;
 import org.server.search.monitor.dump.DumpContributor;
@@ -43,7 +42,7 @@ public class ThreadDumpContributor implements DumpContributor {
 
     private final String name;
 
-    @Inject public ThreadDumpContributor(@Assisted String name, @Assisted Settings settings) {
+    @Inject public ThreadDumpContributor(String name, Settings settings) {
         this.name = name;
     }
 

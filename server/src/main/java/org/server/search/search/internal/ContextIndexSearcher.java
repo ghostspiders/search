@@ -21,7 +21,6 @@ package org.server.search.search.internal;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.OpenBitSet;
 import org.server.search.search.dfs.CachedDfSource;
 import org.server.search.util.lucene.docidset.DocIdSetCollector;
 

@@ -20,7 +20,7 @@
 package org.server.search.index.similarity;
 
 import com.google.inject.Provider;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.server.search.index.IndexComponent;
 
 /**

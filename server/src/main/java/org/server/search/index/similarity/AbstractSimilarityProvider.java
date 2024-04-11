@@ -19,7 +19,7 @@
 
 package org.server.search.index.similarity;
 
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;

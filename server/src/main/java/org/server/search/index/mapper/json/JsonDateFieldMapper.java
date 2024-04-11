@@ -20,10 +20,8 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
-import org.codehaus.jackson.JsonToken;
 import org.server.search.index.analysis.NumericDateAnalyzer;
 import org.server.search.util.Numbers;
 import org.joda.time.DateTimeZone;

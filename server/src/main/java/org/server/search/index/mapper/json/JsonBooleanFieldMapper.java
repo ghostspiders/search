@@ -21,7 +21,7 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
-import org.codehaus.jackson.JsonToken;
+import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.util.lucene.Lucene;
 
 import java.io.IOException;
