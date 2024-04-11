@@ -26,9 +26,6 @@ package org.server.search.util.concurrent.highscalelib;
 
 /**
  * A simple high-performance counter.  Merely renames the extended {@link
- * org.cliffc.high_scale_lib.ConcurrentAutoTable} class to be more obvious.
- * {@link org.cliffc.high_scale_lib.ConcurrentAutoTable} already has a decent
- * counting API.
  *
  * @author Cliff Click
  * @since 1.5

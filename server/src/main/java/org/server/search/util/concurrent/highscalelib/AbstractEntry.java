@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * A simple implementation of {@link Map.Entry}.
- * Does not implement {@link Map.Entry.setValue}, that is done by users of the class.
+ * Does not implement {@link Map.Entry}, that is done by users of the class.
  *
  * @author Cliff Click
  * @param <TypeK> the type of keys maintained by this map

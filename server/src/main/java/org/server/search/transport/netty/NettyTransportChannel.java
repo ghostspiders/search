@@ -19,16 +19,13 @@
 
 package org.server.search.transport.netty;
 
+import io.netty.channel.Channel;
 import org.server.search.transport.NotSerializableTransportException;
 import org.server.search.transport.RemoteTransportException;
 import org.server.search.transport.TransportChannel;
 import org.server.search.util.io.ByteArrayDataOutputStream;
 import org.server.search.util.io.Streamable;
 import org.server.search.util.io.ThrowableObjectOutputStream;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBufferOutputStream;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
 
 import java.io.IOException;
 import java.io.NotSerializableException;

@@ -19,6 +19,7 @@
 
 package org.server.search.transport.netty;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.channel.Channel;
