@@ -22,7 +22,6 @@ package org.server.search.util.lucene.docidset;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.util.OpenBitSetDISI;
 
 import java.io.IOException;
 

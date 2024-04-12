@@ -18,10 +18,7 @@
  */
 
 package org.server.search.util.logging.log4j;
-
-import org.apache.log4j.Layout;
-import org.apache.log4j.WriterAppender;
-import org.apache.log4j.helpers.LogLog;
+import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.server.search.util.logging.Loggers;
 
 import java.io.IOException;

@@ -21,7 +21,6 @@ package org.server.search.util.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 
 /**
  * @author kimchy (Shay Banon)

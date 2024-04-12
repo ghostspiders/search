@@ -20,11 +20,9 @@
 package org.server.search.util.logging.log4j;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.log4j.PropertyConfigurator;
 import org.server.search.env.Environment;
 import org.server.search.env.FailedToResolveConfigException;
 import org.server.search.util.MapBuilder;
-import org.server.search.util.settings.ImmutableSettings;
 import org.server.search.util.settings.Settings;
 
 import java.util.Map;
@@ -71,7 +69,7 @@ public class LogConfigurator {
         }
         loaded = true;
         Environment environment = new Environment(settings);
-        Builder settingsBuilder = settingsBuilder().putAll(settings);
+        Settings.Builder settingsBuilder = settingsBuilder().putAll(settings);
         try {
             settingsBuilder.loadFromUrl(environment.resolveConfig("logging.yml"));
         } catch (FailedToResolveConfigException e) {
