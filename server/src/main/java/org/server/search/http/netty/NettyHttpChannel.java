@@ -19,25 +19,23 @@
 
 package org.server.search.http.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.server.search.http.HttpChannel;
 import org.server.search.http.HttpResponse;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.handler.codec.http.*;
-
-import java.util.Set;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.http.*;
 
 /**
  * @author kimchy (Shay Banon)
  */
 public class NettyHttpChannel implements HttpChannel {
     private final Channel channel;
-    private final org.jboss.netty.handler.codec.http.HttpRequest request;
+    private final io.netty.handler.codec.http.HttpRequest request;
 
-    public NettyHttpChannel(Channel channel, org.jboss.netty.handler.codec.http.HttpRequest request) {
+    public NettyHttpChannel(Channel channel, io.netty.handler.codec.http.HttpRequest request) {
         this.channel = channel;
         this.request = request;
     }
@@ -47,61 +45,43 @@ public class NettyHttpChannel implements HttpChannel {
         // Decide whether to close the connection or not.
         boolean http10 = request.getProtocolVersion().equals(HttpVersion.HTTP_1_0);
         boolean close =
-                HttpHeaders.Values.CLOSE.equalsIgnoreCase(request.getHeader(HttpHeaders.Names.CONNECTION)) ||
-                        (http10 && !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request.getHeader(HttpHeaders.Names.CONNECTION)));
+                HttpHeaders.Values.CLOSE.equalsIgnoreCase(request.headers().get(HttpHeaders.Names.CONNECTION)) ||
+                        (http10 && !HttpHeaders.Values.KEEP_ALIVE.equalsIgnoreCase(request.headers().get(HttpHeaders.Names.CONNECTION)));
 
         // Build the response object.
         HttpResponseStatus status = getStatus(response.status());
-        org.jboss.netty.handler.codec.http.HttpResponse resp;
-        if (http10) {
-            resp = new DefaultHttpResponse(HttpVersion.HTTP_1_0, status);
-            if (!close) {
-                resp.addHeader(HttpHeaders.Names.CONNECTION, "Keep-Alive");
-            }
-        } else {
-            resp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
-        }
+
         // Convert the response content to a ChannelBuffer.
-        ChannelBuffer buf;
+        ByteBuf buf;
         if (response.contentThreadSafe()) {
-            buf = ChannelBuffers.wrappedBuffer(response.content(), 0, response.contentLength());
+            buf = Unpooled.wrappedBuffer(response.content(), 0, response.contentLength());
         } else {
-            buf = ChannelBuffers.copiedBuffer(response.content(), 0, response.contentLength());
+            buf = Unpooled.copiedBuffer(response.content(), 0, response.contentLength());
         }
         if (response.prefixContent() != null || response.suffixContent() != null) {
-            ChannelBuffer prefixBuf = ChannelBuffers.EMPTY_BUFFER;
+            ByteBuf prefixBuf = Unpooled.EMPTY_BUFFER; ;
             if (response.prefixContent() != null) {
-                prefixBuf = ChannelBuffers.copiedBuffer(response.prefixContent(), 0, response.prefixContentLength());
+                prefixBuf = Unpooled.copiedBuffer(response.prefixContent(), 0, response.prefixContentLength());
             }
-            ChannelBuffer suffixBuf = ChannelBuffers.EMPTY_BUFFER;
+            ByteBuf suffixBuf = Unpooled.EMPTY_BUFFER;
             if (response.suffixContent() != null) {
-                suffixBuf = ChannelBuffers.copiedBuffer(response.suffixContent(), 0, response.suffixContentLength());
+                suffixBuf = Unpooled.copiedBuffer(response.suffixContent(), 0, response.suffixContentLength());
             }
-            buf = ChannelBuffers.wrappedBuffer(prefixBuf, buf, suffixBuf);
+            buf = Unpooled.wrappedBuffer(prefixBuf, buf, suffixBuf);
         }
-        resp.setContent(buf);
-        resp.setHeader(HttpHeaders.Names.CONTENT_TYPE, response.contentType());
-
-        resp.setHeader(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(buf.readableBytes()));
-
-        String cookieString = request.getHeader(HttpHeaders.Names.COOKIE);
-        if (cookieString != null) {
-            CookieDecoder cookieDecoder = new CookieDecoder();
-            Set<Cookie> cookies = cookieDecoder.decode(cookieString);
-            if (!cookies.isEmpty()) {
-                // Reset the cookies if necessary.
-                CookieEncoder cookieEncoder = new CookieEncoder(true);
-                for (Cookie cookie : cookies) {
-                    cookieEncoder.addCookie(cookie);
-                }
-                resp.addHeader(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
+        io.netty.handler.codec.http.FullHttpResponse resp;
+        if (http10) {
+            resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_0, status,buf);
+            if (!close) {
+                resp.headers().add(HttpHeaders.Names.CONNECTION, "Keep-Alive");
             }
+        } else {
+            resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,buf);
         }
+        resp.headers().add(HttpHeaders.Names.CONTENT_TYPE, response.contentType());
 
-        // Write the response.
+        resp.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(buf.readableBytes()));
         ChannelFuture future = channel.write(resp);
-
-        // Close the connection after the write operation is done if necessary.
         if (close) {
             future.addListener(ChannelFutureListener.CLOSE);
         }
@@ -147,7 +127,7 @@ public class NettyHttpChannel implements HttpChannel {
             case BAD_REQUEST:
                 return HttpResponseStatus.BAD_REQUEST;
             case UNAUTHORIZED:
-                return HttpResponseStatus.UNUATHORIZED;
+                return HttpResponseStatus.UNAUTHORIZED;
             case PAYMENT_REQUIRED:
                 return HttpResponseStatus.PAYMENT_REQUIRED;
             case FORBIDDEN:

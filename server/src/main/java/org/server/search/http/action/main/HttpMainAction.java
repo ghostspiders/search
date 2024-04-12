@@ -77,17 +77,12 @@ public class HttpMainAction extends BaseHttpServerHandler {
                 builder.startObject("quote");
                 ArrayNode arrayNode = (ArrayNode) rootNode.get("quotes");
                 JsonNode quoteNode = arrayNode.get(ThreadLocalRandom.current().nextInt(quotesSize));
-                builder.field("book", quoteNode.get("book").getValueAsText());
-                builder.field("chapter", quoteNode.get("chapter").getValueAsText());
+                builder.field("book", quoteNode.get("book").textValue());
+                builder.field("chapter", quoteNode.get("chapter").textValue());
                 ArrayNode textNodes = (ArrayNode) quoteNode.get("text");
-//                builder.startArray("text");
-//                for (JsonNode textNode : textNodes) {
-//                    builder.value(textNode.getValueAsText());
-//                }
-//                builder.endArray();
                 int index = 0;
                 for (JsonNode textNode : textNodes) {
-                    builder.field("text" + (++index), textNode.getValueAsText());
+                    builder.field("text" + (++index), textNode.textValue());
                 }
                 builder.endObject();
             }

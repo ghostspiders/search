@@ -21,6 +21,7 @@ package org.server.search.http.netty;
 
 import com.google.inject.Inject;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.nio.NioEventLoopGroup;
 import org.server.search.ElasticSearchException;
 import org.server.search.http.*;
 import org.server.search.threadpool.ThreadPool;
@@ -34,17 +35,13 @@ import org.server.search.util.transport.BoundTransportAddress;
 import org.server.search.util.transport.InetSocketTransportAddress;
 import org.server.search.util.transport.NetworkExceptionHelper;
 import org.server.search.util.transport.PortsRange;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.*;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.jboss.netty.handler.timeout.ReadTimeoutException;
-import org.jboss.netty.handler.timeout.ReadTimeoutHandler;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.jboss.netty.util.HashedWheelTimer;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.util.HashedWheelTimer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -61,14 +58,6 @@ import static org.server.search.util.io.HostResolver.*;
  * @author kimchy (Shay Banon)
  */
 public class NettyHttpServerTransport extends AbstractComponent implements HttpServerTransport {
-
-    static {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory() {
-            @Override public InternalLogger newInstance(String name) {
-                return super.newInstance(name.replace("org.jboss.netty.", "netty.lib."));
-            }
-        });
-    }
 
     private final Lifecycle lifecycle = new Lifecycle();
 
@@ -138,14 +127,11 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         if (!lifecycle.moveToStarted()) {
             return this;
         }
-
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpBoss")));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpIoWorker")));
         this.serverOpenChannels = new OpenChannelsHandler();
-
-        serverBootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(
-                Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpBoss")),
-                Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpIoWorker")),
-                workerCount));
-
+        serverBootstrap = new ServerBootstrap();
+        serverBootstrap.group(bossGroup,workerGroup);
         final HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
         final HttpRequestHandler requestHandler = new HttpRequestHandler(this);
 

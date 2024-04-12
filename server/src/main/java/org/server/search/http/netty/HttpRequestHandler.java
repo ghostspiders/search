@@ -19,10 +19,10 @@
 
 package org.server.search.http.netty;
 
-import com.sun.jdi.event.ExceptionEvent;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpRequest;
 
 /**
@@ -37,12 +37,13 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
         this.serverTransport = serverTransport;
     }
 
-    public void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
-        HttpRequest request = (HttpRequest) msg.getMessage();
-        serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(e.getChannel(), request));
-        super.messageReceived(ctx, msg);
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        DefaultFullHttpRequest request = (DefaultFullHttpRequest) msg;
+        serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(ctx.channel(), request));
+        super.channelRead(ctx, msg);
     }
-
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         serverTransport.exceptionCaught(ctx, cause);
     }
