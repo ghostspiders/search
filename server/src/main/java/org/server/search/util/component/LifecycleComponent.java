@@ -28,7 +28,7 @@ public interface LifecycleComponent<T> {
 
     Lifecycle.State lifecycleState();
 
-    T start() throws ElasticSearchException;
+    T start() throws Exception;
 
     T stop() throws ElasticSearchException;
 

@@ -69,7 +69,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
 
     private final ClusterService clusterService;
 
-    private final Channel channel;
+    private final JChannel channel;
 
     private volatile ScheduledFuture reconnectFuture;
 
@@ -79,7 +79,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
 
     private final Node localNode = new Node("#client#", null); // dummy local node
 
-    @Inject public JgroupsClientDiscovery(Settings settings, Environment environment, ClusterName clusterName, ClusterService clusterService, ThreadPool threadPool) {
+    @Inject public JgroupsClientDiscovery(Settings settings, Environment environment, ClusterName clusterName, ClusterService clusterService, ThreadPool threadPool) throws Exception {
         super(settings);
         this.clusterName = clusterName;
         this.clusterService = clusterService;
@@ -133,7 +133,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
         return this.lifecycle.state();
     }
 
-    @Override public Discovery start() throws ElasticSearchException {
+    @Override public Discovery start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -244,11 +244,11 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
         return false;
     }
 
-    @Override public byte[] getState() {
+    public byte[] getState() {
         return new byte[0];
     }
 
-    @Override public void setState(byte[] state) {
+    public void setState(byte[] state) {
     }
 
     @Override public void suspect(Address suspectedMember) {

@@ -20,6 +20,7 @@
 package org.server.search.discovery.jgroups;
 
 import com.google.inject.Inject;
+import io.netty.channel.ChannelException;
 import org.server.search.ElasticSearchException;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.cluster.*;
@@ -72,7 +73,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
 
     private final ClusterService clusterService;
 
-    private final Channel channel;
+    private final JChannel channel;
 
     private volatile boolean addressSet = false;
 
@@ -85,7 +86,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
     private final CopyOnWriteArrayList<InitialStateDiscoveryListener> initialStateListeners = new CopyOnWriteArrayList<InitialStateDiscoveryListener>();
 
     @Inject public JgroupsDiscovery(Settings settings, Environment environment, ClusterName clusterName,
-                                    ThreadPool threadPool, TransportService transportService, ClusterService clusterService) {
+                                    ThreadPool threadPool, TransportService transportService, ClusterService clusterService) throws Exception {
         super(settings);
         this.clusterName = clusterName;
         this.threadPool = threadPool;
@@ -185,14 +186,14 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
                     }
                 });
                 try {
-                    channel.send(new Message(channel.getView().getCreator(), channel.getAddress(), nodeMessagePayload()));
+                    channel.send(new Message( channel.getAddress(), nodeMessagePayload()));
                     addressSet = true;
                     logger.debug("Sent address [{}] to master [{}]", transportService.boundAddress().publishAddress(), channel.getView().getCreator());
                 } catch (Exception e) {
                     logger.warn("Can't send address to master [" + channel.getView().getCreator() + "] will try again later...", e);
                 }
             }
-        } catch (ChannelException e) {
+        } catch (Exception e) {
             throw new DiscoveryException("Can't connect to group [" + clusterName + "]", e);
         }
         return this;
@@ -234,7 +235,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             throw new ElasticSearchIllegalStateException("Shouldn't publish state when not master");
         }
         try {
-            channel.send(new Message(null, null, ClusterState.Builder.toBytes(clusterState)));
+            channel.send(new Message( channel.getAddress(),ClusterState.Builder.toBytes(clusterState)));
         } catch (Exception e) {
             logger.error("Failed to send cluster state to nodes", e);
         }
@@ -299,17 +300,17 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
         return channel.getAddress().equals(channel.getView().getCreator());
     }
 
-    @Override public byte[] getState() {
+    public byte[] getState() {
         return new byte[0];
     }
 
-    @Override public void setState(byte[] state) {
+    public void setState(byte[] state) {
     }
 
     @Override public void viewAccepted(final View newView) {
         if (!addressSet) {
             try {
-                channel.send(new Message(newView.getCreator(), channel.getAddress(), nodeMessagePayload()));
+                channel.send(new Message( channel.getAddress(), nodeMessagePayload()));
                 logger.debug("Sent address [{}] to master [{}]", localNode.address(), newView.getCreator());
                 addressSet = true;
             } catch (Exception e) {
@@ -330,12 +331,6 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
                     if (delta.added()) {
                         logger.warn("No new nodes should be created when a new discovery view is accepted");
                     }
-                    // we want to send a new cluster state any how on view change (that's why its commented)
-                    // for cases where we have client node joining (and it needs the cluster state)
-//                    if (!delta.removed()) {
-//                        // no nodes were removed, return the current state
-//                        return currentState;
-//                    }
                     return newClusterStateBuilder().state(currentState).nodes(newNodes).build();
                 }
             });
@@ -353,7 +348,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             if (!foundMe) {
                 logger.warn("Disconnected from cluster, resending address [{}] to master [{}]", localNode.address(), newView.getCreator());
                 try {
-                    channel.send(new Message(newView.getCreator(), channel.getAddress(), nodeMessagePayload()));
+                    channel.send(new Message(channel.getAddress(), nodeMessagePayload()));
                     addressSet = true;
                 } catch (Exception e) {
                     addressSet = false;

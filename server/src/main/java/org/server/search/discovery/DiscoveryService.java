@@ -52,7 +52,7 @@ public class DiscoveryService extends AbstractComponent implements LifecycleComp
         return this.lifecycle.state();
     }
 
-    @Override public DiscoveryService start() throws ElasticSearchException {
+    @Override public DiscoveryService start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }

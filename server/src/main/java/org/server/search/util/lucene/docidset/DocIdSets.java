@@ -34,15 +34,11 @@ public class DocIdSets {
      * Returns a cacheable version of the doc id set (might be the same instance provided as a parameter).
      */
     public static DocIdSet cacheable(IndexReader reader, DocIdSet docIdSet) throws IOException {
-        if (docIdSet.isCacheable()) {
-            return docIdSet;
-        } else {
-            final DocIdSetIterator it = docIdSet.iterator();
-            // null is allowed to be returned by iterator(),
-            // in this case we wrap with the empty set,
-            // which is cacheable.
-            return (it == null) ? DocIdSet.EMPTY_DOCIDSET : new OpenBitSetDISI(it, reader.maxDoc());
-        }
+        final DocIdSetIterator it = docIdSet.iterator();
+        // null is allowed to be returned by iterator(),
+        // in this case we wrap with the empty set,
+        // which is cacheable.
+        return (it == null) ? DocIdSet.EMPTY : DocIdSet.all(reader.maxDoc());
     }
 
     private DocIdSets() {

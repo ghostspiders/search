@@ -73,12 +73,22 @@ public class JgroupsCustomLogFactory implements CustomLogFactory {
             logger.debug(msg);
         }
 
+        @Override
+        public void debug(String msg, Object... objects) {
+            logger.debug(msg,objects);
+        }
+
         @Override public void debug(String msg, Throwable throwable) {
             logger.debug(msg, throwable);
         }
 
         @Override public void error(String msg) {
             logger.error(msg);
+        }
+
+        @Override
+        public void error(String msg, Object... objects) {
+            logger.error(msg,objects);
         }
 
         @Override public void error(String msg, Throwable throwable) {
@@ -89,6 +99,11 @@ public class JgroupsCustomLogFactory implements CustomLogFactory {
             logger.error(msg);
         }
 
+        @Override
+        public void fatal(String msg, Object... objects) {
+            logger.error(msg,objects);
+        }
+
         @Override public void fatal(String msg, Throwable throwable) {
             logger.error(msg, throwable);
         }
@@ -97,7 +112,12 @@ public class JgroupsCustomLogFactory implements CustomLogFactory {
             logger.info(msg);
         }
 
-        @Override public void info(String msg, Throwable throwable) {
+        @Override
+        public void info(String msg, Object... objects) {
+            logger.info(msg,objects);
+        }
+
+        public void info(String msg, Throwable throwable) {
             logger.info(msg, throwable);
         }
 
@@ -105,12 +125,17 @@ public class JgroupsCustomLogFactory implements CustomLogFactory {
             logger.trace(msg.toString());
         }
 
-        @Override public void trace(Object msg, Throwable throwable) {
+        public void trace(Object msg, Throwable throwable) {
             logger.trace(msg.toString(), throwable);
         }
 
         @Override public void trace(String msg) {
             logger.trace(msg);
+        }
+
+        @Override
+        public void trace(String s, Object... objects) {
+
         }
 
         @Override public void trace(String msg, Throwable throwable) {
@@ -119,6 +144,11 @@ public class JgroupsCustomLogFactory implements CustomLogFactory {
 
         @Override public void warn(String msg) {
             logger.warn(msg);
+        }
+
+        @Override
+        public void warn(String s, Object... objects) {
+
         }
 
         @Override public void warn(String msg, Throwable throwable) {
