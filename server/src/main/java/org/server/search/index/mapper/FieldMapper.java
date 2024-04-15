@@ -21,8 +21,7 @@ package org.server.search.index.mapper;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.search.Query;
 import org.server.search.util.concurrent.ThreadSafe;
 
@@ -50,7 +49,7 @@ public interface FieldMapper<T> {
      */
     String fullName();
 
-    Field.Index index();
+    FieldType index();
 
     boolean indexed();
 
@@ -60,7 +59,7 @@ public interface FieldMapper<T> {
 
     boolean stored();
 
-    Field.TermVector termVector();
+    FieldType  termVector();
 
     float boost();
 
@@ -81,17 +80,17 @@ public interface FieldMapper<T> {
     /**
      * Returns the value that will be used as a result for search. Can be only of specific types... .
      */
-    Object valueForSearch(Fieldable field);
+    Object valueForSearch(Field  field);
 
     /**
      * Returns the actual value of the field.
      */
-    T value(Fieldable field);
+    T value(Field  field);
 
     /**
      * Returns the actual value of the field as string.
      */
-    String valueAsString(Fieldable field);
+    String valueAsString(Field  field);
 
     /**
      * Returns the indexed value.
@@ -105,7 +104,7 @@ public interface FieldMapper<T> {
 
     Query fieldQuery(String value);
 
-    Filter fieldFilter(String value);
+    Query fieldFilter(String value);
 
     /**
      * Constructs a range query based on the mapper.
@@ -115,7 +114,7 @@ public interface FieldMapper<T> {
     /**
      * Constructs a range query filter based on the mapper.
      */
-    Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper);
+    Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper);
 
     int sortType();
 }

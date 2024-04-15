@@ -19,24 +19,26 @@
 
 package org.server.search.transport.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.*;
 import org.server.search.util.io.DataInputInputStream;
 import org.server.search.util.io.Streamable;
 import org.server.search.util.io.ThrowableObjectInputStream;
-import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.jboss.netty.channel.*;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.server.search.transport.Transport.Helper.*;
 
 /**
  * @author kimchy (Shay Banon)
  */
-@ChannelPipelineCoverage("one")
-public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
+public class MessageChannelHandler extends ChannelInboundHandlerAdapter  {
 
     private final Logger logger;
 
@@ -53,15 +55,15 @@ public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
         this.logger = logger;
     }
 
-    @Override public void messageReceived(ChannelHandlerContext ctx, MessageEvent event) throws Exception {
-        ChannelBufferInputStream buffer = (ChannelBufferInputStream) event.getMessage();
+    @Override public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf buffer = (ByteBuf) msg;
 
         long requestId = buffer.readLong();
         byte status = buffer.readByte();
         boolean isRequest = isRequest(status);
 
         if (isRequest) {
-            handleRequest(event, buffer, requestId);
+            handleRequest(ctx, buffer, requestId);
         } else {
             final TransportResponseHandler handler = transportServiceAdapter.remove(requestId);
             if (handler == null) {
@@ -75,10 +77,11 @@ public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private void handleResponse(ChannelBufferInputStream buffer, final TransportResponseHandler handler) {
+    private void handleResponse(ByteBuf buffer, final TransportResponseHandler handler) {
         final Streamable streamable = handler.newInstance();
         try {
-            streamable.readFrom(buffer);
+            InputStream inputStream = new ByteBufInputStream(buffer);
+            streamable.readFrom(new DataInputStream(inputStream));
         } catch (Exception e) {
             handleException(handler, new TransportSerializationException("Failed to deserialize response of type [" + streamable.getClass().getName() + "]", e));
             return;
@@ -103,10 +106,11 @@ public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private void handlerResponseError(ChannelBufferInputStream buffer, final TransportResponseHandler handler) {
+    private void handlerResponseError(ByteBuf buffer , final TransportResponseHandler handler) {
         Throwable error;
         try {
-            ThrowableObjectInputStream ois = new ThrowableObjectInputStream(new DataInputInputStream(buffer));
+            InputStream inputStream = new ByteBufInputStream(buffer);
+            ThrowableObjectInputStream ois = new ThrowableObjectInputStream(new DataInputStream(inputStream));
             error = (Throwable) ois.readObject();
         } catch (Exception e) {
             error = new TransportSerializationException("Failed to deserialize exception response from stream", e);
@@ -134,17 +138,19 @@ public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private void handleRequest(MessageEvent event, ChannelBufferInputStream buffer, long requestId) throws IOException {
-        final String action = buffer.readUTF();
+    private void handleRequest(ChannelHandlerContext ctx, ByteBuf buffer, long requestId) throws IOException {
+        final String action = buffer.toString();
 
-        final NettyTransportChannel transportChannel = new NettyTransportChannel(transport, action, event.getChannel(), requestId);
+        final NettyTransportChannel transportChannel = new NettyTransportChannel(transport, action, ctx.channel(), requestId);
         try {
             final TransportRequestHandler handler = transportServiceAdapter.handler(action);
             if (handler == null) {
                 throw new ActionNotFoundTransportException("Action [" + action + "] not found");
             }
             final Streamable streamable = handler.newInstance();
-            streamable.readFrom(buffer);
+
+            InputStream inputStream = new ByteBufInputStream(buffer);
+            streamable.readFrom(new DataInputStream(inputStream));
             if (handler.spawn()) {
                 threadPool.execute(new Runnable() {
                     @SuppressWarnings({"unchecked"}) @Override public void run() {
@@ -174,7 +180,7 @@ public class MessageChannelHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    @Override public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-        transport.exceptionCaught(ctx, e);
+    @Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        transport.exceptionCaught(ctx, cause);
     }
 }

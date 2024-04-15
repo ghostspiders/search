@@ -19,7 +19,7 @@
 
 package org.server.search.index.cache.filter;
 
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
 import org.server.search.index.IndexComponent;
 
 /**
@@ -27,7 +27,7 @@ import org.server.search.index.IndexComponent;
  */
 public interface FilterCache extends IndexComponent {
 
-    Filter cache(Filter filterToCache);
+    Query cache(Query filterToCache);
 
     void close();
 }

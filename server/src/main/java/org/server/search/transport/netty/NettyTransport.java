@@ -341,16 +341,16 @@ public class NettyTransport extends AbstractComponent implements Transport {
         return this.boundAddress;
     }
 
-    void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+    void exceptionCaught(ChannelHandlerContext ctx, Throwable e){
         if (!lifecycle.started()) {
             // ignore
         }
         if (isCloseConnectionException(e.getCause()) || isConnectException(e.getCause())) {
             if (logger.isTraceEnabled()) {
-                logger.trace("(Ignoring) Exception caught on netty layer [" + ctx.getChannel() + "]", e.getCause());
+                logger.trace("(Ignoring) Exception caught on netty layer [" + ctx.channel() + "]", e.getCause());
             }
         } else {
-            logger.warn("Exception caught on netty layer [" + ctx.getChannel() + "]", e.getCause());
+            logger.warn("Exception caught on netty layer [" + ctx.channel() + "]", e.getCause());
         }
     }
 

@@ -21,7 +21,7 @@ package org.server.search.index.similarity;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
-\import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
