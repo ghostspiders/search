@@ -22,6 +22,7 @@ package org.server.search.http.netty;
 import com.google.inject.Inject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import org.server.search.ElasticSearchException;
 import org.server.search.http.*;
 import org.server.search.threadpool.ThreadPool;
@@ -89,9 +90,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
 
     private volatile BoundTransportAddress boundAddress;
 
-    private volatile Channel serverChannel;
-
-    private volatile OpenChannelsHandler serverOpenChannels;
+    private volatile ChannelFuture  serverChannelFuture;
 
     private volatile HttpServerAdapter httpServerAdapter;
 
@@ -129,41 +128,35 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         }
         EventLoopGroup bossGroup = new NioEventLoopGroup(1, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpBoss")));
         EventLoopGroup workerGroup = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpIoWorker")));
-        this.serverOpenChannels = new OpenChannelsHandler();
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup,workerGroup);
         final HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
         final HttpRequestHandler requestHandler = new HttpRequestHandler(this);
 
-        ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
-            @Override public ChannelPipeline getPipeline() throws Exception {
-                ChannelPipeline pipeline = Channels.pipeline();
-                pipeline.addLast("openChannels", serverOpenChannels);
-                pipeline.addLast("keepAliveTimeout", new ReadTimeoutHandler(keepAliveTimer, httpKeepAlive.millis(), TimeUnit.MILLISECONDS));
-                pipeline.addLast("decoder", new HttpRequestDecoder());
-                pipeline.addLast("encoder", new HttpResponseEncoder());
-                pipeline.addLast("handler", requestHandler);
-                return pipeline;
+        serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast("keepAliveTimeout", new ReadTimeoutHandler(httpKeepAlive.millis(), TimeUnit.MILLISECONDS));
+                ch.pipeline().addLast("decoder", new HttpRequestDecoder());
+                ch.pipeline().addLast("encoder", new HttpResponseEncoder());
+                ch.pipeline().addLast("handler", requestHandler);
             }
-        };
-
-        serverBootstrap.setPipelineFactory(pipelineFactory);
-
+        });
         if (tcpNoDelay != null) {
-            serverBootstrap.setOption("child.tcpNoDelay", tcpNoDelay);
+            serverBootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay);
         }
         if (tcpKeepAlive != null) {
-            serverBootstrap.setOption("child.keepAlive", tcpKeepAlive);
+            serverBootstrap.childOption(ChannelOption.SO_KEEPALIVE, tcpKeepAlive);
         }
         if (tcpSendBufferSize != null) {
-            serverBootstrap.setOption("child.sendBufferSize", tcpSendBufferSize.bytes());
+            serverBootstrap.childOption(ChannelOption.SO_SNDBUF, (int) tcpSendBufferSize.bytes());
         }
         if (tcpReceiveBufferSize != null) {
-            serverBootstrap.setOption("child.receiveBufferSize", tcpReceiveBufferSize.bytes());
+            serverBootstrap.childOption(ChannelOption.SO_RCVBUF, (int) tcpReceiveBufferSize.bytes());
         }
         if (reuseAddress != null) {
-            serverBootstrap.setOption("reuseAddress", reuseAddress);
-            serverBootstrap.setOption("child.reuseAddress", reuseAddress);
+            serverBootstrap.option(ChannelOption.SO_REUSEADDR, reuseAddress);
+            serverBootstrap.childOption(ChannelOption.SO_REUSEADDR, reuseAddress);
         }
 
         // Bind and start to accept incoming connections.
@@ -180,7 +173,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         boolean success = portsRange.iterate(new PortsRange.PortCallback() {
             @Override public boolean onPortNumber(int portNumber) {
                 try {
-                    serverChannel = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber));
+                    serverChannelFuture = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber));
                 } catch (Exception e) {
                     lastException.set(e);
                     return false;
@@ -192,7 +185,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
             throw new BindHttpException("Failed to bind to [" + port + "]", lastException.get());
         }
 
-        InetSocketAddress boundAddress = (InetSocketAddress) serverChannel.getLocalAddress();
+        InetSocketAddress boundAddress = (InetSocketAddress) serverChannelFuture.channel().localAddress();
         InetSocketAddress publishAddress;
         try {
             InetAddress publishAddressX = resultPublishHostAddress(publishHost, settings);
@@ -213,28 +206,22 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         return this;
     }
 
-    @Override public HttpServerTransport stop() throws ElasticSearchException {
+    @Override public HttpServerTransport stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
-        if (serverChannel != null) {
-            serverChannel.close().awaitUninterruptibly();
-            serverChannel = null;
+        if (serverChannelFuture != null) {
+            serverChannelFuture.channel().close().awaitUninterruptibly();
+            serverChannelFuture = null;
         }
-
-        if (serverOpenChannels != null) {
-            serverOpenChannels.close();
-            serverOpenChannels = null;
-        }
-
         if (serverBootstrap != null) {
-            serverBootstrap.releaseExternalResources();
+            serverBootstrap.config().group().shutdownGracefully().sync();
             serverBootstrap = null;
         }
         return this;
     }
 
-    @Override public void close() {
+    @Override public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }
@@ -254,9 +241,9 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
     void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
         if (e.getCause() instanceof ReadTimeoutException) {
             if (logger.isTraceEnabled()) {
-                logger.trace("Connection timeout [{}]", ctx.getChannel().getRemoteAddress());
+                logger.trace("Connection timeout [{}]", ctx.channel().remoteAddress());
             }
-            ctx.getChannel().close();
+            ctx.channel().close();
         } else {
             if (!lifecycle.started()) {
                 // ignore

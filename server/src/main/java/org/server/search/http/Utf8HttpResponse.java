@@ -22,7 +22,6 @@ package org.server.search.http;
 import org.apache.lucene.util.UnicodeUtil;
 
 /**
- * An http response that is built on top of {@link UnicodeUtil.UTF8Result}.
  * <p/>
  * <p>Note, this class assumes that the utf8 result is not thread safe.
  *
@@ -30,33 +29,24 @@ import org.apache.lucene.util.UnicodeUtil;
  */
 public class Utf8HttpResponse extends AbstractHttpResponse implements HttpResponse {
 
-    public static final UnicodeUtil.UTF8Result EMPTY;
-
-    static {
-        UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result();
-        temp.result = new byte[0];
-        temp.length = 0;
-        EMPTY = temp;
-    }
-
     private final Status status;
 
-    private final UnicodeUtil.UTF8Result utf8Result;
+    private final String utf8Result;
 
-    private final UnicodeUtil.UTF8Result prefixUtf8Result;
+    private final String prefixUtf8Result;
 
-    private final UnicodeUtil.UTF8Result suffixUtf8Result;
+    private final String suffixUtf8Result;
 
     public Utf8HttpResponse(Status status) {
-        this(status, EMPTY);
+        this(status, null);
     }
 
-    public Utf8HttpResponse(Status status, UnicodeUtil.UTF8Result utf8Result) {
+    public Utf8HttpResponse(Status status, String utf8Result) {
         this(status, utf8Result, null, null);
     }
 
-    public Utf8HttpResponse(Status status, UnicodeUtil.UTF8Result utf8Result,
-                            UnicodeUtil.UTF8Result prefixUtf8Result, UnicodeUtil.UTF8Result suffixUtf8Result) {
+    public Utf8HttpResponse(Status status, String utf8Result,
+                            String prefixUtf8Result, String suffixUtf8Result) {
         this.status = status;
         this.utf8Result = utf8Result;
         this.prefixUtf8Result = prefixUtf8Result;
@@ -72,11 +62,11 @@ public class Utf8HttpResponse extends AbstractHttpResponse implements HttpRespon
     }
 
     @Override public byte[] content() {
-        return utf8Result.result;
+        return utf8Result.getBytes();
     }
 
     @Override public int contentLength() {
-        return utf8Result.length;
+        return utf8Result.length();
     }
 
     @Override public Status status() {
@@ -84,18 +74,18 @@ public class Utf8HttpResponse extends AbstractHttpResponse implements HttpRespon
     }
 
     @Override public byte[] prefixContent() {
-        return prefixUtf8Result != null ? prefixUtf8Result.result : null;
+        return prefixUtf8Result != null ? prefixUtf8Result.getBytes() : null;
     }
 
     @Override public int prefixContentLength() {
-        return prefixUtf8Result != null ? prefixUtf8Result.length : -1;
+        return prefixUtf8Result != null ? prefixUtf8Result.length() : -1;
     }
 
     @Override public byte[] suffixContent() {
-        return suffixUtf8Result != null ? suffixUtf8Result.result : null;
+        return suffixUtf8Result != null ? suffixUtf8Result.getBytes() : null;
     }
 
     @Override public int suffixContentLength() {
-        return suffixUtf8Result != null ? suffixUtf8Result.length : -1;
+        return suffixUtf8Result != null ? suffixUtf8Result.length() : -1;
     }
 }

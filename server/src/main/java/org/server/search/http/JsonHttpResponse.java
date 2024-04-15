@@ -19,7 +19,6 @@
 
 package org.server.search.http;
 
-import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
@@ -29,26 +28,22 @@ import java.io.IOException;
  */
 public class JsonHttpResponse extends Utf8HttpResponse {
 
-    private static ThreadLocal<UnicodeUtil.UTF8CodePoint> cache = new ThreadLocal<UnicodeUtil.UTF8CodePoint>() {
-        @Override protected UnicodeUtil.UTF8CodePoint initialValue() {
-            return new UnicodeUtil.UTF8CodePoint();
+    private static ThreadLocal<String> cache = new ThreadLocal<String>() {
+        @Override protected String initialValue() {
+            return "";
         }
     };
 
-    private static final UnicodeUtil.UTF8CodePoint END_JSONP = new UnicodeUtil.UTF8CodePoint();
+    private static final String END_JSONP = new String();
 
-    static {
-        UnicodeUtil.UTF16toUTF8(");", 0, ");".length(), END_JSONP);
-    }
-
-    private static ThreadLocal<UnicodeUtil.UTF8CodePoint> prefixCache = new ThreadLocal<UnicodeUtil.UTF8CodePoint>() {
-        @Override protected UnicodeUtil.UTF8CodePoint initialValue() {
-            return new UnicodeUtil.UTF8CodePoint();
+    private static ThreadLocal<String> prefixCache = new ThreadLocal<String>() {
+        @Override protected String initialValue() {
+            return new String();
         }
     };
 
     public JsonHttpResponse(HttpRequest request, Status status) {
-        super(status, EMPTY, startJsonp(request), endJsonp(request));
+        super(status, null, startJsonp(request), endJsonp(request));
     }
 
     public JsonHttpResponse(HttpRequest request, Status status, JsonBuilder jsonBuilder) throws IOException {
@@ -63,25 +58,21 @@ public class JsonHttpResponse extends Utf8HttpResponse {
         return "application/json; charset=UTF-8";
     }
 
-    private static UnicodeUtil.UTF8CodePoint convert(String content) {
-        UnicodeUtil.UTF8CodePoint result = cache.get();
-        UnicodeUtil.UTF16toUTF8(content, 0, content.length(), result);
+    private static String convert(String content) {
+        String result = cache.get();
         return result;
     }
 
-    private static UnicodeUtil.UTF8CodePoint startJsonp(HttpRequest request) {
+    private static String startJsonp(HttpRequest request) {
         String callback = request.param("callback");
         if (callback == null) {
             return null;
         }
-        UnicodeUtil.UTF8CodePoint result = prefixCache.get();
-        UnicodeUtil.UTF16toUTF8(callback, 0, callback.length(), result);
-        result.result[result.length] = '(';
-        result.length++;
+        String result = prefixCache.get();
         return result;
     }
 
-    private static UnicodeUtil.UTF8CodePoint endJsonp(HttpRequest request) {
+    private static String endJsonp(HttpRequest request) {
         String callback = request.param("callback");
         if (callback == null) {
             return null;

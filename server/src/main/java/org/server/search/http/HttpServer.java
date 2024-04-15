@@ -80,7 +80,7 @@ public class HttpServer extends AbstractComponent implements LifecycleComponent<
         }
     }
 
-    public HttpServer start() throws ElasticSearchException {
+    public HttpServer start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -91,7 +91,7 @@ public class HttpServer extends AbstractComponent implements LifecycleComponent<
         return this;
     }
 
-    public HttpServer stop() throws ElasticSearchException {
+    public HttpServer stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -99,7 +99,7 @@ public class HttpServer extends AbstractComponent implements LifecycleComponent<
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

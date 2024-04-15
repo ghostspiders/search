@@ -18,19 +18,11 @@
  */
 
 package org.server.search.http;
-
-import org.apache.lucene.util.UnicodeUtil;
-
 /**
  * @author kimchy (Shay Banon)
  */
 public class StringHttpResponse extends Utf8HttpResponse {
 
-    private static ThreadLocal<UnicodeUtil.UTF8Result> cache = new ThreadLocal<UnicodeUtil.UTF8Result>() {
-        @Override protected UnicodeUtil.UTF8Result initialValue() {
-            return new UnicodeUtil.UTF8Result();
-        }
-    };
 
     public StringHttpResponse(Status status) {
         super(status);
@@ -40,9 +32,8 @@ public class StringHttpResponse extends Utf8HttpResponse {
         super(status, convert(content));
     }
 
-    private static UnicodeUtil.UTF8Result convert(String content) {
-        UnicodeUtil.UTF8Result result = cache.get();
-        UnicodeUtil.UTF16toUTF8(content, 0, content.length(), result);
-        return result;
+    private static String convert(String content) {
+
+        return content;
     }
 }

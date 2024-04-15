@@ -22,11 +22,14 @@ package org.server.search.transport.netty;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.sun.jdi.event.ExceptionEvent;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
@@ -53,10 +56,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -109,9 +109,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
 
     private final ThreadPool threadPool;
 
-    private volatile OpenChannelsHandler serverOpenChannels;
-
-    private volatile ClientBootstrap clientBootstrap;
+    private volatile Bootstrap clientBootstrap;
 
     private volatile ServerBootstrap serverBootstrap;
 
@@ -171,19 +169,18 @@ public class NettyTransport extends AbstractComponent implements Transport {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
-
-        clientBootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(
-                Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportClientBoss")),
-                Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportClientIoWorker")),
-                workerCount));
-        ChannelPipelineFactory clientPipelineFactory = new ChannelPipelineFactory() {
-            @Override public ChannelPipeline getPipeline() throws Exception {
-                ChannelPipeline pipeline = Channels.pipeline();
-                pipeline.addLast("decoder", new SizeHeaderFrameDecoder());
-                pipeline.addLast("dispatcher", new MessageChannelHandler(NettyTransport.this, logger));
-                return pipeline;
+        EventLoopGroup transportClientIoWorker = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportClientIoWorker")));
+        clientBootstrap = new Bootstrap();
+        clientBootstrap.group(transportClientIoWorker);
+        clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) {
+                ch.pipeline().addLast("decoder", (ChannelHandler) new SizeHeaderFrameDecoder());
+                ch.pipeline().addLast("dispatcher", (ChannelHandler) new MessageChannelHandler(NettyTransport.this, logger));
             }
-        };
+        });
+
+
         clientBootstrap.setPipelineFactory(clientPipelineFactory);
         clientBootstrap.setOption("connectTimeoutMillis", connectTimeout.millis());
         if (tcpNoDelay != null) {
@@ -206,7 +203,6 @@ public class NettyTransport extends AbstractComponent implements Transport {
             return null;
         }
 
-        serverOpenChannels = new OpenChannelsHandler();
         serverBootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(
                 Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportServerBoss")),
                 Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportServerIoWorker")),
@@ -214,7 +210,6 @@ public class NettyTransport extends AbstractComponent implements Transport {
         ChannelPipelineFactory serverPipelineFactory = new ChannelPipelineFactory() {
             @Override public ChannelPipeline getPipeline() throws Exception {
                 ChannelPipeline pipeline = Channels.pipeline();
-                pipeline.addLast("openChannels", serverOpenChannels);
                 pipeline.addLast("decoder", new SizeHeaderFrameDecoder());
                 pipeline.addLast("dispatcher", new MessageChannelHandler(NettyTransport.this, logger));
                 return pipeline;
@@ -299,12 +294,6 @@ public class NettyTransport extends AbstractComponent implements Transport {
                 serverChannel = null;
             }
         }
-
-        if (serverOpenChannels != null) {
-            serverOpenChannels.close();
-            serverOpenChannels = null;
-        }
-
         if (serverBootstrap != null) {
             serverBootstrap.releaseExternalResources();
             serverBootstrap = null;

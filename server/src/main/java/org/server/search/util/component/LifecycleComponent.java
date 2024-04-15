@@ -30,7 +30,7 @@ public interface LifecycleComponent<T> {
 
     T start() throws Exception;
 
-    T stop() throws ElasticSearchException;
+    T stop() throws ElasticSearchException, InterruptedException;
 
-    void close() throws ElasticSearchException;
+    void close() throws ElasticSearchException, InterruptedException;
 }

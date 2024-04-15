@@ -81,7 +81,7 @@ public class JsonBuilder {
 
     private JsonGenerator generator;
 
-    final UnicodeUtil.UTF8CodePoint utf8Result = new UnicodeUtil.UTF8CodePoint();
+    final String utf8Result = new String();
 
     public JsonBuilder() throws IOException {
         this(Jackson.defaultJsonFactory());
@@ -330,7 +330,7 @@ public class JsonBuilder {
      * Note, the result is shared within this instance, so copy the byte array if needed
      * or use {@link #utf8copied()}.
      */
-    public UnicodeUtil.UTF8CodePoint utf8() throws IOException {
+    public String utf8() throws IOException {
         flush();
 
         // ignore whitepsaces
@@ -345,9 +345,6 @@ public class JsonBuilder {
         while ((st < len) && (val[len - 1] <= ' ')) {
             len--;
         }
-
-        UnicodeUtil.UTF16toUTF8(val, st, len, utf8Result);
-
         return utf8Result;
     }
 
@@ -356,9 +353,7 @@ public class JsonBuilder {
      */
     public byte[] utf8copied() throws IOException {
         utf8();
-        byte[] result = new byte[utf8Result.length];
-        System.arraycopy(utf8Result.result, 0, result, 0, utf8Result.length);
-        return result;
+        return utf8Result.getBytes();
     }
 
     public void close() throws IOException {
