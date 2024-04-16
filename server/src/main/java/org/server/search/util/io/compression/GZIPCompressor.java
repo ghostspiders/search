@@ -18,8 +18,6 @@
  */
 
 package org.server.search.util.io.compression;
-
-import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.util.SizeUnit;
 import org.server.search.util.io.FastByteArrayInputStream;
 import org.server.search.util.io.FastByteArrayOutputStream;
@@ -54,8 +52,8 @@ public class GZIPCompressor implements Compressor {
     private static class CompressHolder {
         final FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
         final byte[] buffer = new byte[(int) SizeUnit.KB.toBytes(5)];
-        final UnicodeUtil.UTF16Result utf16Result = new UnicodeUtil.UTF16Result();
-        final UnicodeUtil.UTF8Result utf8Result = new UnicodeUtil.UTF8Result();
+        final String utf16Result = new String();
+        final String utf8Result = new String();
     }
 
 
@@ -69,8 +67,7 @@ public class GZIPCompressor implements Compressor {
 
     @Override public byte[] compressString(String value) throws IOException {
         CompressHolder ch = Cached.cached();
-        UnicodeUtil.UTF16toUTF8(value, 0, value.length(), ch.utf8Result);
-        return compress(ch.utf8Result.result, 0, ch.utf8Result.length, ch);
+        return compress(ch.utf8Result.getBytes(), 0, ch.utf8Result.length(), ch);
     }
 
     @Override public byte[] decompress(byte[] value) throws IOException {
@@ -82,8 +79,7 @@ public class GZIPCompressor implements Compressor {
     @Override public String decompressString(byte[] value) throws IOException {
         CompressHolder ch = Cached.cached();
         decompress(value);
-        UnicodeUtil.UTF8toUTF16(ch.bos.unsafeByteArray(), 0, ch.bos.size(), ch.utf16Result);
-        return new String(ch.utf16Result.result, 0, ch.utf16Result.length);
+        return new String(ch.utf16Result.getBytes(), 0, ch.utf16Result.length());
     }
 
     private static void decompress(byte[] value, CompressHolder ch) throws IOException {

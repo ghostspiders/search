@@ -44,8 +44,8 @@ public class LzfCompressor implements Compressor {
     }
 
     private static class CompressHolder {
-        final UnicodeUtil.UTF16Result utf16Result = new UnicodeUtil.UTF16Result();
-        final UnicodeUtil.UTF8Result utf8Result = new UnicodeUtil.UTF8Result();
+        final String utf16Result = new String();
+        final String utf8Result = new String();
     }
 
     @Override public byte[] compress(byte[] value) throws IOException {
@@ -54,8 +54,7 @@ public class LzfCompressor implements Compressor {
 
     @Override public byte[] compressString(String value) throws IOException {
         CompressHolder ch = Cached.cached();
-        UnicodeUtil.UTF16toUTF8(value, 0, value.length(), ch.utf8Result);
-        return LZFEncoder.encode(ch.utf8Result.result, ch.utf8Result.length);
+        return LZFEncoder.encode(ch.utf8Result.getBytes(), ch.utf8Result.length());
     }
 
     @Override public byte[] decompress(byte[] value) throws IOException {
@@ -65,7 +64,6 @@ public class LzfCompressor implements Compressor {
     @Override public String decompressString(byte[] value) throws IOException {
         CompressHolder ch = Cached.cached();
         byte[] result = decompress(value);
-        UnicodeUtil.UTF8toUTF16(result, 0, result.length, ch.utf16Result);
-        return new String(ch.utf16Result.result, 0, ch.utf16Result.length);
+        return new String(ch.utf16Result.getBytes(), 0, ch.utf16Result.length());
     }
 }

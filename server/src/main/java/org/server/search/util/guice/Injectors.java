@@ -19,8 +19,8 @@
 
 package org.server.search.util.guice;
 
+import com.google.common.collect.Sets;
 import com.google.inject.*;
-import com.google.inject.internal.Sets;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.name.Names;
 
