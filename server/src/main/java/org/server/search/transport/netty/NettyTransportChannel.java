@@ -19,7 +19,10 @@
 
 package org.server.search.transport.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOutboundBuffer;
 import org.server.search.transport.NotSerializableTransportException;
 import org.server.search.transport.RemoteTransportException;
 import org.server.search.transport.TransportChannel;
@@ -66,40 +69,26 @@ public class NettyTransportChannel implements TransportChannel {
         status = setResponse(status);
         stream.writeByte(status); // 0 for request, 1 for response.
         message.writeTo(stream);
-        ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(stream.copiedByteArray());
+        ByteBuf buffer = Unpooled.wrappedBuffer(stream.copiedByteArray());
         buffer.setInt(0, buffer.writerIndex() - 4); // update real size.
         channel.write(buffer);
     }
 
     @Override public void sendResponse(Throwable error) throws IOException {
-        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-        ChannelBufferOutputStream os = new ChannelBufferOutputStream(buffer);
-
-        os.write(LENGTH_PLACEHOLDER);
-        os.writeLong(requestId);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeBytes(LENGTH_PLACEHOLDER);
+        buffer.writeLong(requestId);
 
         byte status = 0;
         status = setResponse(status);
         status = setError(status);
-        os.writeByte(status);
+        buffer.writeByte(status);
 
-        // mark the buffer, so we can reset it when the exception is not serializable
-        os.flush();
         buffer.markWriterIndex();
-        try {
-            RemoteTransportException tx = new RemoteTransportException(transport.settings().get("name"), transport.wrapAddress(channel.getLocalAddress()), action, error);
-            ThrowableObjectOutputStream too = new ThrowableObjectOutputStream(os);
-            too.writeObject(tx);
-            too.close();
-        } catch (NotSerializableException e) {
-            buffer.resetWriterIndex();
-            RemoteTransportException tx = new RemoteTransportException(transport.settings().get("name"), transport.wrapAddress(channel.getLocalAddress()), action, new NotSerializableTransportException(error));
-            ThrowableObjectOutputStream too = new ThrowableObjectOutputStream(os);
-            too.writeObject(tx);
-            too.close();
-        }
+        RemoteTransportException tx = new RemoteTransportException(transport.settings().get("name"), transport.wrapAddress(channel.localAddress()), action, error);
+        buffer.writeBytes(tx.getDetailedMessage().getBytes());
 
-        buffer.setInt(0, buffer.writerIndex() - 4); // update real size.
+        buffer.setInt(0, buffer.writerIndex() - 4);
         channel.write(buffer);
     }
 }

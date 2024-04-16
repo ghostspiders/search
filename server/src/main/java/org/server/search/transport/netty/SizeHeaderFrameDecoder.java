@@ -19,40 +19,42 @@
 
 package org.server.search.transport.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
-
+import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.CharsetUtil;
 import java.io.StreamCorruptedException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
  */
-@ChannelPipelineCoverage("one")
-public class SizeHeaderFrameDecoder extends FrameDecoder {
+public class SizeHeaderFrameDecoder extends ByteToMessageDecoder {
+    private int length;
 
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
 
-        if (buffer.readableBytes() < 4) {
-            return null;
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
+
+        if (byteBuf.readableBytes() < 4) {
+            return;
         }
 
-        int dataLen = buffer.getInt(buffer.readerIndex());
+        int dataLen = byteBuf.getInt(byteBuf.readerIndex());
         if (dataLen <= 0) {
             throw new StreamCorruptedException("invalid data length: " + dataLen);
         }
 
-        if (buffer.readableBytes() < dataLen + 4) {
-            return null;
+        if (byteBuf.readableBytes() < dataLen + 4) {
+            return ;
         }
 
-        buffer.skipBytes(4);
+        byteBuf.skipBytes(4);
 
-        return new ChannelBufferInputStream(buffer, dataLen);
+        length = byteBuf.readInt();
+        byte[] content = new byte[length];
+        byteBuf.readBytes(content); // 读取消息内容
+        out.add(new String(content, CharsetUtil.UTF_8));
+        length = 0;
     }
-
 }

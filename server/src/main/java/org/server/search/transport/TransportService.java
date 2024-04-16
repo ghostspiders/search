@@ -65,7 +65,7 @@ public class TransportService extends AbstractComponent implements LifecycleComp
         return this.lifecycle.state();
     }
 
-    public TransportService start() throws ElasticSearchException {
+    public TransportService start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -86,7 +86,7 @@ public class TransportService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    public TransportService stop() throws ElasticSearchException {
+    public TransportService stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -94,7 +94,7 @@ public class TransportService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }
