@@ -20,9 +20,8 @@
 package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -32,7 +31,7 @@ import org.server.search.util.settings.Settings;
  */
 public class ASCIIFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
 
-    @Inject public ASCIIFoldingTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
+    @Inject public ASCIIFoldingTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {
         super(index, indexSettings, name);
     }
 

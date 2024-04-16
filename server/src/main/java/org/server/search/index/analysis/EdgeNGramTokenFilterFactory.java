@@ -25,6 +25,8 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ngram.EdgeNGramTokenFilter;
 import org.apache.lucene.analysis.ngram.EdgeNGramTokenizer;
 import org.apache.lucene.analysis.ngram.NGramTokenFilter;
+import org.apache.lucene.analysis.ngram.NGramTokenizer;
+import org.apache.lucene.util.AttributeSource;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -39,13 +41,13 @@ public class EdgeNGramTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final int maxGram;
 
-    private final EdgeNGramTokenFilter.Side side;
+    private final EdgeNGramTokenFilter side;
 
     @Inject public EdgeNGramTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
-        this.minGram = settings.getAsInt("minGram", NGramTokenFilter.DEFAULT_MIN_NGRAM_SIZE);
-        this.maxGram = settings.getAsInt("maxGram", NGramTokenFilter.DEFAULT_MAX_NGRAM_SIZE);
-        this.side = EdgeNGramTokenFilter.Side.getSide(settings.get("side", EdgeNGramTokenizer.DEFAULT_SIDE.getLabel()));
+        this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
+        this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
+        this.side = AttributeSource.State.getSide(settings.get("side", EdgeNGramTokenizer.DEFAULT_SIDE.getLabel()));
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {
