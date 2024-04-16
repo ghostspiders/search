@@ -37,7 +37,7 @@ import java.util.List;
  * the default deletion policy.
  */
 @IndexShardLifecycle
-public class KeepOnlyLastDeletionPolicy extends AbstractIndexShardComponent implements IndexDeletionPolicy {
+public class KeepOnlyLastDeletionPolicy extends AbstractIndexShardComponent{
 
     @Inject public KeepOnlyLastDeletionPolicy(ShardId shardId, @IndexSettings Settings indexSettings) {
         super(shardId, indexSettings);

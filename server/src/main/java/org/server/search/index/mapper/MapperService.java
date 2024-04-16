@@ -327,7 +327,12 @@ public class MapperService extends AbstractIndexComponent implements Iterable<Do
             this.defaultAnalyzer = defaultAnalyzer;
         }
 
-        @Override public TokenStream tokenStream(String fieldName, Reader reader) {
+        @Override
+        protected TokenStreamComponents createComponents(String s) {
+            return null;
+        }
+
+        public TokenStream tokenStream1(String fieldName, Reader reader) {
             int dotIndex = fieldName.indexOf('.');
             if (dotIndex != -1) {
                 String possibleType = fieldName.substring(0, dotIndex);
@@ -343,20 +348,20 @@ public class MapperService extends AbstractIndexComponent implements Iterable<Do
             return defaultAnalyzer.tokenStream(fieldName, reader);
         }
 
-        @Override public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
+        public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
             int dotIndex = fieldName.indexOf('.');
             if (dotIndex != -1) {
                 String possibleType = fieldName.substring(0, dotIndex);
                 DocumentMapper possibleDocMapper = mappers.get(possibleType);
                 if (possibleDocMapper != null) {
-                    return possibleDocMapper.mappers().searchAnalyzer().reusableTokenStream(fieldName, reader);
+                    return possibleDocMapper.mappers().searchAnalyzer().tokenStream(fieldName, reader);
                 }
             }
             FieldMappers mappers = indexNameFieldMappers.get(fieldName);
             if (mappers != null && mappers.mapper() != null && mappers.mapper().searchAnalyzer() != null) {
-                return mappers.mapper().searchAnalyzer().reusableTokenStream(fieldName, reader);
+                return mappers.mapper().searchAnalyzer().tokenStream(fieldName, reader);
             }
-            return defaultAnalyzer.reusableTokenStream(fieldName, reader);
+            return defaultAnalyzer.tokenStream(fieldName, reader);
         }
     }
 

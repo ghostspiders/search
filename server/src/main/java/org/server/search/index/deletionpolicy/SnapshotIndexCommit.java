@@ -70,4 +70,9 @@ public class SnapshotIndexCommit extends IndexCommitDelegate implements Releasab
             delegate.delete();
         }
     }
+
+    @Override
+    public int getSegmentCount() {
+        return 0;
+    }
 }

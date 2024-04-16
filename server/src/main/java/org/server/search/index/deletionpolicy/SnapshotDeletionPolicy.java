@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author kimchy (Shay Banon)
  */
 @IndexShardLifecycle
-public class SnapshotDeletionPolicy extends AbstractIndexShardComponent implements IndexDeletionPolicy {
+public class SnapshotDeletionPolicy extends AbstractIndexShardComponent{
 
     private final IndexDeletionPolicy primary;
 

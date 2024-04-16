@@ -19,6 +19,7 @@
 
 package org.server.search.index.shard;
 
+import org.apache.lucene.index.IndexDeletionPolicy;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.jmx.ManagedGroupName;
 import org.server.search.util.logging.Loggers;
@@ -30,7 +31,7 @@ import static org.server.search.index.shard.IndexShardManagement.*;
 /**
  * @author kimchy (Shay Banon)
  */
-public abstract class AbstractIndexShardComponent implements IndexShardComponent {
+public abstract class AbstractIndexShardComponent extends IndexDeletionPolicy implements IndexShardComponent {
 
     protected final Logger logger;
 

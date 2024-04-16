@@ -41,16 +41,14 @@ public class EdgeNGramTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final int maxGram;
 
-    private final EdgeNGramTokenFilter side;
 
     @Inject public EdgeNGramTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
         this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
         this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
-        this.side = AttributeSource.State.getSide(settings.get("side", EdgeNGramTokenizer.DEFAULT_SIDE.getLabel()));
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {
-        return new EdgeNGramTokenFilter(tokenStream, side, minGram, maxGram);
+        return new EdgeNGramTokenFilter(tokenStream, minGram, maxGram,false);
     }
 }

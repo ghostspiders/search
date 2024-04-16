@@ -21,7 +21,6 @@ package org.server.search.index.deletionpolicy;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexCommit;
-import org.apache.lucene.index.IndexDeletionPolicy;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.shard.AbstractIndexShardComponent;
 import org.server.search.index.shard.IndexShardLifecycle;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author kimchy (Shay Banon)
  */
 @IndexShardLifecycle
-public class KeepLastNDeletionPolicy extends AbstractIndexShardComponent implements IndexDeletionPolicy {
+public class KeepLastNDeletionPolicy extends AbstractIndexShardComponent{
 
     private final int numToKeep;
 

@@ -41,12 +41,17 @@ public class FieldNameAnalyzer extends Analyzer {
         this.defaultAnalyzer = defaultAnalyzer;
     }
 
-    @Override public TokenStream tokenStream(String fieldName, Reader reader) {
+    @Override
+    protected TokenStreamComponents createComponents(String s) {
+        return null;
+    }
+
+    public TokenStream tokenStream1(String fieldName, Reader reader) {
         return getAnalyzer(fieldName).tokenStream(fieldName, reader);
     }
 
-    @Override public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
-        return getAnalyzer(fieldName).reusableTokenStream(fieldName, reader);
+    public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
+        return getAnalyzer(fieldName).tokenStream(fieldName, reader);
     }
 
     @Override public int getPositionIncrementGap(String fieldName) {

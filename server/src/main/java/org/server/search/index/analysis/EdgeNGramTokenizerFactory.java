@@ -40,16 +40,14 @@ public class EdgeNGramTokenizerFactory extends AbstractTokenizerFactory {
 
     private final int maxGram;
 
-    private final EdgeNGramTokenizer.Side side;
 
     @Inject public EdgeNGramTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
         this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
         this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
-        this.side = EdgeNGramTokenizer.Side.getSide(settings.get("side", EdgeNGramTokenizer.DEFAULT_SIDE.getLabel()));
     }
 
     @Override public Tokenizer create(Reader reader) {
-        return new EdgeNGramTokenizer(reader, side, minGram, maxGram);
+        return new EdgeNGramTokenizer(reader,minGram, maxGram);
     }
 }
