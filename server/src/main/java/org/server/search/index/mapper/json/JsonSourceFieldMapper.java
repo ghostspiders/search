@@ -20,6 +20,7 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.server.search.index.mapper.MapperCompressionException;
 import org.server.search.index.mapper.SourceFieldMapper;
 import org.server.search.util.io.compression.Compressor;
@@ -83,7 +84,7 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
     // the size of the source file that we will perform compression for
     private final int compressionThreshold;
 
-    private final SourceFieldSelector fieldSelector;
+    private final StoredFieldVisitor  fieldSelector;
 
     protected JsonSourceFieldMapper() {
         this(Defaults.NAME, Defaults.ENABLED);
@@ -99,14 +100,14 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
         this.enabled = enabled;
         this.compressionThreshold = compressionThreshold;
         this.compressor = compressor;
-        this.fieldSelector = new SourceFieldSelector(indexName);
+        this.fieldSelector = new DocumentStoredFieldVisitor(indexName);
     }
 
     public boolean enabled() {
         return this.enabled;
     }
 
-    public FieldSelector fieldSelector() {
+    public StoredFieldVisitor fieldSelector() {
         return this.fieldSelector;
     }
 

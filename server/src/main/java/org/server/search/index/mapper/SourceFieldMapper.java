@@ -20,7 +20,7 @@
 package org.server.search.index.mapper;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
@@ -41,5 +41,5 @@ public interface SourceFieldMapper extends FieldMapper<String> {
     /**
      * A field selector that loads just the source field.
      */
-    FieldSelector fieldSelector();
+    StoredFieldVisitor fieldSelector();
 }

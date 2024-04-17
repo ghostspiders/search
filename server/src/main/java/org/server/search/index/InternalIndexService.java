@@ -24,7 +24,6 @@ import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.server.search.ElasticSearchException;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.deletionpolicy.DeletionPolicyModule;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineModule;
@@ -73,8 +72,6 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
 
     private final SimilarityService similarityService;
 
-    private final FilterCache filterCache;
-
     private final OperationRouting operationRouting;
 
     private volatile ImmutableMap<Integer, Injector> shardsInjectors = ImmutableMap.of();
@@ -83,14 +80,13 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
 
     @Inject public InternalIndexService(Injector injector, Index index, @IndexSettings Settings indexSettings,
                                         MapperService mapperService, IndexQueryParserService queryParserService, SimilarityService similarityService,
-                                        FilterCache filterCache, OperationRouting operationRouting) {
+                                         OperationRouting operationRouting) {
         super(index, indexSettings);
         this.injector = injector;
         this.indexSettings = indexSettings;
         this.mapperService = mapperService;
         this.queryParserService = queryParserService;
         this.similarityService = similarityService;
-        this.filterCache = filterCache;
         this.operationRouting = operationRouting;
     }
 
@@ -124,10 +120,6 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
 
     @Override public Injector injector() {
         return injector;
-    }
-
-    @Override public FilterCache filterCache() {
-        return filterCache;
     }
 
     @Override public OperationRouting operationRouting() {

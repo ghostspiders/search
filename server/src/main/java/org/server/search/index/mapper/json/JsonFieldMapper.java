@@ -21,12 +21,12 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.apache.lucene.util.BytesRef;
 import org.server.search.index.mapper.FieldMapper;
 import org.server.search.index.mapper.FieldMapperListener;
-import org.server.search.util.lucene.search.TermFilter;
 
 import java.io.IOException;
 
@@ -36,9 +36,10 @@ import java.io.IOException;
 public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     public static class Defaults {
-        public static final Field.Index INDEX = Field.Index.ANALYZED;
+        FieldType customType = new FieldType();
+        public static final FieldType INDEX = new FieldType();
         public static final Field.Store STORE = Field.Store.NO;
-        public static final Field.TermVector TERM_VECTOR = Field.TermVector.NO;
+        public static final FieldType  TERM_VECTOR = new FieldType();
         public static final float BOOST = 1.0f;
         public static final boolean OMIT_NORMS = false;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = false;
@@ -46,11 +47,11 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     public abstract static class Builder<T extends Builder, Y extends JsonFieldMapper> extends JsonMapper.Builder<T, Y> {
 
-        protected Field.Index index = Defaults.INDEX;
+        protected FieldType index = Defaults.INDEX;
 
         protected Field.Store store = Defaults.STORE;
 
-        protected Field.TermVector termVector = Defaults.TERM_VECTOR;
+        protected FieldType termVector = Defaults.TERM_VECTOR;
 
         protected float boost = Defaults.BOOST;
 
@@ -69,7 +70,7 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
             indexName = name;
         }
 
-        public T index(Field.Index index) {
+        public T index(FieldType index) {
             this.index = index;
             return builder;
         }
@@ -79,7 +80,7 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
             return builder;
         }
 
-        public T termVector(Field.TermVector termVector) {
+        public T termVector(FieldType termVector) {
             this.termVector = termVector;
             return builder;
         }
@@ -133,11 +134,11 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     protected final String fullName;
 
-    protected final Field.Index index;
+    protected final FieldType index;
 
     protected final Field.Store store;
 
-    protected final Field.TermVector termVector;
+    protected final FieldType termVector;
 
     protected final float boost;
 
@@ -149,7 +150,7 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     protected final Analyzer searchAnalyzer;
 
-    protected JsonFieldMapper(String name, String indexName, String fullName, Field.Index index, Field.Store store, Field.TermVector termVector,
+    protected JsonFieldMapper(String name, String indexName, String fullName, FieldType index, Field.Store store, FieldType termVector,
                               float boost, boolean omitNorms, boolean omitTermFreqAndPositions, Analyzer indexAnalyzer, Analyzer searchAnalyzer) {
         this.name = name;
         this.indexName = indexName;
@@ -176,7 +177,7 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
         return this.fullName;
     }
 
-    @Override public Field.Index index() {
+    @Override public FieldType index() {
         return this.index;
     }
 
@@ -189,14 +190,14 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
     }
 
     @Override public boolean indexed() {
-        return index != Field.Index.NO;
+        return index.stored();
     }
 
     @Override public boolean analyzed() {
-        return index == Field.Index.ANALYZED;
+        return index.tokenized();
     }
 
-    @Override public Field.TermVector termVector() {
+    @Override public FieldType termVector() {
         return this.termVector;
     }
 
@@ -228,9 +229,9 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
         if (field == null) {
             return;
         }
-        field.setOmitNorms(omitNorms);
-        field.setOmitTermFreqAndPositions(omitTermFreqAndPositions);
-        field.setBoost(boost);
+//        field.setOmitNorms(omitNorms);
+//        field.setOmitTermFreqAndPositions(omitTermFreqAndPositions);
+//        field.setBoost(boost);
         jsonContext.doc().add(field);
     }
 
@@ -240,7 +241,7 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
         fieldMapperListener.fieldMapper(this);
     }
 
-    @Override public Object valueForSearch(Fieldable field) {
+    @Override public Object valueForSearch(Field field) {
         return valueAsString(field);
     }
 
@@ -256,25 +257,18 @@ public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
         return new TermQuery(new Term(indexName, indexedValue(value)));
     }
 
-    @Override public Filter fieldFilter(String value) {
-        return new TermFilter(new Term(indexName, indexedValue(value)));
+    @Override public Query fieldFilter(String value) {
+        return new TermQuery(new Term(indexName, indexedValue(value)));
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
         return new TermRangeQuery(indexName,
-                lowerTerm == null ? null : indexedValue(lowerTerm),
-                upperTerm == null ? null : indexedValue(upperTerm),
+                lowerTerm == null ? null : new BytesRef(indexedValue(lowerTerm)),
+                upperTerm == null ? null : new BytesRef(indexedValue(upperTerm)),
                 includeLower, includeUpper);
     }
 
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return new TermRangeFilter(indexName,
-                lowerTerm == null ? null : indexedValue(lowerTerm),
-                upperTerm == null ? null : indexedValue(upperTerm),
-                includeLower, includeUpper);
-    }
-
-    @Override public int sortType() {
-        return SortField.STRING;
+    @Override public SortField.Type sortType() {
+        return SortField.Type.STRING;
     }
 }

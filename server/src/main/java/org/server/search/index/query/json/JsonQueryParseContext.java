@@ -21,10 +21,8 @@ package org.server.search.index.query.json;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.server.search.index.Index;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.FieldMapper;
 import org.server.search.index.mapper.FieldMappers;
 import org.server.search.index.mapper.MapperService;
@@ -41,18 +39,16 @@ public class JsonQueryParseContext {
 
     private final MapperService mapperService;
 
-    private final FilterCache filterCache;
 
     private final JsonQueryParserRegistry queryParserRegistry;
 
     private JsonParser jp;
 
     public JsonQueryParseContext(Index index, JsonQueryParserRegistry queryParserRegistry,
-                                 MapperService mapperService, FilterCache filterCache) {
+                                 MapperService mapperService) {
         this.index = index;
         this.queryParserRegistry = queryParserRegistry;
         this.mapperService = mapperService;
-        this.filterCache = filterCache;
     }
 
     public void reset(JsonParser jp) {
@@ -65,17 +61,6 @@ public class JsonQueryParseContext {
 
     public MapperService mapperService() {
         return mapperService;
-    }
-
-    public FilterCache filterCache() {
-        return filterCache;
-    }
-
-    public Filter cacheFilterIfPossible(Filter filter) {
-        if (filterCache == null) {
-            return filter;
-        }
-        return filterCache.cache(filter);
     }
 
     public Query parseInnerQuery() throws IOException, QueryParsingException {
@@ -104,31 +89,6 @@ public class JsonQueryParseContext {
         return result;
     }
 
-    public Filter parseInnerFilter() throws IOException, QueryParsingException {
-        // move to START object
-        JsonToken token;
-        if (jp.getCurrentToken() != JsonToken.START_OBJECT) {
-            token = jp.nextToken();
-            assert token == JsonToken.START_OBJECT;
-        }
-        token = jp.nextToken();
-        assert token == JsonToken.FIELD_NAME;
-        String queryName = jp.getCurrentName();
-        // move to the next START_OBJECT
-        token = jp.nextToken();
-        assert token == JsonToken.START_OBJECT;
-
-        JsonFilterParser filterParser = queryParserRegistry.filterParser(queryName);
-        if (filterParser == null) {
-            throw new QueryParsingException(index, "No json query parser registered for [" + queryName + "]");
-        }
-        Filter result = filterParser.parse(this);
-        if (jp.getCurrentToken() == JsonToken.END_OBJECT) {
-            // if we are at END_OBJECT, move to the next one...
-            jp.nextToken();
-        }
-        return result;
-    }
 
     public FieldMapper fieldMapper(String name) {
         FieldMappers fieldMappers = mapperService.smartNameFieldMappers(name);

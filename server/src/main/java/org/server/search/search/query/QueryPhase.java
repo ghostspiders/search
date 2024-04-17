@@ -27,7 +27,6 @@ import org.server.search.search.SearchParseElement;
 import org.server.search.search.SearchPhase;
 import org.server.search.search.facets.FacetsPhase;
 import org.server.search.search.internal.SearchContext;
-import org.server.search.util.lucene.search.TermFilter;
 
 import java.util.Map;
 

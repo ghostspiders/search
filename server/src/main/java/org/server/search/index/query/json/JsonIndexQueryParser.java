@@ -22,13 +22,11 @@ package org.server.search.index.query.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.search.Query;
 import org.server.search.ElasticSearchException;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.analysis.AnalysisService;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.index.query.IndexQueryParser;
 import org.server.search.index.query.QueryBuilder;
@@ -57,7 +55,7 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
 
     private ThreadLocal<JsonQueryParseContext> cache = new ThreadLocal<JsonQueryParseContext>() {
         @Override protected JsonQueryParseContext initialValue() {
-            return new JsonQueryParseContext(index, queryParserRegistry, mapperService, filterCache);
+            return new JsonQueryParseContext(index, queryParserRegistry, mapperService);
         }
     };
 
@@ -67,13 +65,11 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
 
     private final MapperService mapperService;
 
-    private final FilterCache filterCache;
-
     private final JsonQueryParserRegistry queryParserRegistry;
 
     @Inject public JsonIndexQueryParser(Index index,
                                         @IndexSettings Settings indexSettings,
-                                        MapperService mapperService, FilterCache filterCache,
+                                        MapperService mapperService,
                                         AnalysisService analysisService,
                                         @Nullable Map<String, JsonQueryParserFactory> jsonQueryParsers,
                                         @Nullable Map<String, JsonFilterParserFactory> jsonFilterParsers,
@@ -81,7 +77,6 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
         super(index, indexSettings);
         this.name = name;
         this.mapperService = mapperService;
-        this.filterCache = filterCache;
 
         List<JsonQueryParser> queryParsers = newArrayList();
         if (jsonQueryParsers != null) {

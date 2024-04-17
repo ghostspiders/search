@@ -24,7 +24,6 @@ import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.DocumentMapper;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.util.Nullable;
-import org.server.search.util.lucene.search.TermFilter;
 
 /**
  * @author kimchy (Shay Banon)

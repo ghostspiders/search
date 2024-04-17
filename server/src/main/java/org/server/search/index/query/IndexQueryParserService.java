@@ -24,7 +24,6 @@ import com.google.inject.Inject;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.analysis.AnalysisService;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.index.query.json.JsonIndexQueryParser;
 import org.server.search.index.settings.IndexSettings;
@@ -50,12 +49,12 @@ public class IndexQueryParserService extends AbstractIndexComponent {
 
     private final Map<String, IndexQueryParser> indexQueryParsers;
 
-    public IndexQueryParserService(Index index, MapperService mapperService, FilterCache filterCache, AnalysisService analysisService) {
-        this(index, ImmutableSettings.Builder.EMPTY_SETTINGS, mapperService, filterCache, analysisService, null);
+    public IndexQueryParserService(Index index, MapperService mapperService, AnalysisService analysisService) {
+        this(index, ImmutableSettings.Builder.EMPTY_SETTINGS, mapperService, analysisService, null);
     }
 
     @Inject public IndexQueryParserService(Index index, @IndexSettings Settings indexSettings,
-                                           MapperService mapperService, FilterCache filterCache,
+                                           MapperService mapperService,
                                            AnalysisService analysisService,
                                            @Nullable Map<String, IndexQueryParserFactory> indexQueryParsersFactories) {
         super(index, indexSettings);
@@ -74,7 +73,7 @@ public class IndexQueryParserService extends AbstractIndexComponent {
             }
         }
         if (!qparsers.containsKey(Defaults.DEFAULT)) {
-            IndexQueryParser defaultQueryParser = new JsonIndexQueryParser(index, indexSettings, mapperService, filterCache, analysisService, null, null, Defaults.DEFAULT, null);
+            IndexQueryParser defaultQueryParser = new JsonIndexQueryParser(index, indexSettings, mapperService, analysisService, null, null, Defaults.DEFAULT, null);
             qparsers.put(Defaults.DEFAULT, defaultQueryParser);
         }
 

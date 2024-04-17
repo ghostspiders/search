@@ -25,7 +25,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.Version;
 import org.server.search.util.gnu.trove.TIntArrayList;
 
 import java.io.DataInput;
@@ -37,7 +36,7 @@ import java.io.IOException;
  */
 public class Lucene {
 
-    public static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(Version.LUCENE_CURRENT);
+    public static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer();
     public static final KeywordAnalyzer KEYWORD_ANALYZER = new KeywordAnalyzer();
 
     public static final int NO_DOC = -1;
@@ -49,7 +48,7 @@ public class Lucene {
     }
 
     public static int docId(IndexReader reader, Term term) throws IOException {
-        TermDocs termDocs = reader.termDocs(term);
+        TermDocs termDocs = reader.docFreq(term);
         try {
             if (termDocs.next()) {
                 return termDocs.doc();

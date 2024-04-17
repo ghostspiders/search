@@ -21,7 +21,6 @@ package org.server.search.index;
 
 import com.google.inject.Injector;
 import org.server.search.ElasticSearchException;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.index.query.IndexQueryParserService;
 import org.server.search.index.routing.OperationRouting;
@@ -39,8 +38,6 @@ public interface IndexService extends IndexComponent, Iterable<IndexShard> {
     void close();
 
     Injector injector();
-
-    FilterCache filterCache();
 
     OperationRouting operationRouting();
 

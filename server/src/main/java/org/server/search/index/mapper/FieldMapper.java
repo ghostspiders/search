@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
@@ -116,5 +117,5 @@ public interface FieldMapper<T> {
      */
     Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper);
 
-    int sortType();
+    SortField.Type sortType();
 }

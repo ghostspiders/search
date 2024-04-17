@@ -31,29 +31,31 @@ import org.server.search.search.internal.SearchContext;
 import org.server.search.util.gnu.trove.TObjectIntHashMap;
 import org.server.search.util.trove.ExtTObjectIntHasMap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author kimchy (Shay Banon)
  */
 public class SortParseElement implements SearchParseElement {
 
-    private final TObjectIntHashMap<String> sortFieldTypesMapper = new ExtTObjectIntHasMap<String>().defaultReturnValue(-1);
+    private final Map<String,SortField.Type> sortFieldTypesMapper = new HashMap<>();
 
-    private static final SortField SORT_SCORE = new SortField(null, SortField.SCORE);
-    private static final SortField SORT_SCORE_REVERSE = new SortField(null, SortField.SCORE, true);
-    private static final SortField SORT_DOC = new SortField(null, SortField.DOC);
-    private static final SortField SORT_DOC_REVERSE = new SortField(null, SortField.DOC, true);
+    private static final SortField SORT_SCORE = new SortField(null, SortField.Type.SCORE);
+    private static final SortField SORT_SCORE_REVERSE = new SortField(null, SortField.Type.SCORE, true);
+    private static final SortField SORT_DOC = new SortField(null, SortField.Type.DOC);
+    private static final SortField SORT_DOC_REVERSE = new SortField(null, SortField.Type.DOC, true);
 
     public SortParseElement() {
-        sortFieldTypesMapper.put("string", SortField.STRING);
-        sortFieldTypesMapper.put("int", SortField.INT);
-        sortFieldTypesMapper.put("float", SortField.FLOAT);
-        sortFieldTypesMapper.put("long", SortField.LONG);
-        sortFieldTypesMapper.put("double", SortField.DOUBLE);
-        sortFieldTypesMapper.put("short", SortField.SHORT);
-        sortFieldTypesMapper.put("byte", SortField.BYTE);
-        sortFieldTypesMapper.put("string_val", SortField.STRING_VAL);
+        sortFieldTypesMapper.put("string", SortField.Type.STRING);
+        sortFieldTypesMapper.put("int", SortField.Type.INT);
+        sortFieldTypesMapper.put("float", SortField.Type.FLOAT);
+        sortFieldTypesMapper.put("long", SortField.Type.LONG);
+        sortFieldTypesMapper.put("double", SortField.Type.DOUBLE);
+        sortFieldTypesMapper.put("short", SortField.Type.INT);
+        sortFieldTypesMapper.put("byte", SortField.Type.INT);
+        sortFieldTypesMapper.put("string_val", SortField.Type.STRING_VAL);
     }
 
     @Override public void parse(JsonParser jp, SearchContext context) throws Exception {
@@ -64,7 +66,7 @@ public class SortParseElement implements SearchParseElement {
                 String fieldName = jp.getCurrentName();
                 boolean reverse = false;
                 String innerJsonName = null;
-                int type = -1;
+                SortField.Type type = null;
                 while ((token = jp.nextToken()) != JsonToken.END_OBJECT) {
                     if (token == JsonToken.FIELD_NAME) {
                         innerJsonName = jp.getCurrentName();
@@ -75,7 +77,7 @@ public class SortParseElement implements SearchParseElement {
                     } else {
                         if ("type".equals(innerJsonName)) {
                             type = sortFieldTypesMapper.get(jp.getText());
-                            if (type == -1) {
+                            if (type == null) {
                                 throw new SearchParseException("No sort type for [" + jp.getText() + "] with field [" + fieldName + "]");
                             }
                         }
@@ -96,12 +98,12 @@ public class SortParseElement implements SearchParseElement {
                 } else {
                     FieldMappers fieldMappers = context.mapperService().smartNameFieldMappers(fieldName);
                     if (fieldMappers == null || fieldMappers.mappers().isEmpty()) {
-                        if (type == -1) {
+                        if (type == null) {
                             throw new SearchParseException("No built in mapping found for [" + fieldName + "], and no explicit type defined");
                         }
                     } else {
                         fieldName = fieldMappers.mappers().get(0).indexName();
-                        if (type == -1) {
+                        if (type == null) {
                             type = fieldMappers.mappers().get(0).sortType();
                         }
                     }

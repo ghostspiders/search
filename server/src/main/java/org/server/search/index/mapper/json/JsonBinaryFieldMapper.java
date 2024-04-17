@@ -20,8 +20,8 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.search.Query;
 
 import java.io.IOException;
 
@@ -54,8 +54,23 @@ public class JsonBinaryFieldMapper extends JsonFieldMapper<byte[]> {
         return null;
     }
 
+    @Override
+    public byte[] value(Field field) {
+        return new byte[0];
+    }
+
+    @Override
+    public String valueAsString(Field field) {
+        return null;
+    }
+
     @Override public String indexedValue(String value) {
         return value;
+    }
+
+    @Override
+    public Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
+        return null;
     }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {

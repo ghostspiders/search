@@ -21,13 +21,14 @@ package org.server.search.index.shard;
 
 import com.google.inject.Inject;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexCommit;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.server.search.ElasticSearchException;
 import org.server.search.ElasticSearchIllegalArgumentException;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.cluster.routing.ShardRouting;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineException;
 import org.server.search.index.engine.ScheduledRefreshableEngine;
@@ -41,7 +42,6 @@ import org.server.search.index.query.IndexQueryParserService;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.store.Store;
 import org.server.search.index.translog.Translog;
-import org.server.search.indices.TypeMissingException;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.util.Nullable;
 import org.server.search.util.SizeValue;
@@ -49,10 +49,10 @@ import org.server.search.util.Strings;
 import org.server.search.util.TimeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 import org.server.search.util.lucene.Lucene;
-import org.server.search.util.lucene.search.TermFilter;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -68,7 +68,6 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
 
     private final IndexQueryParserService queryParserService;
 
-    private final FilterCache filterCache;
 
     private final Store store;
 
@@ -85,7 +84,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
     private volatile ShardRouting shardRouting;
 
     @Inject public InternalIndexShard(ShardId shardId, @IndexSettings Settings indexSettings, Store store, Engine engine, Translog translog,
-                                      ThreadPool threadPool, MapperService mapperService, IndexQueryParserService queryParserService, FilterCache filterCache) {
+                                      ThreadPool threadPool, MapperService mapperService, IndexQueryParserService queryParserService) {
         super(shardId, indexSettings);
         this.store = store;
         this.engine = engine;
@@ -93,7 +92,6 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         this.threadPool = threadPool;
         this.mapperService = mapperService;
         this.queryParserService = queryParserService;
-        this.filterCache = filterCache;
         state = IndexShardState.CREATED;
     }
 
@@ -293,7 +291,8 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
                 }
                 return null;
             }
-            Document doc = searcher.reader().document(docId, docMapper.sourceMapper().fieldSelector());
+            StoredFieldVisitor storedFieldVisitor = docMapper.sourceMapper().fieldSelector();
+            Document doc = searcher.reader().document(docId);
             if (logger.isTraceEnabled()) {
                 logger.trace("Get for [{}#{}] returned [{}]", new Object[]{type, id, doc});
             }
@@ -461,31 +460,40 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
     }
 
     private Query filterByTypesIfNeeded(Query query, String[] types) {
-        if (types != null && types.length > 0) {
-            if (types.length == 1) {
-                String type = types[0];
-                DocumentMapper docMapper = mapperService.documentMapper(type);
-                if (docMapper == null) {
-                    throw new TypeMissingException(shardId.index(), type);
-                }
-                Filter typeFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
-                typeFilter = filterCache.cache(typeFilter);
-                query = new FilteredQuery(query, typeFilter);
-            } else {
-                BooleanFilter booleanFilter = new BooleanFilter();
-                for (String type : types) {
-                    DocumentMapper docMapper = mapperService.documentMapper(type);
-                    if (docMapper == null) {
-                        throw new TypeMissingException(shardId.index(), type);
-                    }
-                    Filter typeFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
-                    typeFilter = filterCache.cache(typeFilter);
-                    booleanFilter.add(new FilterClause(typeFilter, BooleanClause.Occur.SHOULD));
-                }
-                query = new FilteredQuery(query, booleanFilter);
-            }
-        }
+//        if (types != null && types.length > 0) {
+//            if (types.length == 1) {
+//                String type = types[0];
+//                DocumentMapper docMapper = mapperService.documentMapper(type);
+//                if (docMapper == null) {
+//                    throw new TypeMissingException(shardId.index(), type);
+//                }
+//                TermFilter termFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
+//                query = new BooleanQuery();
+//            } else {
+//                BooleanFilter booleanFilter = new BooleanFilter();
+//                for (String type : types) {
+//                    DocumentMapper docMapper = mapperService.documentMapper(type);
+//                    if (docMapper == null) {
+//                        throw new TypeMissingException(shardId.index(), type);
+//                    }
+//                    Filter typeFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
+//                    typeFilter = filterCache.cache(typeFilter);
+//                    booleanFilter.add(new FilterClause(typeFilter, BooleanClause.Occur.SHOULD));
+//                }
+//                query = new FilteredQuery(query, booleanFilter);
+//            }
+//        }
         return query;
+    }
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 
     private class EngineRefresher implements Runnable {
