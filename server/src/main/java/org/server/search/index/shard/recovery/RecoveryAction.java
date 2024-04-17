@@ -20,6 +20,7 @@
 package org.server.search.index.shard.recovery;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.server.search.ElasticSearchException;
@@ -166,6 +167,18 @@ public class RecoveryAction extends AbstractIndexShardComponent {
             }
         }
         openIndexOutputs.clear();
+    }
+
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 
     private static class StartRecoveryRequest implements Streamable {

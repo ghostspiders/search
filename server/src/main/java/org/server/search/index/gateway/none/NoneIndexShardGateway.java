@@ -20,6 +20,7 @@
 package org.server.search.index.gateway.none;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.gateway.IndexShardGateway;
 import org.server.search.index.gateway.IndexShardGatewayRecoveryException;
@@ -33,6 +34,9 @@ import org.server.search.index.translog.Translog;
 import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -61,5 +65,16 @@ public class NoneIndexShardGateway extends AbstractIndexShardComponent implement
     }
 
     @Override public void close() {
+    }
+
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 }

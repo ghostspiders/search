@@ -20,9 +20,9 @@
 package org.server.search.index.engine.robin;
 
 import com.google.inject.Inject;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
 import org.server.search.ElasticSearchException;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.SnapshotDeletionPolicy;
@@ -47,6 +47,7 @@ import org.server.search.util.lucene.ReaderSearcherHolder;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -106,7 +107,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
 
         this.ramBufferSize = componentSettings.getAsSize("ramBufferSize", new SizeValue(64, SizeUnit.MB));
         this.refreshInterval = componentSettings.getAsTime("refreshInterval", timeValueSeconds(1));
-        this.termIndexInterval = componentSettings.getAsInt("termIndexInterval", IndexWriter.DEFAULT_TERM_INDEX_INTERVAL);
+        this.termIndexInterval = componentSettings.getAsInt("termIndexInterval", 128);
 
         this.store = store;
         this.deletionPolicy = deletionPolicy;
@@ -126,19 +127,14 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         }
         IndexWriter indexWriter = null;
         try {
-            // release locks when started
-            if (IndexWriter.isLocked(store.directory())) {
-                logger.trace("Shard is locked, releasing lock");
-                store.directory().clearLock(IndexWriter.WRITE_LOCK_NAME);
-            }
-            boolean create = !IndexReader.indexExists(store.directory());
-            indexWriter = new IndexWriter(store.directory(),
-                    analysisService.defaultIndexAnalyzer(), create, deletionPolicy, IndexWriter.MaxFieldLength.UNLIMITED);
-            indexWriter.setMergeScheduler(mergeScheduler.newMergeScheduler());
-            indexWriter.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
-            indexWriter.setSimilarity(similarityService.defaultIndexSimilarity());
-            indexWriter.setRAMBufferSizeMB(ramBufferSize.mbFrac());
-            indexWriter.setTermIndexInterval(termIndexInterval);
+            IndexWriterConfig config = new IndexWriterConfig();
+            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+            config.setMergeScheduler(mergeScheduler.newMergeScheduler());
+            config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
+            config.setSimilarity(similarityService.defaultIndexSimilarity());
+            config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
+
+            indexWriter = new IndexWriter(store.directory(),config);
         } catch (IOException e) {
             safeClose(indexWriter);
             throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
@@ -146,7 +142,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         this.indexWriter = indexWriter;
 
         try {
-            IndexReader indexReader = indexWriter.getReader();
+            IndexReader indexReader = DirectoryReader.open(store.directory());
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
             indexSearcher.setSimilarity(similarityService.defaultSearchSimilarity());
             this.nrtResource = newAcquirableResource(new ReaderSearcherHolder(indexReader, indexSearcher));
@@ -173,7 +169,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
     @Override public void create(Create create) throws EngineException {
         rwl.readLock().lock();
         try {
-            indexWriter.addDocument(create.doc(), create.analyzer());
+            indexWriter.addDocument(create.doc());
             translog.add(new Translog.Create(create));
             dirty = true;
         } catch (IOException e) {
@@ -186,7 +182,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
     @Override public void index(Index index) throws EngineException {
         rwl.readLock().lock();
         try {
-            indexWriter.updateDocument(index.uid(), index.doc(), index.analyzer());
+            indexWriter.updateDocument(index.uid(), index.doc());
             translog.add(new Translog.Index(index));
             dirty = true;
         } catch (IOException e) {
@@ -248,19 +244,14 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
     }
 
     @Override public void refresh(boolean waitForOperations) throws EngineException {
-        // this engine always acts as if waitForOperations=true
         if (refreshMutex.compareAndSet(false, true)) {
             if (dirty) {
                 dirty = false;
-                try {
-                    AcquirableResource<ReaderSearcherHolder> current = nrtResource;
-                    IndexReader newReader = current.resource().reader().reopen(true);
-                    if (newReader != current.resource().reader()) {
-                        nrtResource = newAcquirableResource(new ReaderSearcherHolder(newReader));
-                        current.markForClose();
-                    }
-                } catch (IOException e) {
-                    throw new RefreshFailedEngineException(shardId, e);
+                AcquirableResource<ReaderSearcherHolder> current = nrtResource;
+                IndexReader newReader = current.resource().reader();
+                if (newReader != current.resource().reader()) {
+                    nrtResource = newAcquirableResource(new ReaderSearcherHolder(newReader));
+                    current.markForClose();
                 }
             }
             refreshMutex.set(false);
@@ -398,6 +389,16 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             indexWriter = null;
             rwl.writeLock().unlock();
         }
+    }
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 
     private static class RobinSearchResult implements Searcher {

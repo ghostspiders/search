@@ -20,6 +20,8 @@
 package org.server.search.index.gateway.fs;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
@@ -46,6 +48,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -131,7 +134,7 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
                     continue;
                 }
                 try {
-                    IndexInput indexInput = snapshotIndexCommit.getDirectory().openInput(fileName);
+                    IndexInput indexInput = snapshotIndexCommit.getDirectory().openInput(fileName, IOContext.DEFAULT);
                     File snapshotFile = new File(locationIndex, fileName);
                     if (snapshotFile.exists() && (snapshotFile.length() == indexInput.length())) {
                         // we assume its the same one, no need to copy
@@ -334,5 +337,16 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
         }
 
         return index;
+    }
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 }

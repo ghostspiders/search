@@ -20,6 +20,7 @@
 package org.server.search.index.gateway;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.engine.Engine;
@@ -34,6 +35,7 @@ import org.server.search.util.TimeValue;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -194,6 +196,16 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
             }
             snapshotScheduleFuture = threadPool.scheduleWithFixedDelay(new SnapshotRunnable(), snapshotInterval);
         }
+    }
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 
     private class SnapshotRunnable implements Runnable {
