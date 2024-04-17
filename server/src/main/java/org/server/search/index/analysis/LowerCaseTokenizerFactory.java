@@ -21,7 +21,9 @@ package org.server.search.index.analysis;
 
 import com.google.inject.Inject;
 import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -37,7 +39,7 @@ public class LowerCaseTokenizerFactory extends AbstractTokenizerFactory {
         super(index, indexSettings, name);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        return new LowerCaseFilter(reader);
+    @Override public Tokenizer create() {
+        return new WhitespaceTokenizer();
     }
 }

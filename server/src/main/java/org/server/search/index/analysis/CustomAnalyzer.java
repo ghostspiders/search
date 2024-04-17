@@ -54,41 +54,24 @@ public class CustomAnalyzer extends Analyzer implements PositionIncrementGapAnal
         return tokenFilters;
     }
 
-    @Override public int getPositionIncrementGap(String fieldName) {
-        return this.positionIncrementGap;
-    }
-
-    @Override public TokenStream tokenStream(String fieldName, Reader reader) {
-        return buildHolder(reader).tokenStream;
-    }
-
-    @Override public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
-        Holder holder = (Holder) getPreviousTokenStream();
-        if (holder == null) {
-            holder = buildHolder(reader);
-            setPreviousTokenStream(holder);
-        } else {
-            holder.tokenizer.reset(reader);
-        }
-        return holder.tokenStream;
-    }
-
-    private Holder buildHolder(Reader input) {
-        Tokenizer tokenizer = tokenizerFactory.create(input);
+    /**
+     * Creates a new {@link TokenStreamComponents} instance for this analyzer.
+     *
+     * @param fieldName the name of the fields content passed to the {@link TokenStreamComponents}
+     *                  sink as a reader
+     * @return the {@link TokenStreamComponents} for this analyzer.
+     */
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer tokenizer = this.tokenizerFactory().create();
         TokenStream tokenStream = tokenizer;
-        for (TokenFilterFactory tokenFilter : tokenFilters) {
+        for (TokenFilterFactory tokenFilter : tokenFilters()) {
             tokenStream = tokenFilter.create(tokenStream);
         }
-        return new Holder(tokenizer, tokenStream);
+        return new TokenStreamComponents(tokenizer, tokenStream);
     }
 
-    private static class Holder {
-        final Tokenizer tokenizer;
-        final TokenStream tokenStream;
-
-        private Holder(Tokenizer tokenizer, TokenStream tokenStream) {
-            this.tokenizer = tokenizer;
-            this.tokenStream = tokenStream;
-        }
+    @Override public int getPositionIncrementGap(String fieldName) {
+        return this.positionIncrementGap;
     }
 }

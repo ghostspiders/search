@@ -38,7 +38,7 @@ public class LetterTokenizerFactory extends AbstractTokenizerFactory {
         super(index, indexSettings, name);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        return new LetterTokenizer(reader);
+    @Override public Tokenizer create() {
+        return new LetterTokenizer();
     }
 }

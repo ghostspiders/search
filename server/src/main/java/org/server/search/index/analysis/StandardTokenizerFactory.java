@@ -24,12 +24,9 @@ import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
-
-import java.io.Reader;
 
 /**
  * @author kimchy (Shay Banon)
@@ -43,8 +40,8 @@ public class StandardTokenizerFactory extends AbstractTokenizerFactory {
         maxTokenLength = settings.getAsInt("maxTokenLength", StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        StandardTokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT, reader);
+    @Override public Tokenizer create() {
+        StandardTokenizer tokenizer = new StandardTokenizer();
         tokenizer.setMaxTokenLength(maxTokenLength);
         return tokenizer;
     }

@@ -22,12 +22,10 @@ package org.server.search.index.analysis;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.WhitespaceTokenizer;
+import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
-
-import java.io.Reader;
 
 /**
  * @author kimchy (Shay Banon)
@@ -38,7 +36,7 @@ public class WhitespaceTokenizerFactory extends AbstractTokenizerFactory {
         super(index, indexSettings, name);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        return new WhitespaceTokenizer(reader);
+    @Override public Tokenizer create() {
+        return new WhitespaceTokenizer();
     }
 }

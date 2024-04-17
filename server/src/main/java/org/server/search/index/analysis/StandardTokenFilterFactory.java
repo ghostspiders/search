@@ -22,7 +22,7 @@ package org.server.search.index.analysis;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -38,6 +38,6 @@ public class StandardTokenFilterFactory extends AbstractTokenFilterFactory {
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {
-        return new StandardFilter(tokenStream);
+        return new StandardTokenizer(tokenStream.getAttributeFactory());
     }
 }

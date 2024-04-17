@@ -23,9 +23,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -49,14 +50,14 @@ public class StopTokenFilterFactory extends AbstractTokenFilterFactory {
         if (stopWords.length > 0) {
             this.stopWords = ImmutableSet.copyOf(Iterators.forArray(stopWords));
         } else {
-            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.GLOBAL_REUSE_STRATEGY);
         }
         this.enablePositionIncrements = settings.getAsBoolean("enablePositionIncrements", true);
         this.ignoreCase = settings.getAsBoolean("ignoreCase", false);
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {
-        return new StopFilter(enablePositionIncrements, tokenStream, stopWords, ignoreCase);
+        return new StopFilter( tokenStream, new CharArraySet(stopWords,true));
     }
 
     public Set<String> stopWords() {

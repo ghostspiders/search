@@ -24,30 +24,32 @@ import com.google.inject.assistedinject.Assisted;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.ngram.EdgeNGramTokenizer;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
+import org.apache.lucene.util.Attribute;
+import org.apache.lucene.util.AttributeFactory;
+import org.apache.lucene.util.AttributeImpl;
 import org.apache.lucene.util.AttributeSource;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
 import java.io.Reader;
+import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class EdgeNGramTokenizerFactory extends AbstractTokenizerFactory {
+public class EdgeNGramTokenizerFactory extends AbstractTokenizerFactory{
 
     private final int minGram;
 
     private final int maxGram;
-
 
     @Inject public EdgeNGramTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
         this.minGram = settings.getAsInt("minGram", NGramTokenizer.DEFAULT_MIN_NGRAM_SIZE);
         this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
     }
-
-    @Override public Tokenizer create(Reader reader) {
-        return new EdgeNGramTokenizer(reader,minGram, maxGram);
+    @Override public Tokenizer create() {
+        return new EdgeNGramTokenizer( minGram, maxGram);
     }
 }

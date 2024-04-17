@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.analysis.StopAnalyzer;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -46,9 +46,9 @@ public class StopAnalyzerProvider extends AbstractAnalyzerProvider<StopAnalyzer>
         if (stopWords.length > 0) {
             this.stopWords = ImmutableSet.copyOf(Iterators.forArray(stopWords));
         } else {
-            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.PER_FIELD_REUSE_STRATEGY);
         }
-        this.stopAnalyzer = new StopAnalyzer(Version.LUCENE_CURRENT, this.stopWords);
+        this.stopAnalyzer = new StopAnalyzer(new CharArraySet(this.stopWords,true));
     }
 
     @Override public StopAnalyzer get() {

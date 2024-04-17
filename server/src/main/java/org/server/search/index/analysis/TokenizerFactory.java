@@ -31,5 +31,5 @@ public interface TokenizerFactory extends IndexComponent {
 
     String name();
 
-    Tokenizer create(Reader reader);
+    Tokenizer create();
 }

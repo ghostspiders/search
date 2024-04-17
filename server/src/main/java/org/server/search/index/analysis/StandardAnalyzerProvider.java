@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.util.Version;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -49,10 +49,10 @@ public class StandardAnalyzerProvider extends AbstractAnalyzerProvider<StandardA
         if (stopWords.length > 0) {
             this.stopWords = ImmutableSet.copyOf(Iterators.forArray(stopWords));
         } else {
-            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.GLOBAL_REUSE_STRATEGY);
         }
         maxTokenLength = settings.getAsInt("maxTokenLength", StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH);
-        standardAnalyzer = new StandardAnalyzer(Version.LUCENE_CURRENT, this.stopWords);
+        standardAnalyzer = new StandardAnalyzer(new CharArraySet(this.stopWords,true));
         standardAnalyzer.setMaxTokenLength(maxTokenLength);
     }
 

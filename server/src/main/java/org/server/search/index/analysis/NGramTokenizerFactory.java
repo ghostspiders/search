@@ -43,7 +43,7 @@ public class NGramTokenizerFactory extends AbstractTokenizerFactory {
         this.maxGram = settings.getAsInt("maxGram", NGramTokenizer.DEFAULT_MAX_NGRAM_SIZE);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        return new NGramTokenizer(reader, minGram, maxGram);
+    @Override public Tokenizer create() {
+        return new NGramTokenizer( minGram, maxGram);
     }
 }

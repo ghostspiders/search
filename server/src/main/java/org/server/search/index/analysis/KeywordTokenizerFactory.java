@@ -41,7 +41,7 @@ public class KeywordTokenizerFactory extends AbstractTokenizerFactory {
         bufferSize = settings.getAsInt("bufferSize", 256);
     }
 
-    @Override public Tokenizer create(Reader reader) {
-        return new KeywordTokenizer(reader, bufferSize);
+    @Override public Tokenizer create() {
+        return new KeywordTokenizer(bufferSize);
     }
 }
