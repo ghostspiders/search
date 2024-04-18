@@ -21,10 +21,9 @@ package org.server.search.index.mapper.json;
 
 import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.FloatRangeDocValuesField;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.NumericUtils;
-import org.server.search.index.analysis.NumericFloatAnalyzer;
 import org.server.search.util.Numbers;
 
 import java.io.IOException;
@@ -61,11 +60,11 @@ public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
 
     private final Float nullValue;
 
-    protected JsonFloatFieldMapper(String name, String indexName, String fullName, int precisionStep, Field.Index index, Field.Store store,
+    protected JsonFloatFieldMapper(String name, String indexName, String fullName, int precisionStep, FieldType index, Field.Store store,
                                    float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                    Float nullValue) {
         super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                new NumericFloatAnalyzer(precisionStep), new NumericFloatAnalyzer(Integer.MAX_VALUE));
+                null, null);
         this.nullValue = nullValue;
     }
 
@@ -73,8 +72,8 @@ public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
         return 32;
     }
 
-    @Override public Float value(Fieldable field) {
-        byte[] value = field.getBinaryValue();
+    @Override public Float value(Field field) {
+        byte[] value = field.binaryValue().bytes;
         if (value == null) {
             return Float.NaN;
         }
@@ -86,21 +85,13 @@ public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
     }
 
     @Override public String indexedValue(Float value) {
-        return NumericUtils.floatToPrefixCoded(value);
+        return String.valueOf(value);
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeQuery.newFloatRange(indexName, precisionStep,
-                lowerTerm == null ? null : Float.parseFloat(lowerTerm),
-                upperTerm == null ? null : Float.parseFloat(upperTerm),
-                includeLower, includeUpper);
-    }
-
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeFilter.newFloatRange(indexName, precisionStep,
-                lowerTerm == null ? null : Float.parseFloat(lowerTerm),
-                upperTerm == null ? null : Float.parseFloat(upperTerm),
-                includeLower, includeUpper);
+        return FloatRangeDocValuesField.newSlowIntersectsQuery(indexName,
+                lowerTerm == null ? null : new float[]{Float.parseFloat(lowerTerm)},
+                upperTerm == null ? null : new float[]{Float.parseFloat(upperTerm)});
     }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {
@@ -115,17 +106,17 @@ public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
         }
         Field field = null;
         if (stored()) {
-            field = new Field(indexName, Numbers.floatToBytes(value), store);
+            field = new Field(indexName, Numbers.floatToBytes(value), index);
             if (indexed()) {
                 field.setTokenStream(popCachedStream(precisionStep).setFloatValue(value));
             }
         } else if (indexed()) {
-            field = new Field(indexName, popCachedStream(precisionStep).setFloatValue(value));
+            field = new Field(indexName, popCachedStream(precisionStep).setFloatValue(value),index);
         }
         return field;
     }
 
-    @Override public int sortType() {
-        return SortField.FLOAT;
+    @Override public SortField.Type sortType() {
+        return SortField.Type.FLOAT;
     }
 }

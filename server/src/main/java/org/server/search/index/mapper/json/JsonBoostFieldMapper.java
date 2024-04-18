@@ -20,11 +20,11 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.FloatRangeDocValuesField;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import com.fasterxml.jackson.core.JsonToken;
-import org.server.search.index.analysis.NumericFloatAnalyzer;
 import org.server.search.index.mapper.BoostFieldMapper;
 import org.server.search.util.Numbers;
 
@@ -38,7 +38,7 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
     public static class Defaults extends JsonNumberFieldMapper.Defaults {
         public static final String NAME = "_boost";
         public static final Float NULL_VALUE = null;
-        public static final Field.Index INDEX = Field.Index.NO;
+        public static final FieldType INDEX = new FieldType();
         public static final Field.Store STORE = Field.Store.NO;
     }
 
@@ -76,11 +76,10 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
                 Defaults.BOOST, Defaults.OMIT_NORMS, Defaults.OMIT_TERM_FREQ_AND_POSITIONS, Defaults.NULL_VALUE);
     }
 
-    protected JsonBoostFieldMapper(String name, String indexName, int precisionStep, Field.Index index, Field.Store store,
+    protected JsonBoostFieldMapper(String name, String indexName, int precisionStep, FieldType index, Field.Store store,
                                    float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                    Float nullValue) {
-        super(name, indexName, name, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                new NumericFloatAnalyzer(precisionStep), new NumericFloatAnalyzer(Integer.MAX_VALUE));
+        super(name, indexName, name, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,null,null);
         this.nullValue = nullValue;
     }
 
@@ -88,8 +87,8 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
         return 32;
     }
 
-    @Override public Float value(Fieldable field) {
-        byte[] value = field.getBinaryValue();
+    @Override public Float value(Field field) {
+        byte[] value = field.binaryValue().bytes;
         if (value == null) {
             return Float.NaN;
         }
@@ -101,28 +100,21 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
     }
 
     @Override public String indexedValue(Float value) {
-        return NumericUtils.floatToPrefixCoded(value);
+        return String.valueOf(NumericUtils.floatToSortableInt(value));
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeQuery.newFloatRange(indexName, precisionStep,
-                lowerTerm == null ? null : Float.parseFloat(lowerTerm),
-                upperTerm == null ? null : Float.parseFloat(upperTerm),
-                includeLower, includeUpper);
+        return FloatRangeDocValuesField.newSlowIntersectsQuery(indexName,
+                lowerTerm == null ? null : new float[]{Float.parseFloat(lowerTerm)},
+                upperTerm == null ? null : new float[]{Float.parseFloat(upperTerm)});
     }
 
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeFilter.newFloatRange(indexName, precisionStep,
-                lowerTerm == null ? null : Float.parseFloat(lowerTerm),
-                upperTerm == null ? null : Float.parseFloat(upperTerm),
-                includeLower, includeUpper);
-    }
 
     @Override public void parse(JsonParseContext jsonContext) throws IOException {
         // we override parse since we want to handle cases where it is not indexed and not stored (the default)
         float value = parsedFloatValue(jsonContext);
         if (!Float.isNaN(value)) {
-            jsonContext.doc().setBoost(value);
+//            jsonContext.doc().setBoost(value);
         }
         super.parse(jsonContext);
     }
@@ -132,15 +124,15 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
         if (Float.isNaN(value)) {
             return null;
         }
-        jsonContext.doc().setBoost(value);
+//        jsonContext.doc().setBoost(value);
         Field field = null;
         if (stored()) {
-            field = new Field(indexName, Numbers.floatToBytes(value), store);
+            field = new Field(indexName, Numbers.floatToBytes(value), index);
             if (indexed()) {
                 field.setTokenStream(popCachedStream(precisionStep).setFloatValue(value));
             }
         } else if (indexed()) {
-            field = new Field(indexName, popCachedStream(precisionStep).setFloatValue(value));
+            field = new Field(indexName, popCachedStream(precisionStep).setFloatValue(value),index);
         }
         return field;
     }
@@ -158,7 +150,7 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
         return value;
     }
 
-    @Override public int sortType() {
-        return SortField.FLOAT;
+    @Override public SortField.Type sortType() {
+        return SortField.Type.FLOAT;
     }
 }

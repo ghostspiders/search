@@ -20,6 +20,7 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.Fieldable;
 import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.util.lucene.Lucene;
@@ -60,18 +61,18 @@ public class JsonBooleanFieldMapper extends JsonFieldMapper<Boolean> {
 
     private Boolean nullValue;
 
-    protected JsonBooleanFieldMapper(String name, String indexName, String fullName, Field.Index index, Field.Store store, Field.TermVector termVector,
+    protected JsonBooleanFieldMapper(String name, String indexName, String fullName, FieldType index, Field.Store store, FieldType termVector,
                                      float boost, boolean omitNorms, boolean omitTermFreqAndPositions, Boolean nullValue) {
         super(name, indexName, fullName, index, store, termVector, boost, omitNorms, omitTermFreqAndPositions,
                 Lucene.KEYWORD_ANALYZER, Lucene.KEYWORD_ANALYZER);
         this.nullValue = nullValue;
     }
 
-    @Override public Boolean value(Fieldable field) {
+    @Override public Boolean value(Field field) {
         return Boolean.parseBoolean(valueAsString(field));
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return field.stringValue().charAt(0) == 'T' ? "true" : "false";
     }
 
@@ -106,6 +107,6 @@ public class JsonBooleanFieldMapper extends JsonFieldMapper<Boolean> {
         if (value == null) {
             return null;
         }
-        return new Field(indexName, value, store, index, termVector);
+        return new Field(indexName, value,index);
     }
 }

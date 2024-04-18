@@ -20,11 +20,10 @@
 package org.server.search.index.mapper.json;
 
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.document.DoubleRangeDocValuesField;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.NumericUtils;
-import org.server.search.index.analysis.NumericDoubleAnalyzer;
 import org.server.search.util.Numbers;
 
 import java.io.IOException;
@@ -61,11 +60,10 @@ public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
     private final Double nullValue;
 
     protected JsonDoubleFieldMapper(String name, String indexName, String fullName, int precisionStep,
-                                    Field.Index index, Field.Store store,
+                                    FieldType index, Field.Store store,
                                     float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                     Double nullValue) {
-        super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                new NumericDoubleAnalyzer(precisionStep), new NumericDoubleAnalyzer(Integer.MAX_VALUE));
+        super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,null,null);
         this.nullValue = nullValue;
     }
 
@@ -73,8 +71,8 @@ public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
         return 64;
     }
 
-    @Override public Double value(Fieldable field) {
-        byte[] value = field.getBinaryValue();
+    @Override public Double value(Field field) {
+        byte[] value = field.binaryValue().bytes;
         if (value == null) {
             return Double.NaN;
         }
@@ -86,22 +84,15 @@ public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
     }
 
     @Override public String indexedValue(Double value) {
-        return NumericUtils.doubleToPrefixCoded(value);
+        return String.valueOf(value);
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeQuery.newDoubleRange(indexName, precisionStep,
-                lowerTerm == null ? null : Double.parseDouble(lowerTerm),
-                upperTerm == null ? null : Double.parseDouble(upperTerm),
-                includeLower, includeUpper);
+        return DoubleRangeDocValuesField.newSlowIntersectsQuery(indexName,
+                lowerTerm == null ? null : new double[]{Double.parseDouble(lowerTerm)},
+                upperTerm == null ? null : new double[]{Double.parseDouble(upperTerm)});
     }
 
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeFilter.newDoubleRange(indexName, precisionStep,
-                lowerTerm == null ? null : Double.parseDouble(lowerTerm),
-                upperTerm == null ? null : Double.parseDouble(upperTerm),
-                includeLower, includeUpper);
-    }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {
         double value;
@@ -115,17 +106,17 @@ public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
         }
         Field field = null;
         if (stored()) {
-            field = new Field(indexName, Numbers.doubleToBytes(value), store);
+            field = new Field(indexName, Numbers.doubleToBytes(value), index);
             if (indexed()) {
                 field.setTokenStream(popCachedStream(precisionStep).setDoubleValue(value));
             }
         } else if (indexed()) {
-            field = new Field(indexName, popCachedStream(precisionStep).setDoubleValue(value));
+            field = new Field(indexName, popCachedStream(precisionStep).setDoubleValue(value),index);
         }
         return field;
     }
 
-    @Override public int sortType() {
-        return SortField.Type.DOUBLE.ordinal();
+    @Override public SortField.Type sortType() {
+        return SortField.Type.DOUBLE;
     }
 }

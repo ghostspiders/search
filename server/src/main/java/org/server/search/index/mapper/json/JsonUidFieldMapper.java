@@ -20,8 +20,9 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
 import org.server.search.index.mapper.MapperParsingException;
 import org.server.search.index.mapper.Uid;
 import org.server.search.index.mapper.UidFieldMapper;
@@ -36,7 +37,7 @@ public class JsonUidFieldMapper extends JsonFieldMapper<Uid> implements UidField
 
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_uid";
-        public static final Field.Index INDEX = Field.Index.NOT_ANALYZED;
+        public static final FieldType INDEX = new FieldType();
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
     }
@@ -82,19 +83,24 @@ public class JsonUidFieldMapper extends JsonFieldMapper<Uid> implements UidField
             throw new MapperParsingException("No id found while parsing the json source");
         }
         jsonContext.uid(Uid.createUid(jsonContext.stringBuilder(), jsonContext.type(), jsonContext.id()));
-        return new Field(name, jsonContext.uid(), store, index);
+        return new Field(name, jsonContext.uid().getBytes(),index);
     }
 
-    @Override public Uid value(Fieldable field) {
+    @Override public Uid value(Field field) {
         return Uid.createUid(field.stringValue());
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return field.stringValue();
     }
 
     @Override public String indexedValue(String value) {
         return value;
+    }
+
+    @Override
+    public Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
+        return null;
     }
 
     @Override public Term term(String type, String id) {

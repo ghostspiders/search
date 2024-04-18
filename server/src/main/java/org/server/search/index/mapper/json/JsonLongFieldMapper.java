@@ -124,7 +124,7 @@ public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
         return field;
     }
 
-    @Override public int sortType() {
+    @Override public SortField.Type sortType() {
         return SortField.LONG;
     }
 }

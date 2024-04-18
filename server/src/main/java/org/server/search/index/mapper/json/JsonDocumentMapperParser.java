@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.lucene.document.Field;
 
+import org.apache.lucene.document.FieldType;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.mapper.DocumentMapper;
 import org.server.search.index.mapper.DocumentMapperParser;
@@ -70,7 +71,7 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
         } catch (IOException e) {
             throw new MapperParsingException("Failed to parse json mapping definition", e);
         }
-        String rootName = root.getFieldNames().next();
+        String rootName = root.fieldNames().next();
         ObjectNode rootObj;
         if (type == null) {
             // we have no type, we assume the first node is the type
@@ -92,7 +93,7 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
 
         JsonDocumentMapper.Builder docBuilder = JsonMapperBuilders.doc(parseObject(type, rootObj));
 
-        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = rootObj.getFields(); fieldsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = rootObj.fields(); fieldsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = fieldsIt.next();
             String fieldName = entry.getKey();
             JsonNode fieldNode = entry.getValue();
@@ -108,12 +109,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
             } else if ("boostField".equals(fieldName)) {
                 docBuilder.boostField(parseBoostField((ObjectNode) fieldNode));
             } else if ("indexAnalyzer".equals(fieldName)) {
-                docBuilder.indexAnalyzer(analysisService.analyzer(fieldNode.getTextValue()));
+                docBuilder.indexAnalyzer(analysisService.analyzer(fieldNode.textValue()));
             } else if ("searchAnalyzer".equals(fieldName)) {
-                docBuilder.searchAnalyzer(analysisService.analyzer(fieldNode.getTextValue()));
+                docBuilder.searchAnalyzer(analysisService.analyzer(fieldNode.textValue()));
             } else if ("analyzer".equals(fieldName)) {
-                docBuilder.indexAnalyzer(analysisService.analyzer(fieldNode.getTextValue()));
-                docBuilder.searchAnalyzer(analysisService.analyzer(fieldNode.getTextValue()));
+                docBuilder.indexAnalyzer(analysisService.analyzer(fieldNode.textValue()));
+                docBuilder.searchAnalyzer(analysisService.analyzer(fieldNode.textValue()));
             }
         }
 
@@ -130,37 +131,37 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     }
 
     private JsonUidFieldMapper.Builder parseUidField(ObjectNode uidNode) {
-        String name = uidNode.get("name") == null ? JsonUidFieldMapper.Defaults.NAME : uidNode.get("name").getTextValue();
+        String name = uidNode.get("name") == null ? JsonUidFieldMapper.Defaults.NAME : uidNode.get("name").textValue();
         JsonUidFieldMapper.Builder builder = uid(name);
-        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = uidNode.getFields(); fieldsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = uidNode.fields(); fieldsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = fieldsIt.next();
             String fieldName = entry.getKey();
             JsonNode fieldNode = entry.getValue();
 
             if ("indexName".equals(fieldName)) {
-                builder.indexName(fieldNode.getTextValue());
+                builder.indexName(fieldNode.textValue());
             }
         }
         return builder;
     }
 
     private JsonBoostFieldMapper.Builder parseBoostField(ObjectNode boostNode) {
-        String name = boostNode.get("name") == null ? JsonBoostFieldMapper.Defaults.NAME : boostNode.get("name").getTextValue();
+        String name = boostNode.get("name") == null ? JsonBoostFieldMapper.Defaults.NAME : boostNode.get("name").textValue();
         JsonBoostFieldMapper.Builder builder = boost(name);
         parseNumberField(builder, name, boostNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = boostNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = boostNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getNumberValue().floatValue());
+                builder.nullValue(propNode.numberValue().floatValue());
             }
         }
         return builder;
     }
 
     private JsonTypeFieldMapper.Builder parseTypeField(ObjectNode typeNode) {
-        String name = typeNode.get("name") == null ? JsonTypeFieldMapper.Defaults.NAME : typeNode.get("name").getTextValue();
+        String name = typeNode.get("name") == null ? JsonTypeFieldMapper.Defaults.NAME : typeNode.get("name").textValue();
         JsonTypeFieldMapper.Builder builder = type(name);
         parseJsonField(builder, name, typeNode);
         return builder;
@@ -168,23 +169,23 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
 
 
     private JsonIdFieldMapper.Builder parseIdField(ObjectNode idNode) {
-        String name = idNode.get("name") == null ? JsonIdFieldMapper.Defaults.NAME : idNode.get("name").getTextValue();
+        String name = idNode.get("name") == null ? JsonIdFieldMapper.Defaults.NAME : idNode.get("name").textValue();
         JsonIdFieldMapper.Builder builder = id(name);
         parseJsonField(builder, name, idNode);
         return builder;
     }
 
     private JsonSourceFieldMapper.Builder parseSourceField(ObjectNode sourceNode) {
-        String name = sourceNode.get("name") == null ? JsonSourceFieldMapper.Defaults.NAME : sourceNode.get("name").getTextValue();
+        String name = sourceNode.get("name") == null ? JsonSourceFieldMapper.Defaults.NAME : sourceNode.get("name").textValue();
         JsonSourceFieldMapper.Builder builder = source(name);
-        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = sourceNode.getFields(); fieldsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = sourceNode.fields(); fieldsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = fieldsIt.next();
             String fieldName = entry.getKey();
             JsonNode fieldNode = entry.getValue();
             if (fieldName.equals("compressionThreshold")) {
-                builder.compressionThreshold(fieldNode.getNumberValue().intValue());
+                builder.compressionThreshold(fieldNode.numberValue().intValue());
             } else if (fieldName.equals("compressionType")) {
-                String compressionType = fieldNode.getTextValue();
+                String compressionType = fieldNode.textValue();
                 if ("zip".equals(compressionType)) {
                     builder.compressor(new ZipCompressor());
                 } else if ("gzip".equals(compressionType)) {
@@ -201,14 +202,14 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
 
     private JsonObjectMapper.Builder parseObject(String name, ObjectNode node) {
         JsonObjectMapper.Builder builder = object(name);
-        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = node.getFields(); fieldsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> fieldsIt = node.fields(); fieldsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = fieldsIt.next();
             String fieldName = entry.getKey();
             JsonNode fieldNode = entry.getValue();
             if (fieldName.equals("dynamic")) {
-                builder.dynamic(fieldNode.getBooleanValue());
+                builder.dynamic(fieldNode.booleanValue());
             } else if (fieldName.equals("type")) {
-                String type = fieldNode.getTextValue();
+                String type = fieldNode.textValue();
                 if (!type.equals("object")) {
                     throw new MapperParsingException("Trying to parse an object but has a different type [" + type + "] for [" + name + "]");
                 }
@@ -218,7 +219,7 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
                     for (JsonNode node1 : (ArrayNode) fieldNode) {
                         dateTimeFormatters.add(parseDateTimeFormatter(fieldName, node1));
                     }
-                } else if ("none".equals(fieldNode.getValueAsText())) {
+                } else if ("none".equals(fieldNode.textValue())) {
                     dateTimeFormatters = null;
                 } else {
                     dateTimeFormatters.add(parseDateTimeFormatter(fieldName, fieldNode));
@@ -229,9 +230,9 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
                     builder.dateTimeFormatter(dateTimeFormatters);
                 }
             } else if (fieldName.equals("enabled")) {
-                builder.enabled(fieldNode.getBooleanValue());
+                builder.enabled(fieldNode.booleanValue());
             } else if (fieldName.equals("pathType")) {
-                builder.pathType(parsePathType(name, fieldNode.getValueAsText()));
+                builder.pathType(parsePathType(name, fieldNode.textValue()));
             } else if (fieldName.equals("properties")) {
                 parseProperties(builder, (ObjectNode) fieldNode);
             }
@@ -250,7 +251,7 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     }
 
     private void parseProperties(JsonObjectMapper.Builder objBuilder, ObjectNode propsNode) {
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = propsNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = propsNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
@@ -258,7 +259,7 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
             String type;
             JsonNode typeNode = propNode.get("type");
             if (typeNode != null) {
-                type = typeNode.getTextValue();
+                type = typeNode.textValue();
             } else {
                 // lets see if we can derive this...
                 if (propNode.isObject() && propNode.get("properties") != null) {
@@ -292,12 +293,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonDateFieldMapper.Builder parseDate(String name, ObjectNode dateNode) {
         JsonDateFieldMapper.Builder builder = dateField(name);
         parseNumberField(builder, name, dateNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = dateNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = dateNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getValueAsText());
+                builder.nullValue(propNode.textValue());
             } else if (propName.equals("format")) {
                 builder.dateTimeFormatter(parseDateTimeFormatter(propName, propNode));
             }
@@ -309,12 +310,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonIntegerFieldMapper.Builder parseInteger(String name, ObjectNode integerNode) {
         JsonIntegerFieldMapper.Builder builder = integerField(name);
         parseNumberField(builder, name, integerNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = integerNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = integerNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getNumberValue().intValue());
+                builder.nullValue(propNode.numberValue().intValue());
             }
         }
         return builder;
@@ -323,12 +324,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonLongFieldMapper.Builder parseLong(String name, ObjectNode longNode) {
         JsonLongFieldMapper.Builder builder = longField(name);
         parseNumberField(builder, name, longNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = longNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = longNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getNumberValue().longValue());
+                builder.nullValue(propNode.numberValue().longValue());
             }
         }
         return builder;
@@ -337,12 +338,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonFloatFieldMapper.Builder parseFloat(String name, ObjectNode floatNode) {
         JsonFloatFieldMapper.Builder builder = floatField(name);
         parseNumberField(builder, name, floatNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = floatNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = floatNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getNumberValue().floatValue());
+                builder.nullValue(propNode.numberValue().floatValue());
             }
         }
         return builder;
@@ -351,12 +352,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonDoubleFieldMapper.Builder parseDouble(String name, ObjectNode doubleNode) {
         JsonDoubleFieldMapper.Builder builder = doubleField(name);
         parseNumberField(builder, name, doubleNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = doubleNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = doubleNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getNumberValue().doubleValue());
+                builder.nullValue(propNode.numberValue().doubleValue());
             }
         }
         return builder;
@@ -365,12 +366,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonStringFieldMapper.Builder parseString(String name, ObjectNode stringNode) {
         JsonStringFieldMapper.Builder builder = stringField(name);
         parseJsonField(builder, name, stringNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = stringNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = stringNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getValueAsText());
+                builder.nullValue(propNode.textValue());
             }
         }
         return builder;
@@ -385,12 +386,12 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
     private JsonBooleanFieldMapper.Builder parseBoolean(String name, ObjectNode booleanNode) {
         JsonBooleanFieldMapper.Builder builder = booleanField(name);
         parseJsonField(builder, name, booleanNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = booleanNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = booleanNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("nullValue")) {
-                builder.nullValue(propNode.getBooleanValue());
+                builder.nullValue(propNode.booleanValue());
             }
         }
         return builder;
@@ -398,78 +399,78 @@ public class JsonDocumentMapperParser implements DocumentMapperParser {
 
     private void parseNumberField(JsonNumberFieldMapper.Builder builder, String name, ObjectNode numberNode) {
         parseJsonField(builder, name, numberNode);
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = numberNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = numberNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("precisionStep")) {
-                builder.precisionStep(propNode.getNumberValue().intValue());
+                builder.precisionStep(propNode.numberValue().intValue());
             }
         }
     }
 
     private void parseJsonField(JsonFieldMapper.Builder builder, String name, ObjectNode fieldNode) {
-        for (Iterator<Map.Entry<String, JsonNode>> propsIt = fieldNode.getFields(); propsIt.hasNext();) {
+        for (Iterator<Map.Entry<String, JsonNode>> propsIt = fieldNode.fields(); propsIt.hasNext();) {
             Map.Entry<String, JsonNode> entry = propsIt.next();
             String propName = entry.getKey();
             JsonNode propNode = entry.getValue();
             if (propName.equals("indexName")) {
-                builder.indexName(propNode.getValueAsText());
+                builder.indexName(propNode.textValue());
             } else if (propName.equals("store")) {
-                builder.store(parseStore(name, propNode.getTextValue()));
+                builder.store(parseStore(name, propNode.textValue()));
             } else if (propName.equals("index")) {
-                builder.index(parseIndex(name, propNode.getTextValue()));
+                builder.index(parseIndex(name, propNode.textValue()));
             } else if (propName.equals("termVector")) {
-                builder.termVector(parseTermVector(name, propNode.getTextValue()));
+                builder.termVector(parseTermVector(name, propNode.textValue()));
             } else if (propName.equals("boost")) {
-                builder.boost(propNode.getNumberValue().floatValue());
+                builder.boost(propNode.numberValue().floatValue());
             } else if (propName.equals("omitNorms")) {
-                builder.omitNorms(propNode.getBooleanValue());
+                builder.omitNorms(propNode.booleanValue());
             } else if (propName.equals("omitTermFreqAndPositions")) {
-                builder.omitTermFreqAndPositions(propNode.getBooleanValue());
+                builder.omitTermFreqAndPositions(propNode.booleanValue());
             } else if (propName.equals("indexAnalyzer")) {
-                builder.indexAnalyzer(analysisService.analyzer(propNode.getTextValue()));
+                builder.indexAnalyzer(analysisService.analyzer(propNode.textValue()));
             } else if (propName.equals("searchAnalyzer")) {
-                builder.searchAnalyzer(analysisService.analyzer(propNode.getTextValue()));
+                builder.searchAnalyzer(analysisService.analyzer(propNode.textValue()));
             } else if (propName.equals("analyzer")) {
-                builder.indexAnalyzer(analysisService.analyzer(propNode.getTextValue()));
-                builder.searchAnalyzer(analysisService.analyzer(propNode.getTextValue()));
+                builder.indexAnalyzer(analysisService.analyzer(propNode.textValue()));
+                builder.searchAnalyzer(analysisService.analyzer(propNode.textValue()));
             }
         }
     }
 
     private DateTimeFormatter parseDateTimeFormatter(String fieldName, JsonNode node) {
         if (node.isTextual()) {
-            return Joda.forPattern(node.getTextValue()).withZone(DateTimeZone.UTC);
+            return Joda.forPattern(node.textValue()).withZone(DateTimeZone.UTC);
         } else {
             // TODO support more complex configuration...
             throw new MapperParsingException("Wrong node to use to parse date formatters [" + fieldName + "]");
         }
     }
 
-    private Field.TermVector parseTermVector(String fieldName, String termVector) throws MapperParsingException {
+    private FieldType parseTermVector(String fieldName, String termVector) throws MapperParsingException {
         if ("no".equals(termVector)) {
-            return Field.TermVector.NO;
+            return new FieldType();
         } else if ("yes".equals(termVector)) {
-            return Field.TermVector.YES;
+            return new FieldType();
         } else if ("with_offsets".equals(termVector)) {
-            return Field.TermVector.WITH_OFFSETS;
+            return new FieldType();
         } else if ("with_positions".equals(termVector)) {
-            return Field.TermVector.WITH_POSITIONS;
+            return new FieldType();
         } else if ("with_positions_offsets".equals(termVector)) {
-            return Field.TermVector.WITH_POSITIONS_OFFSETS;
+            return new FieldType();
         } else {
             throw new MapperParsingException("Wrong value for termVector [" + termVector + "] for field [" + fieldName + "]");
         }
     }
 
-    private Field.Index parseIndex(String fieldName, String index) throws MapperParsingException {
+    private FieldType parseIndex(String fieldName, String index) throws MapperParsingException {
         if ("no".equals(index)) {
-            return Field.Index.NO;
+            return new FieldType();
         } else if ("not_analyzed".equals(index)) {
-            return Field.Index.NOT_ANALYZED;
+            return new FieldType();
         } else if ("analyzed".equals(index)) {
-            return Field.Index.ANALYZED;
+            return new FieldType();
         } else {
             throw new MapperParsingException("Wrong value for index [" + index + "] for field [" + fieldName + "]");
         }

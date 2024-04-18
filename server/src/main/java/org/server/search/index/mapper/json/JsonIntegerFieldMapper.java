@@ -124,7 +124,7 @@ public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
         return field;
     }
 
-    @Override public int sortType() {
+    @Override public SortField.Type sortType() {
         return SortField.INT;
     }
 }

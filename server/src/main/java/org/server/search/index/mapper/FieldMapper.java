@@ -112,10 +112,5 @@ public interface FieldMapper<T> {
      */
     Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper);
 
-    /**
-     * Constructs a range query filter based on the mapper.
-     */
-    Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper);
-
     SortField.Type sortType();
 }

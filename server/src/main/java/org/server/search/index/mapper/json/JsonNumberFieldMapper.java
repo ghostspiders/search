@@ -20,11 +20,10 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.NumericTokenStream;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.util.NumericUtils;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.search.SortField;
 import org.server.search.util.gnu.trove.TIntObjectHashMap;
 
 import java.io.IOException;
@@ -37,8 +36,8 @@ import java.util.Deque;
 public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldMapper<T> {
 
     public static class Defaults extends JsonFieldMapper.Defaults {
-        public static final int PRECISION_STEP = NumericUtils.PRECISION_STEP_DEFAULT;
-        public static final Field.Index INDEX = Field.Index.NOT_ANALYZED;
+        public static final int PRECISION_STEP = 4;
+        public static final FieldType INDEX = new FieldType();
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
     }
@@ -69,10 +68,10 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
     protected final int precisionStep;
 
     protected JsonNumberFieldMapper(String name, String indexName, String fullName, int precisionStep,
-                                    Field.Index index, Field.Store store,
+                                    FieldType index, Field.Store store,
                                     float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                     Analyzer indexAnalyzer, Analyzer searchAnalyzer) {
-        super(name, indexName, fullName, index, store, Field.TermVector.NO, boost, omitNorms, omitTermFreqAndPositions, indexAnalyzer, searchAnalyzer);
+        super(name, indexName, fullName, index, store, Defaults.INDEX, boost, omitNorms, omitTermFreqAndPositions, indexAnalyzer, searchAnalyzer);
         if (precisionStep <= 0 || precisionStep >= maxPrecisionStep()) {
             this.precisionStep = Integer.MAX_VALUE;
         } else {
@@ -97,7 +96,7 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
         return value(field).toString();
     }
 
-    @Override public abstract int sortType();
+    @Override public abstract SortField.Type sortType();
 
     /**
      * Removes a cached numeric token stream. The stream will be returned to the cahed once it is used
@@ -108,10 +107,10 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
         if (deque == null) {
             deque = new ArrayDeque<CachedNumericTokenStream>();
             cachedStreams.get().put(precisionStep, deque);
-            deque.add(new CachedNumericTokenStream(new NumericTokenStream(precisionStep), precisionStep));
+            deque.add(new CachedNumericTokenStream(precisionStep));
         }
         if (deque.isEmpty()) {
-            deque.add(new CachedNumericTokenStream(new NumericTokenStream(precisionStep), precisionStep));
+            deque.add(new CachedNumericTokenStream(precisionStep));
         }
         return deque.pollFirst();
     }
@@ -124,23 +123,20 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
 
         private final int precisionStep;
 
-        private final NumericTokenStream numericTokenStream;
 
-        public CachedNumericTokenStream(NumericTokenStream numericTokenStream, int precisionStep) {
-            super(numericTokenStream);
-            this.numericTokenStream = numericTokenStream;
+        public CachedNumericTokenStream(int precisionStep) {
+            super();
             this.precisionStep = precisionStep;
         }
 
         public void end() throws IOException {
-            numericTokenStream.end();
+
         }
 
         /**
          * Close the input TokenStream.
          */
         public void close() throws IOException {
-            numericTokenStream.close();
             cachedStreams.get().get(precisionStep).add(this);
         }
 
@@ -148,30 +144,25 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
          * Reset the filter as well as the input TokenStream.
          */
         public void reset() throws IOException {
-            numericTokenStream.reset();
         }
 
         @Override public boolean incrementToken() throws IOException {
-            return numericTokenStream.incrementToken();
+            return true;
         }
 
         public CachedNumericTokenStream setIntValue(int value) {
-            numericTokenStream.setIntValue(value);
             return this;
         }
 
         public CachedNumericTokenStream setLongValue(long value) {
-            numericTokenStream.setLongValue(value);
             return this;
         }
 
         public CachedNumericTokenStream setFloatValue(float value) {
-            numericTokenStream.setFloatValue(value);
             return this;
         }
 
         public CachedNumericTokenStream setDoubleValue(double value) {
-            numericTokenStream.setDoubleValue(value);
             return this;
         }
     }

@@ -37,7 +37,7 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_source";
         public static final boolean ENABLED = true;
-        public static final Field.Index INDEX = Field.Index.NO;
+        public static final FieldType INDEX = new FieldType();
         public static final Field.Store STORE = Field.Store.YES;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
@@ -129,15 +129,15 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
     }
 
     @Override public String value(Document document) {
-        Fieldable field = document.getFieldable(indexName);
+        Field field = document.getFieldable(indexName);
         return field == null ? null : value(field);
     }
 
-    @Override public String value(Fieldable field) {
+    @Override public String value(Field field) {
         if (field.stringValue() != null) {
             return field.stringValue();
         }
-        byte[] compressed = field.getBinaryValue();
+        byte[] compressed = field.binaryValue().bytes;
         if (compressed == null) {
             return null;
         }

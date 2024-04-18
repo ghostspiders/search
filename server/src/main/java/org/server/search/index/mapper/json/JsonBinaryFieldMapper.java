@@ -21,6 +21,7 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.search.Query;
 
 import java.io.IOException;
@@ -43,19 +44,13 @@ public class JsonBinaryFieldMapper extends JsonFieldMapper<byte[]> {
     }
 
     protected JsonBinaryFieldMapper(String name, String indexName, String fullName) {
-        super(name, indexName, fullName, Field.Index.NO, Field.Store.YES, Field.TermVector.NO, 1.0f, true, true, null, null);
+        super(name, indexName, fullName, new FieldType(), Field.Store.YES, new FieldType(), 1.0f, true, true, null, null);
     }
 
-    @Override public byte[] value(Fieldable field) {
-        return field.getBinaryValue();
-    }
-
-    @Override public String valueAsString(Fieldable field) {
-        return null;
-    }
 
     @Override
     public byte[] value(Field field) {
+
         return new byte[0];
     }
 
@@ -83,6 +78,7 @@ public class JsonBinaryFieldMapper extends JsonFieldMapper<byte[]> {
         if (value == null) {
             return null;
         }
-        return new Field(indexName, value, Field.Store.YES);
+
+        return new Field(indexName, value, new FieldType());
     }
 }
