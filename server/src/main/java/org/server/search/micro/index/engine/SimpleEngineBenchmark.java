@@ -20,7 +20,6 @@
 package org.server.search.micro.index.engine;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.LoadFirstFieldSelector;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.TermQuery;
@@ -239,7 +238,7 @@ public class SimpleEngineBenchmark {
                     Engine.Searcher searcher = engine.searcher();
                     TopDocs topDocs = searcher.searcher().search(new TermQuery(new Term("content", content(i))), 10);
                     // read one
-                    searcher.searcher().doc(topDocs.scoreDocs[0].doc, new LoadFirstFieldSelector());
+                    searcher.searcher().doc(topDocs.scoreDocs[0].doc);
                     searcher.release();
                 }
             } catch (Exception e) {

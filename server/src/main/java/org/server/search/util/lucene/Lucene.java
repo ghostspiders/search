@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.server.search.util.gnu.trove.TIntArrayList;
@@ -253,7 +254,7 @@ public class Lucene {
         }
     }
 
-    public static class CountCollector extends Collector {
+    public static class CountCollector implements Collector {
 
         private final float minScore;
         private Scorer scorer;
@@ -267,21 +268,22 @@ public class Lucene {
             return this.count;
         }
 
-        @Override public void setScorer(Scorer scorer) throws IOException {
-            this.scorer = scorer;
+        /**
+         * Create a new {@link LeafCollector collector} to collect the given context.
+         *
+         * @param context next atomic reader context
+         */
+        @Override
+        public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
+            return null;
         }
 
-        @Override public void collect(int doc) throws IOException {
-            if (scorer.score() > minScore) {
-                count++;
-            }
-        }
-
-        @Override public void setNextReader(IndexReader reader, int docBase) throws IOException {
-        }
-
-        @Override public boolean acceptsDocsOutOfOrder() {
-            return true;
+        /**
+         * Indicates what features are required from the scorer.
+         */
+        @Override
+        public ScoreMode scoreMode() {
+            return null;
         }
     }
 

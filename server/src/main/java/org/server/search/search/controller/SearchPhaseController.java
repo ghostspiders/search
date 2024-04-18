@@ -28,6 +28,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.util.PriorityQueue;
 import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.lucene.ShardFieldDocSortedHitQueue;
 import org.server.search.search.SearchHit;
 import org.server.search.search.SearchShardTarget;
 import org.server.search.search.dfs.AggregatedDfs;
@@ -97,7 +98,7 @@ public class SearchPhaseController {
                 ScoreDoc[] scoreDocs = result.topDocs().scoreDocs;
                 totalNumDocs += scoreDocs.length;
                 for (ScoreDoc doc : scoreDocs) {
-                    ShardFieldDoc nodeFieldDoc = new ShardFieldDoc(result.shardTarget(), doc.doc, doc.score, ((FieldDoc) doc).fields);
+                    ShardFieldDoc nodeFieldDoc = new ShardFieldDoc(result.shardTarget(), doc.doc, doc.score, (Comparable[])((FieldDoc) doc).fields);
                     if (queue.insertWithOverflow(nodeFieldDoc) == nodeFieldDoc) {
                         // filled the queue, break
                         break;
@@ -186,7 +187,7 @@ public class SearchPhaseController {
         // count the total (we use the query result provider here, since we might not get any hits (we scrolled past them))
         long totalHits = 0;
         for (QuerySearchResultProvider queryResultProvider : queryResults.values()) {
-            totalHits += queryResultProvider.queryResult().topDocs().totalHits;
+            totalHits += queryResultProvider.queryResult().topDocs().totalHits.value;
         }
 
         // clean the fetch counter

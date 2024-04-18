@@ -42,11 +42,11 @@ public class DfsPhase implements SearchPhase {
             context.rewriteQuery();
 
             THashSet<Term> termsSet = new THashSet<Term>();
-            context.query().extractTerms(termsSet);
+//            context.query().extractTerms(termsSet);
             Term[] terms = termsSet.toArray(new Term[termsSet.size()]);
-            int[] freqs = context.searcher().docFreqs(terms);
+//            int[] freqs = context.searcher().docFreqs(terms);
 
-            context.dfsResult().termsAndFreqs(terms, freqs);
+//            context.dfsResult().termsAndFreqs(terms, freqs);
             context.dfsResult().numDocs(context.searcher().getIndexReader().numDocs());
         } catch (Exception e) {
             throw new DfsPhaseExecutionException(context);

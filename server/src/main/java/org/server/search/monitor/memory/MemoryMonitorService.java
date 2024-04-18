@@ -44,7 +44,7 @@ public class MemoryMonitorService extends AbstractComponent implements Lifecycle
         return lifecycle.state();
     }
 
-    @Override public MemoryMonitorService start() throws ElasticSearchException {
+    @Override public MemoryMonitorService start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -52,7 +52,7 @@ public class MemoryMonitorService extends AbstractComponent implements Lifecycle
         return this;
     }
 
-    @Override public MemoryMonitorService stop() throws ElasticSearchException {
+    @Override public MemoryMonitorService stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -60,7 +60,7 @@ public class MemoryMonitorService extends AbstractComponent implements Lifecycle
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws ElasticSearchException, InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

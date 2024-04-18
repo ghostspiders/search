@@ -18,16 +18,16 @@
  */
 
 package org.server.search.index.mapper;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.StoredFieldVisitor;
 
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-
+import java.io.IOException;
 import java.util.HashSet;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class FieldMappersFieldSelector implements FieldSelector {
+public class FieldMappersFieldSelector extends StoredFieldVisitor {
 
     private final HashSet<String> names = new HashSet<String>();
 
@@ -37,10 +37,7 @@ public class FieldMappersFieldSelector implements FieldSelector {
         }
     }
 
-    @Override public FieldSelectorResult accept(String fieldName) {
-        if (names.contains(fieldName)) {
-            return FieldSelectorResult.LOAD;
-        }
-        return FieldSelectorResult.NO_LOAD;
+    public Status needsField(FieldInfo fieldInfo) throws IOException {
+        return null;
     }
 }

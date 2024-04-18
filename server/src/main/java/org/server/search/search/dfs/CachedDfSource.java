@@ -20,9 +20,11 @@
 package org.server.search.search.dfs;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.Similarity;
+import org.server.search.ElasticSearchException;
 import org.server.search.index.engine.Engine;
 
 import java.io.IOException;
@@ -30,13 +32,12 @@ import java.io.IOException;
 /**
  * @author kimchy (Shay Banon)
  */
-public class CachedDfSource extends Engine.Searcher {
+public class CachedDfSource implements Engine.Searcher {
 
     private final AggregatedDfs dfs;
 
     public CachedDfSource(AggregatedDfs dfs, Similarity similarity) throws IOException {
         this.dfs = dfs;
-        setSimilarity(similarity);
     }
 
     public int docFreq(Term term) {
@@ -75,24 +76,23 @@ public class CachedDfSource extends Engine.Searcher {
         throw new UnsupportedOperationException();
     }
 
-    public Document doc(int i, FieldSelector fieldSelector) {
-        throw new UnsupportedOperationException();
-    }
-
     public Explanation explain(Weight weight, int doc) {
         throw new UnsupportedOperationException();
     }
 
-    public void search(Weight weight, Filter filter, Collector results) {
-        throw new UnsupportedOperationException();
+
+    @Override
+    public IndexReader reader() {
+        return null;
     }
 
-    public TopDocs search(Weight weight, Filter filter, int n) {
-        throw new UnsupportedOperationException();
+    @Override
+    public IndexSearcher searcher() {
+        return null;
     }
 
-    public TopFieldDocs search(Weight weight, Filter filter, int n, Sort sort) {
-        throw new UnsupportedOperationException();
+    @Override
+    public boolean release() throws ElasticSearchException {
+        return false;
     }
-
 }

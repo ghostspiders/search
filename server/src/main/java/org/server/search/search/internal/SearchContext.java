@@ -23,7 +23,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.server.search.ElasticSearchException;
 import org.server.search.index.IndexService;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.index.query.IndexQueryParser;
@@ -108,11 +107,6 @@ public class SearchContext implements Releasable {
     }
 
     @Override public boolean release() throws ElasticSearchException {
-        try {
-            searcher.close();
-        } catch (IOException e) {
-            // ignore this exception
-        }
         engineSearcher.release();
         return true;
     }
@@ -180,10 +174,6 @@ public class SearchContext implements Releasable {
 
     public SimilarityService similarityService() {
         return indexService.similarityService();
-    }
-
-    public FilterCache filterCache() {
-        return indexService.filterCache();
     }
 
     public TimeValue timeout() {

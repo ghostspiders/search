@@ -19,6 +19,7 @@
 
 package org.server.search.micro.index.store;
 
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.server.search.env.Environment;
@@ -116,7 +117,7 @@ public class SimpleStoreBenchmark {
         System.out.println("Creating [" + staticFiles.length + "] static files with size [" + staticFileSize + "]");
         for (int i = 0; i < staticFiles.length; i++) {
             staticFiles[i] = "static" + i;
-            IndexOutput io = store.directory().createOutput(staticFiles[i]);
+            IndexOutput io = store.directory().createOutput(staticFiles[i], IOContext.DEFAULT);
             for (long sizeCounter = 0; sizeCounter < staticFileSize.bytes(); sizeCounter++) {
                 io.writeByte((byte) 1);
             }
@@ -128,7 +129,7 @@ public class SimpleStoreBenchmark {
         StopWatch stopWatch = new StopWatch("warmup");
         stopWatch.start();
         for (String staticFile : staticFiles) {
-            IndexInput ii = store.directory().openInput(staticFile);
+            IndexInput ii = store.directory().openInput(staticFile,IOContext.DEFAULT);
             // do a full read
             for (long counter = 0; counter < ii.length(); counter++) {
                 byte result = ii.readByte();
@@ -206,7 +207,7 @@ public class SimpleStoreBenchmark {
                         // do a list of the files
                         store.directory().listAll();
 
-                        IndexInput ii = store.directory().openInput(staticFile);
+                        IndexInput ii = store.directory().openInput(staticFile,IOContext.DEFAULT);
                         // do a full read
                         for (long counter = 0; counter < ii.length(); counter++) {
                             byte result = ii.readByte();
@@ -245,7 +246,7 @@ public class SimpleStoreBenchmark {
             try {
                 for (int i = 0; i < writerIterations; i++) {
                     String dynamicFileName = "dynamic" + dynamicFilesCounter.incrementAndGet();
-                    IndexOutput io = store.directory().createOutput(dynamicFileName);
+                    IndexOutput io = store.directory().createOutput(dynamicFileName,IOContext.DEFAULT);
                     for (long sizeCounter = 0; sizeCounter < dynamicFileSize.bytes(); sizeCounter++) {
                         io.writeByte((byte) 1);
                     }

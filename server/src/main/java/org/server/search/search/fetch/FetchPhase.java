@@ -21,7 +21,7 @@ package org.server.search.search.fetch;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.Field;
 import org.server.search.index.mapper.*;
 import org.server.search.search.SearchHit;
 import org.server.search.search.SearchHitField;
@@ -63,7 +63,7 @@ public class FetchPhase implements SearchPhase {
             hits[index] = searchHit;
 
             for (Object oField : doc.getFields()) {
-                Fieldable field = (Fieldable) oField;
+                Field field = (Field) oField;
                 String name = field.name();
                 Object value = null;
                 FieldMappers fieldMappers = documentMapper.mappers().indexName(field.name());
@@ -75,8 +75,8 @@ public class FetchPhase implements SearchPhase {
                     }
                 }
                 if (value == null) {
-                    if (field.isBinary()) {
-                        value = field.getBinaryValue();
+                    if (field.binaryValue().isValid()) {
+                        value = field.binaryValue();
                     } else {
                         value = field.stringValue();
                     }
@@ -97,7 +97,7 @@ public class FetchPhase implements SearchPhase {
 
             index++;
         }
-        context.fetchResult().hits(new InternalSearchHits(hits, context.queryResult().topDocs().totalHits));
+        context.fetchResult().hits(new InternalSearchHits(hits, context.queryResult().topDocs().totalHits.value));
     }
 
     private void doExplanation(SearchContext context, int docId, InternalSearchHit searchHit) {
@@ -112,7 +112,7 @@ public class FetchPhase implements SearchPhase {
 
     private String extractSource(Document doc, DocumentMapper documentMapper) {
         String source = null;
-        Fieldable sourceField = doc.getFieldable(documentMapper.sourceMapper().indexName());
+        Field sourceField = (Field) doc.getField(documentMapper.sourceMapper().indexName());
         if (sourceField != null) {
             source = documentMapper.sourceMapper().valueAsString(sourceField);
             doc.removeField(documentMapper.sourceMapper().indexName());
@@ -140,7 +140,7 @@ public class FetchPhase implements SearchPhase {
     private Document loadDocument(SearchContext context, FieldMappersFieldSelector fieldSelector, int docId) {
         Document doc;
         try {
-            doc = context.searcher().doc(docId, fieldSelector);
+            doc = context.searcher().doc(docId);
         } catch (IOException e) {
             throw new FetchPhaseExecutionException(context, "Failed to fetch doc id [" + docId + "]", e);
         }

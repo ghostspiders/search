@@ -20,6 +20,8 @@
 package org.server.search.index.store.ram;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.shard.ShardId;
 import org.server.search.index.store.support.AbstractStore;
@@ -28,26 +30,27 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class RamStore extends AbstractStore<RAMDirectory> {
+public class RamStore extends AbstractStore<ByteBuffersDirectory> {
 
-    private RAMDirectory directory;
+    private ByteBuffersDirectory directory;
 
     @Inject public RamStore(ShardId shardId, @IndexSettings Settings indexSettings) {
         super(shardId, indexSettings);
-        this.directory = new RAMDirectory();
+        this.directory = new ByteBuffersDirectory();
         logger.debug("Using [RAM] Store");
     }
 
-    @Override public RAMDirectory directory() {
+    @Override public ByteBuffersDirectory directory() {
         return directory;
     }
 
     @Override public SizeValue estimateSize() throws IOException {
-        return new SizeValue(directory.sizeInBytes(), SizeUnit.BYTES);
+        return new SizeValue(directory.getPendingDeletions().size(), SizeUnit.BYTES);
     }
 
     /**
@@ -55,5 +58,15 @@ public class RamStore extends AbstractStore<RAMDirectory> {
      */
     @Override public boolean suggestUseCompoundFile() {
         return false;
+    }
+
+    @Override
+    public void onInit(List<? extends IndexCommit> commits) throws IOException {
+
+    }
+
+    @Override
+    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
+
     }
 }

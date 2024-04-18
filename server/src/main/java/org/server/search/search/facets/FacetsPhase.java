@@ -22,9 +22,7 @@ package org.server.search.search.facets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.util.OpenBitSet;
+
 import org.server.search.ElasticSearchException;
 import org.server.search.ElasticSearchIllegalStateException;
 import org.server.search.search.SearchParseElement;
@@ -60,13 +58,11 @@ public class FacetsPhase implements SearchPhase {
         List<Facet> facets = Lists.newArrayListWithCapacity(2);
         if (contextFacets.queryFacets() != null) {
             for (SearchContextFacets.QueryFacet queryFacet : contextFacets.queryFacets()) {
-                Filter facetFilter = new QueryWrapperFilter(queryFacet.query());
-                facetFilter = context.filterCache().cache(facetFilter);
                 long count;
                 if (contextFacets.queryType() == SearchContextFacets.QueryExecutionType.COLLECT) {
-                    count = executeQueryCollectorCount(context, queryFacet, facetFilter);
+                    count = executeQueryCollectorCount(context, queryFacet);
                 } else if (contextFacets.queryType() == SearchContextFacets.QueryExecutionType.IDSET) {
-                    count = executeQueryIdSetCount(context, queryFacet, facetFilter);
+                    count = executeQueryIdSetCount(context, queryFacet);
                 } else {
                     throw new ElasticSearchIllegalStateException("No matching for type [" + contextFacets.queryType() + "]");
                 }
@@ -77,19 +73,14 @@ public class FacetsPhase implements SearchPhase {
         context.queryResult().facets(new Facets(facets));
     }
 
-    private long executeQueryIdSetCount(SearchContext context, SearchContextFacets.QueryFacet queryFacet, Filter facetFilter) {
-        try {
-            DocIdSet filterDocIdSet = facetFilter.getDocIdSet(context.searcher().getIndexReader());
-            return OpenBitSet.intersectionCount(context.searcher().docIdSet(), (OpenBitSet) filterDocIdSet);
-        } catch (IOException e) {
-            throw new FacetPhaseExecutionException(queryFacet.name(), "Failed to bitset facets for query [" + queryFacet.query() + "]", e);
-        }
+    private long executeQueryIdSetCount(SearchContext context, SearchContextFacets.QueryFacet queryFacet) {
+        return Long.MIN_VALUE;
     }
 
-    private long executeQueryCollectorCount(SearchContext context, SearchContextFacets.QueryFacet queryFacet, Filter facetFilter) {
+    private long executeQueryCollectorCount(SearchContext context, SearchContextFacets.QueryFacet queryFacet) {
         Lucene.CountCollector countCollector = new Lucene.CountCollector(-1.0f);
         try {
-            context.searcher().search(context.query(), facetFilter, countCollector);
+            context.searcher().search(context.query(), countCollector);
         } catch (IOException e) {
             throw new FacetPhaseExecutionException(queryFacet.name(), "Failed to collect facets for query [" + queryFacet.query() + "]", e);
         }

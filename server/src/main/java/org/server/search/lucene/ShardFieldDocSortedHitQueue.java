@@ -20,15 +20,28 @@
 package org.server.search.lucene;
 
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.util.PriorityQueue;
 
 /**
  * @author kimchy (Shay Banon)
  */
 // LUCENE TRACK
-public class ShardFieldDocSortedHitQueue extends FieldDocSortedHitQueue {
+public class ShardFieldDocSortedHitQueue extends PriorityQueue {
 
     public ShardFieldDocSortedHitQueue(SortField[] fields, int size) {
         super(size);
-        setFields(fields);
+    }
+
+    /**
+     * Determines the ordering of objects in this priority queue. Subclasses must define this one
+     * method.
+     *
+     * @param a
+     * @param b
+     * @return <code>true</code> iff parameter <code>a</code> is less than parameter <code>b</code>.
+     */
+    @Override
+    protected boolean lessThan(Object a, Object b) {
+        return false;
     }
 }

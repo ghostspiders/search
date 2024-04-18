@@ -24,6 +24,8 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
+import javax.swing.text.Highlighter;
+
 /**
  * @author kimchy (Shay Banon)
  */

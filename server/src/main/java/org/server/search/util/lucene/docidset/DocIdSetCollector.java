@@ -20,46 +20,52 @@
 package org.server.search.util.lucene.docidset;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.LeafCollector;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Scorer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class DocIdSetCollector extends Collector {
+public class DocIdSetCollector implements Collector {
 
     private final Collector collector;
 
-    private final OpenBitSetDISI docIdSet;
+    private final List<Object> docIdSet;
 
     private int base;
 
     public DocIdSetCollector(Collector collector, IndexReader reader) {
         this.collector = collector;
-        this.docIdSet = new OpenBitSetDISI(reader.maxDoc());
+        this.docIdSet = new ArrayList(reader.maxDoc());
     }
 
-    public OpenBitSetDISI docIdSet() {
+    public List<Object>  docIdSet() {
         return docIdSet;
     }
 
-    @Override public void setScorer(Scorer scorer) throws IOException {
-        collector.setScorer(scorer);
+
+    /**
+     * Create a new {@link LeafCollector collector} to collect the given context.
+     *
+     * @param context next atomic reader context
+     */
+    @Override
+    public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
+        return null;
     }
 
-    @Override public void collect(int doc) throws IOException {
-        collector.collect(doc);
-        docIdSet.fastSet(base + doc);
-    }
-
-    @Override public void setNextReader(IndexReader reader, int docBase) throws IOException {
-        base = docBase;
-        collector.setNextReader(reader, docBase);
-    }
-
-    @Override public boolean acceptsDocsOutOfOrder() {
-        return collector.acceptsDocsOutOfOrder();
+    /**
+     * Indicates what features are required from the scorer.
+     */
+    @Override
+    public ScoreMode scoreMode() {
+        return null;
     }
 }

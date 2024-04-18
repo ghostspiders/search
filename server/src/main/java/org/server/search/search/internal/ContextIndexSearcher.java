@@ -25,6 +25,7 @@ import org.server.search.search.dfs.CachedDfSource;
 import org.server.search.util.lucene.docidset.DocIdSetCollector;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -37,7 +38,7 @@ public class ContextIndexSearcher extends IndexSearcher {
 
     private boolean docIdSetEnabled;
 
-    private OpenBitSet docIdSet;
+    private List<Object>  docIdSet;
 
     public ContextIndexSearcher(SearchContext searchContext, IndexReader r) {
         super(r);
@@ -52,37 +53,8 @@ public class ContextIndexSearcher extends IndexSearcher {
         docIdSetEnabled = true;
     }
 
-    public OpenBitSet docIdSet() {
+    public List<Object> docIdSet() {
         return docIdSet;
     }
 
-    @Override protected Weight createWeight(Query query) throws IOException {
-        if (dfSource == null) {
-            return super.createWeight(query);
-        }
-        return query.weight(dfSource);
-    }
-
-    @Override public void search(Weight weight, Filter filter, Collector collector) throws IOException {
-        if (searchContext.timeout() != null) {
-            collector = new TimeLimitingCollector(collector, searchContext.timeout().millis());
-        }
-        // we only compute the doc id set once since within a context, we execute the same query always...
-        if (docIdSetEnabled && docIdSet == null) {
-            collector = new DocIdSetCollector(collector, getIndexReader());
-        }
-        if (searchContext.timeout() != null) {
-            searchContext.queryResult().searchTimedOut(false);
-            try {
-                super.search(weight, filter, collector);
-            } catch (TimeLimitingCollector.TimeExceededException e) {
-                searchContext.queryResult().searchTimedOut(true);
-            }
-        } else {
-            super.search(weight, filter, collector);
-        }
-        if (docIdSetEnabled && docIdSet == null) {
-            this.docIdSet = ((DocIdSetCollector) collector).docIdSet();
-        }
-    }
 }

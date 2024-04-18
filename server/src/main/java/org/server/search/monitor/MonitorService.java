@@ -49,7 +49,7 @@ public class MonitorService extends AbstractComponent implements LifecycleCompon
         return lifecycle.state();
     }
 
-    @Override public MonitorService start() throws ElasticSearchException {
+    @Override public MonitorService start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -58,7 +58,7 @@ public class MonitorService extends AbstractComponent implements LifecycleCompon
         return this;
     }
 
-    @Override public MonitorService stop() throws ElasticSearchException {
+    @Override public MonitorService stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -67,7 +67,7 @@ public class MonitorService extends AbstractComponent implements LifecycleCompon
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }
