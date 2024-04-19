@@ -42,6 +42,7 @@ public class MemoryIndexOutput extends IndexOutput {
     private int bufferLength;
 
     public MemoryIndexOutput(MemoryDirectory dir, MemoryFile file) {
+        super("","");
         this.dir = dir;
         this.file = file;
 
@@ -75,13 +76,8 @@ public class MemoryIndexOutput extends IndexOutput {
         }
     }
 
-    @Override public void flush() throws IOException {
-        file.lastModified(System.currentTimeMillis());
-        setFileLength();
-    }
 
     @Override public void close() throws IOException {
-        flush();
         file.buffers(buffers.toArray(new byte[buffers.size()][]));
     }
 
@@ -89,20 +85,12 @@ public class MemoryIndexOutput extends IndexOutput {
         return currentBufferIndex < 0 ? 0 : bufferStart + bufferPosition;
     }
 
-    @Override public void seek(long pos) throws IOException {
-        // set the file length in case we seek back
-        // and flush() has not been called yet
-        setFileLength();
-        if (pos < bufferStart || pos >= bufferStart + bufferLength) {
-            currentBufferIndex = (int) (pos / dir.bufferSizeInBytes());
-            switchCurrentBuffer();
-        }
-
-        bufferPosition = (int) (pos % dir.bufferSizeInBytes());
-    }
-
-    @Override public long length() throws IOException {
-        return file.length();
+    /**
+     * Returns the current checksum of bytes written so far
+     */
+    @Override
+    public long getChecksum() throws IOException {
+        return 0;
     }
 
     private void switchCurrentBuffer() throws IOException {

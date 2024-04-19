@@ -19,6 +19,7 @@
 
 package org.server.search.index.store.bytebuffer;
 
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.IndexOutput;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  */
 public class ByteBufferIndexOutput extends IndexOutput {
 
-    private final ByteBufferDirectory dir;
+    private final ByteBuffersDirectory dir;
     private final ByteBufferFile file;
 
     private ByteBuffer currentBuffer;
@@ -41,7 +42,8 @@ public class ByteBufferIndexOutput extends IndexOutput {
 
     private ArrayList<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
 
-    public ByteBufferIndexOutput(ByteBufferDirectory dir, ByteBufferFile file) throws IOException {
+    public ByteBufferIndexOutput(ByteBuffersDirectory dir, ByteBufferFile file) throws IOException {
+        super("","");
         this.dir = dir;
         this.file = file;
         switchCurrentBuffer();
@@ -70,13 +72,8 @@ public class ByteBufferIndexOutput extends IndexOutput {
         }
     }
 
-    @Override public void flush() throws IOException {
-        file.lastModified(System.currentTimeMillis());
-        setFileLength();
-    }
 
     @Override public void close() throws IOException {
-        flush();
         file.buffers(buffers.toArray(new ByteBuffer[buffers.size()]));
     }
 
@@ -84,31 +81,16 @@ public class ByteBufferIndexOutput extends IndexOutput {
         return currentBufferIndex < 0 ? 0 : bufferStart + currentBuffer.position();
     }
 
-    @Override public void seek(long pos) throws IOException {
-        // set the file length in case we seek back
-        // and flush() has not been called yet
-        setFileLength();
-        if (pos < bufferStart || pos >= bufferStart + bufferLength) {
-            currentBufferIndex = (int) (pos / dir.bufferSizeInBytes());
-            switchCurrentBuffer();
-        }
-        currentBuffer.position((int) (pos % dir.bufferSizeInBytes()));
-    }
-
-    @Override public long length() throws IOException {
-        return file.length();
+    /**
+     * Returns the current checksum of bytes written so far
+     */
+    @Override
+    public long getChecksum() throws IOException {
+        return 0;
     }
 
     private void switchCurrentBuffer() throws IOException {
-        if (currentBufferIndex == buffers.size()) {
-            currentBuffer = dir.acquireBuffer();
-            buffers.add(currentBuffer);
-        } else {
-            currentBuffer = buffers.get(currentBufferIndex);
-        }
-        currentBuffer.position(0);
-        bufferStart = (long) dir.bufferSizeInBytes() * (long) currentBufferIndex;
-        bufferLength = currentBuffer.capacity();
+
     }
 
     private void setFileLength() {

@@ -20,6 +20,7 @@
 package org.server.search.index.store.bytebuffer;
 
 import com.google.inject.Inject;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.shard.ShardId;
 import org.server.search.index.store.support.AbstractStore;
@@ -30,7 +31,7 @@ import org.server.search.util.settings.Settings;
 /**
  * @author kimchy (Shay Banon)
  */
-public class ByteBufferStore extends AbstractStore<ByteBufferDirectory> {
+public class ByteBufferStore extends AbstractStore<ByteBuffersDirectory> {
 
     private final SizeValue bufferSize;
 
@@ -40,7 +41,7 @@ public class ByteBufferStore extends AbstractStore<ByteBufferDirectory> {
 
     private final boolean warmCache;
 
-    private final ByteBufferDirectory directory;
+    private final ByteBuffersDirectory directory;
 
     @Inject public ByteBufferStore(ShardId shardId, @IndexSettings Settings indexSettings) {
         super(shardId, indexSettings);
@@ -49,12 +50,10 @@ public class ByteBufferStore extends AbstractStore<ByteBufferDirectory> {
         this.cacheSize = componentSettings.getAsSize("cacheSize", new SizeValue(20, SizeUnit.MB));
         this.direct = componentSettings.getAsBoolean("direct", true);
         this.warmCache = componentSettings.getAsBoolean("warmCache", true);
-        this.directory = new ByteBufferDirectory(bufferSize, cacheSize, direct, warmCache);
-        logger.debug("Using [ByteBuffer] Store with bufferSize[{}], cacheSize[{}], direct[{}], warmCache[{}]",
-                new Object[]{directory.bufferSize(), directory.cacheSize(), directory.isDirect(), warmCache});
+        this.directory = new ByteBuffersDirectory();
     }
 
-    @Override public ByteBufferDirectory directory() {
+    @Override public ByteBuffersDirectory directory() {
         return directory;
     }
 

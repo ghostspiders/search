@@ -20,6 +20,8 @@
 package org.server.search.index.store.fs;
 
 import com.google.inject.Inject;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.server.search.env.Environment;
 import org.server.search.index.LocalNodeId;
 import org.server.search.index.settings.IndexSettings;
@@ -34,38 +36,31 @@ import static org.server.search.index.store.fs.FsStores.*;
 /**
  * @author kimchy (Shay Banon)
  */
-public class SimpleFsStore extends AbstractFsStore<SimpleFSDirectory> {
+public class SimpleFsStore extends AbstractFsStore<NIOFSDirectory> {
 
     private final boolean syncToDisk;
 
-    private SimpleFSDirectory directory;
+    private NIOFSDirectory directory;
 
     @Inject public SimpleFsStore(ShardId shardId, @IndexSettings Settings indexSettings, Environment environment, @LocalNodeId String localNodeId) throws IOException {
         super(shardId, indexSettings);
         // by default, we don't need to sync to disk, since we use the gateway
         this.syncToDisk = componentSettings.getAsBoolean("syncToDisk", false);
         this.directory = new CustomSimpleFSDirectory(createStoreFilePath(environment.workWithClusterFile(), localNodeId, shardId), syncToDisk);
-        logger.debug("Using [SimpleFs] Store with path [{}], syncToDisk [{}]", directory.getFile(), syncToDisk);
+        logger.debug("Using [SimpleFs] Store with path [{}], syncToDisk [{}]", directory.getDirectory(), syncToDisk);
     }
 
-    @Override public SimpleFSDirectory directory() {
+    @Override public NIOFSDirectory directory() {
         return directory;
     }
 
-    private static class CustomSimpleFSDirectory extends SimpleFSDirectory {
+    private static class CustomSimpleFSDirectory extends NIOFSDirectory {
 
         private final boolean syncToDisk;
 
         private CustomSimpleFSDirectory(File path, boolean syncToDisk) throws IOException {
-            super(path);
+            super(path.toPath());
             this.syncToDisk = syncToDisk;
-        }
-
-        @Override public void sync(String name) throws IOException {
-            if (!syncToDisk) {
-                return;
-            }
-            super.sync(name);
         }
     }
 }

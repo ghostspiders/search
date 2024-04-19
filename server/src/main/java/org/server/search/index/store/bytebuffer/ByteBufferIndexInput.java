@@ -19,6 +19,7 @@
 
 package org.server.search.index.store.bytebuffer;
 
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.IndexInput;
 
 import java.io.IOException;
@@ -39,10 +40,11 @@ public class ByteBufferIndexInput extends IndexInput {
     private long bufferStart;
 
 
-    public ByteBufferIndexInput(ByteBufferDirectory dir, ByteBufferFile file) throws IOException {
+    public ByteBufferIndexInput(ByteBuffersDirectory dir, ByteBufferFile file, int bufferSize) throws IOException {
+        super("");
         this.file = file;
-        this.bufferSize = dir.bufferSizeInBytes();
         this.length = file.length();
+        this.bufferSize = bufferSize;
         switchCurrentBuffer(true);
     }
 
@@ -88,6 +90,19 @@ public class ByteBufferIndexInput extends IndexInput {
         return length;
     }
 
+    /**
+     * Creates a slice of this index input, with the given description, offset, and length. The slice
+     * is sought to the beginning.
+     *
+     * @param sliceDescription
+     * @param offset
+     * @param length
+     */
+    @Override
+    public IndexInput slice(String sliceDescription, long offset, long length) throws IOException {
+        return null;
+    }
+
     private void switchCurrentBuffer(boolean enforceEOF) throws IOException {
         if (currentBufferIndex >= file.numberOfBuffers()) {
             // end of file reached, no more buffers left
@@ -104,11 +119,5 @@ public class ByteBufferIndexInput extends IndexInput {
             currentBuffer.position(0);
             bufferStart = (long) bufferSize * (long) currentBufferIndex;
         }
-    }
-
-    @Override public Object clone() {
-        ByteBufferIndexInput cloned = (ByteBufferIndexInput) super.clone();
-        cloned.currentBuffer = currentBuffer.asReadOnlyBuffer();
-        return cloned;
     }
 }

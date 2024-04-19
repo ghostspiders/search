@@ -46,7 +46,7 @@ public class NioFsStore extends AbstractFsStore<NIOFSDirectory> {
         // by default, we don't need to sync to disk, since we use the gateway
         this.syncToDisk = componentSettings.getAsBoolean("syncToDisk", false);
         this.directory = new CustomNioFSDirectory(createStoreFilePath(environment.workWithClusterFile(), localNodeId, shardId), syncToDisk);
-        logger.debug("Using [NioFs] Store with path [{}], syncToDisk [{}]", directory.getFile(), syncToDisk);
+        logger.debug("Using [NioFs] Store with path [{}], syncToDisk [{}]", directory.getDirectory(), syncToDisk);
     }
 
     @Override public NIOFSDirectory directory() {
@@ -58,15 +58,8 @@ public class NioFsStore extends AbstractFsStore<NIOFSDirectory> {
         private final boolean syncToDisk;
 
         private CustomNioFSDirectory(File path, boolean syncToDisk) throws IOException {
-            super(path);
+            super(path.toPath());
             this.syncToDisk = syncToDisk;
-        }
-
-        @Override public void sync(String name) throws IOException {
-            if (!syncToDisk) {
-                return;
-            }
-            super.sync(name);
         }
     }
 }

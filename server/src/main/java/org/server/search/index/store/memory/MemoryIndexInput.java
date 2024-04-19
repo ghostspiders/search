@@ -41,6 +41,7 @@ public class MemoryIndexInput extends IndexInput {
     private int bufferLength;
 
     public MemoryIndexInput(MemoryDirectory dir, MemoryFile file) throws IOException {
+        super("");
         this.bufferSize = dir.bufferSizeInBytes();
         this.file = file;
 
@@ -96,6 +97,19 @@ public class MemoryIndexInput extends IndexInput {
 
     @Override public long length() {
         return length;
+    }
+
+    /**
+     * Creates a slice of this index input, with the given description, offset, and length. The slice
+     * is sought to the beginning.
+     *
+     * @param sliceDescription
+     * @param offset
+     * @param length
+     */
+    @Override
+    public IndexInput slice(String sliceDescription, long offset, long length) throws IOException {
+        return null;
     }
 
     private void switchCurrentBuffer(boolean enforceEOF) throws IOException {

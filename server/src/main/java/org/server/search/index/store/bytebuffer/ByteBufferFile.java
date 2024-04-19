@@ -19,6 +19,8 @@
 
 package org.server.search.index.store.bytebuffer;
 
+import org.apache.lucene.store.ByteBuffersDirectory;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -26,7 +28,7 @@ import java.nio.ByteBuffer;
  */
 public class ByteBufferFile {
 
-    private final ByteBufferDirectory dir;
+    private final ByteBuffersDirectory dir;
 
     private volatile long lastModified = System.currentTimeMillis();
 
@@ -34,7 +36,7 @@ public class ByteBufferFile {
 
     private volatile ByteBuffer[] buffers;
 
-    public ByteBufferFile(ByteBufferDirectory dir) {
+    public ByteBufferFile(ByteBuffersDirectory dir) {
         this.dir = dir;
     }
 
@@ -69,7 +71,7 @@ public class ByteBufferFile {
     void clean() {
         if (buffers != null) {
             for (ByteBuffer buffer : buffers) {
-                dir.releaseBuffer(buffer);
+//                dir.releaseBuffer(buffer);
             }
             buffers = null;
         }

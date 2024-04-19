@@ -19,17 +19,17 @@
 
 package org.server.search.index.store.memory;
 
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.store.IndexOutput;
-import org.apache.lucene.store.SingleInstanceLockFactory;
+import org.apache.lucene.store.*;
 import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
@@ -65,7 +65,6 @@ public class MemoryDirectory extends Directory {
         int numberOfCacheEntries = (int) (cacheSize.bytes() / bufferSize.bytes());
         this.cache = disableCache ? null : new ArrayBlockingQueue<byte[]>(numberOfCacheEntries);
         this.cacheSize = disableCache ? new SizeValue(0, SizeUnit.BYTES) : new SizeValue(numberOfCacheEntries * bufferSize.bytes(), SizeUnit.BYTES);
-        setLockFactory(new SingleInstanceLockFactory());
         if (!disableCache && warmCache) {
             for (int i = 0; i < numberOfCacheEntries; i++) {
                 cache.add(createBuffer());
@@ -89,38 +88,6 @@ public class MemoryDirectory extends Directory {
         return files.keySet().toArray(new String[0]);
     }
 
-    @Override public boolean fileExists(String name) throws IOException {
-        return files.containsKey(name);
-    }
-
-    @Override public long fileModified(String name) throws IOException {
-        MemoryFile file = files.get(name);
-        if (file == null)
-            throw new FileNotFoundException(name);
-        return file.lastModified();
-    }
-
-    @Override public void touchFile(String name) throws IOException {
-        MemoryFile file = files.get(name);
-        if (file == null)
-            throw new FileNotFoundException(name);
-
-        long ts2, ts1 = System.currentTimeMillis();
-        do {
-            try {
-                Thread.sleep(0, 1);
-            } catch (InterruptedException ie) {
-                // In 3.0 we will change this to throw
-                // InterruptedException instead
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(ie);
-            }
-            ts2 = System.currentTimeMillis();
-        } while (ts1 == ts2);
-
-        file.lastModified(ts2);
-    }
-
     @Override public void deleteFile(String name) throws IOException {
         MemoryFile file = files.remove(name);
         if (file == null)
@@ -135,20 +102,41 @@ public class MemoryDirectory extends Directory {
         return file.length();
     }
 
-    @Override public IndexOutput createOutput(String name) throws IOException {
-        MemoryFile file = new MemoryFile(this);
-        MemoryFile existing = files.put(name, file);
-        if (existing != null) {
-            existing.clean();
-        }
-        return new MemoryIndexOutput(this, file);
+    @Override
+    public IndexOutput createOutput(String name, IOContext context) throws IOException {
+        return null;
     }
 
-    @Override public IndexInput openInput(String name) throws IOException {
-        MemoryFile file = files.get(name);
-        if (file == null)
-            throw new FileNotFoundException(name);
-        return new MemoryIndexInput(this, file);
+    @Override
+    public IndexOutput createTempOutput(String prefix, String suffix, IOContext context) throws IOException {
+        return null;
+    }
+
+    @Override
+    public void sync(Collection<String> names) throws IOException {
+
+    }
+
+
+    @Override
+    public void syncMetaData() throws IOException {
+
+    }
+
+
+    @Override
+    public void rename(String source, String dest) throws IOException {
+
+    }
+
+    @Override
+    public IndexInput openInput(String name, IOContext context) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Lock obtainLock(String name) throws IOException {
+        return null;
     }
 
     @Override public void close() throws IOException {
@@ -163,6 +151,11 @@ public class MemoryDirectory extends Directory {
                 buffer = cache.poll();
             }
         }
+    }
+
+    @Override
+    public Set<String> getPendingDeletions() throws IOException {
+        return null;
     }
 
     void releaseBuffer(byte[] buffer) {

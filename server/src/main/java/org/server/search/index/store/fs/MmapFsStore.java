@@ -48,7 +48,7 @@ public class MmapFsStore extends AbstractFsStore<MMapDirectory> {
         // by default, we don't need to sync to disk, since we use the gateway
         this.syncToDisk = componentSettings.getAsBoolean("syncToDisk", false);
         this.directory = new CustomMMapDirectory(createStoreFilePath(environment.workWithClusterFile(), localNodeId, shardId), syncToDisk);
-        logger.debug("Using [MmapFs] Store with path [{}]", directory.getFile());
+        logger.debug("Using [MmapFs] Store with path [{}]", directory.getDirectory());
     }
 
     @Override public MMapDirectory directory() {
@@ -60,15 +60,8 @@ public class MmapFsStore extends AbstractFsStore<MMapDirectory> {
         private final boolean syncToDisk;
 
         private CustomMMapDirectory(File path, boolean syncToDisk) throws IOException {
-            super(path);
+            super(path.toPath());
             this.syncToDisk = syncToDisk;
-        }
-
-        @Override public void sync(String name) throws IOException {
-            if (!syncToDisk) {
-                return;
-            }
-            super.sync(name);
         }
     }
 }

@@ -58,7 +58,7 @@ public class SnapshotIndexCommit extends IndexCommitDelegate implements Releasab
      * actually released.
      */
     public boolean release() {
-        return deletionPolicy.release(getVersion());
+        return deletionPolicy.release(getGeneration());
     }
 
     /**
@@ -66,7 +66,7 @@ public class SnapshotIndexCommit extends IndexCommitDelegate implements Releasab
      * is not held by the {@link SnapshotDeletionPolicy}.
      */
     @Override public void delete() {
-        if (!deletionPolicy.isHeld(getVersion())) {
+        if (!deletionPolicy.isHeld(getGeneration())) {
             delegate.delete();
         }
     }

@@ -38,10 +38,10 @@ public abstract class AbstractFsStore<T extends FSDirectory> extends AbstractSto
     }
 
     @Override public void fullDelete() throws IOException {
-        FileSystemUtils.deleteRecursively(directory().getFile());
+        FileSystemUtils.deleteRecursively(directory().getDirectory().toFile());
         // if we are the last ones, delete also the actual index
-        if (directory().getFile().getParentFile().list().length == 0) {
-            FileSystemUtils.deleteRecursively(directory().getFile().getParentFile());
+        if (directory().getDirectory().toFile().getParentFile().list().length == 0) {
+            FileSystemUtils.deleteRecursively(directory().getDirectory().toFile().getParentFile());
         }
     }
 }
