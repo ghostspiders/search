@@ -67,14 +67,4 @@ public class NoneIndexShardGateway extends AbstractIndexShardComponent implement
     @Override public void close() {
     }
 
-
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
 }

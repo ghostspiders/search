@@ -55,16 +55,8 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
             setMaxSmallSegments(params._maxSmallSegments);
             setPartialExpunge(params._doPartialExpunge);
             setMergeFactor(params._mergeFactor);
-            setUseCompoundFile(params._useCompoundFile);
             setMaxMergeDocs(params._maxMergeDocs);
         }
-    }
-
-    @Override
-    protected long size(SegmentInfo info) throws IOException {
-        long byteSize = info.sizeInBytes();
-        float delRatio = (info.docCount <= 0 ? 0.0f : ((float) info.getDelCount() / (float) info.docCount));
-        return (info.docCount <= 0 ? byteSize : (long) ((float) byteSize * (1.0f - delRatio)));
     }
 
     public void setPartialExpunge(boolean doPartialExpunge) {

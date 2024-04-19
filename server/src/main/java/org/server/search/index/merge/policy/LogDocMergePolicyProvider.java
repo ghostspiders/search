@@ -20,12 +20,16 @@
 package org.server.search.index.merge.policy;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.LogDocMergePolicy;
 import org.server.search.index.shard.AbstractIndexShardComponent;
 import org.server.search.index.shard.IndexShardLifecycle;
 import org.server.search.index.store.Store;
 import org.server.search.util.Preconditions;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -51,12 +55,10 @@ public class LogDocMergePolicyProvider extends AbstractIndexShardComponent imple
     }
 
     @Override public LogDocMergePolicy newMergePolicy(IndexWriter indexWriter) {
-        LogDocMergePolicy mergePolicy = new LogDocMergePolicy(indexWriter);
+        LogDocMergePolicy mergePolicy = new LogDocMergePolicy();
         mergePolicy.setMinMergeDocs(minMergeDocs);
         mergePolicy.setMaxMergeDocs(maxMergeDocs);
         mergePolicy.setMergeFactor(mergeFactor);
-        mergePolicy.setUseCompoundFile(useCompoundFile);
-        mergePolicy.setUseCompoundDocStore(useCompoundFile);
         return mergePolicy;
     }
 }

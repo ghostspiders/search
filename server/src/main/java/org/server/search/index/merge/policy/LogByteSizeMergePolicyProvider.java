@@ -20,6 +20,7 @@
 package org.server.search.index.merge.policy;
 
 import com.google.inject.Inject;
+import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.server.search.index.shard.AbstractIndexShardComponent;
@@ -28,6 +29,9 @@ import org.server.search.index.store.Store;
 import org.server.search.util.Preconditions;
 import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -55,13 +59,11 @@ public class LogByteSizeMergePolicyProvider extends AbstractIndexShardComponent 
     }
 
     @Override public LogByteSizeMergePolicy newMergePolicy(IndexWriter indexWriter) {
-        LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy(indexWriter);
+        LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy();
         mergePolicy.setMinMergeMB(minMergeSize.mbFrac());
         mergePolicy.setMaxMergeMB(maxMergeSize.mbFrac());
         mergePolicy.setMergeFactor(mergeFactor);
         mergePolicy.setMaxMergeDocs(maxMergeDocs);
-        mergePolicy.setUseCompoundFile(useCompoundFile);
-        mergePolicy.setUseCompoundDocStore(useCompoundFile);
         return mergePolicy;
     }
 }

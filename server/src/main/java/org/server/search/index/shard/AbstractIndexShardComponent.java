@@ -19,12 +19,17 @@
 
 package org.server.search.index.shard;
 
+import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.IndexDeletionPolicy;
+import org.apache.lucene.index.IndexWriter;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.jmx.ManagedGroupName;
 import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.Settings;
 import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.List;
 
 import static org.server.search.index.shard.IndexShardManagement.*;
 
@@ -65,4 +70,12 @@ public abstract class AbstractIndexShardComponent extends IndexDeletionPolicy im
     public String managementGroupName() {
         return buildShardGroupName(shardId);
     }
+    public  void onInit(List<? extends IndexCommit> commits) throws IOException{
+
+    };
+
+
+    public  void onCommit(List<? extends IndexCommit> commits) throws IOException{
+
+    };
 }

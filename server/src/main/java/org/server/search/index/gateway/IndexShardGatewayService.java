@@ -198,16 +198,6 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
         }
     }
 
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
     private class SnapshotRunnable implements Runnable {
         @Override public void run() {
             try {

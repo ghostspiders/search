@@ -59,14 +59,4 @@ public class RamStore extends AbstractStore<ByteBuffersDirectory> {
     @Override public boolean suggestUseCompoundFile() {
         return false;
     }
-
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
 }

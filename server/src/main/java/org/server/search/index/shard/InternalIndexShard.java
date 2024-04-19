@@ -486,16 +486,6 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         return query;
     }
 
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
     private class EngineRefresher implements Runnable {
         @Override public void run() {
             try {

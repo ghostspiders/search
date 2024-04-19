@@ -391,16 +391,6 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         }
     }
 
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
     private static class RobinSearchResult implements Searcher {
 
         private final AcquirableResource<ReaderSearcherHolder> nrtHolder;

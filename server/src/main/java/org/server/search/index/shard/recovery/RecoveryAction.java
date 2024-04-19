@@ -21,6 +21,7 @@ package org.server.search.index.shard.recovery;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexCommit;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.server.search.ElasticSearchException;
@@ -169,18 +170,6 @@ public class RecoveryAction extends AbstractIndexShardComponent {
         openIndexOutputs.clear();
     }
 
-
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
     private static class StartRecoveryRequest implements Streamable {
 
         private Node node;
@@ -224,7 +213,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                         StopWatch stopWatch = new StopWatch().start();
 
                         for (String name : snapshot.getFiles()) {
-                            IndexInput indexInput = store.directory().openInput(name);
+                            IndexInput indexInput = store.directory().openInput(name,IOContext.DEFAULT);
                             recoveryStatus.phase1FileNames.add(name);
                             recoveryStatus.phase1FileSizes.add(indexInput.length());
                             totalSize += indexInput.length();
@@ -242,7 +231,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                                     try {
                                         final int BUFFER_SIZE = (int) fileChunkSize.bytes();
                                         byte[] buf = new byte[BUFFER_SIZE];
-                                        IndexInput indexInput = store.directory().openInput(name);
+                                        IndexInput indexInput = store.directory().openInput(name,IOContext.DEFAULT);
                                         long len = indexInput.length();
                                         long readCount = 0;
                                         while (readCount < len) {
@@ -431,7 +420,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                         // ignore
                     }
                 }
-                indexOutput = store.directory().createOutput(request.name);
+                indexOutput = store.directory().createOutput(request.name, IOContext.DEFAULT);
                 openIndexOutputs.put(request.name, indexOutput);
             } else {
                 indexOutput = openIndexOutputs.get(request.name);

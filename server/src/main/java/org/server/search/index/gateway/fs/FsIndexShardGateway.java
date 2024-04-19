@@ -338,15 +338,4 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
 
         return index;
     }
-
-    @Override
-    public void onInit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
-
-
-    @Override
-    public void onCommit(List<? extends IndexCommit> commits) throws IOException {
-
-    }
 }

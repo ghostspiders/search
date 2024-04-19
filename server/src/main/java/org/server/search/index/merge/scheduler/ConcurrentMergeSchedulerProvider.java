@@ -21,12 +21,16 @@ package org.server.search.index.merge.scheduler;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.ConcurrentMergeScheduler;
+import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.MergeScheduler;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.index.shard.AbstractIndexShardComponent;
 import org.server.search.index.shard.IndexShardLifecycle;
 import org.server.search.index.shard.ShardId;
 import org.server.search.util.settings.Settings;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -45,7 +49,8 @@ public class ConcurrentMergeSchedulerProvider extends AbstractIndexShardComponen
 
     @Override public MergeScheduler newMergeScheduler() {
         ConcurrentMergeScheduler concurrentMergeScheduler = new ConcurrentMergeScheduler();
-        concurrentMergeScheduler.setMaxThreadCount(maxThreadCount);
         return concurrentMergeScheduler;
     }
+
+
 }
