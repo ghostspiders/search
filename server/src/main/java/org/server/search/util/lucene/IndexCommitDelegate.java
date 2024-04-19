@@ -66,9 +66,6 @@ public abstract class IndexCommitDelegate extends IndexCommit {
         return delegate.isDeleted();
     }
 
-    @Override public boolean isOptimized() {
-        return delegate.isOptimized();
-    }
 
     @Override public boolean equals(Object other) {
         return delegate.equals(other);
@@ -78,16 +75,9 @@ public abstract class IndexCommitDelegate extends IndexCommit {
         return delegate.hashCode();
     }
 
-    @Override public long getVersion() {
-        return delegate.getVersion();
-    }
 
     @Override public long getGeneration() {
         return delegate.getGeneration();
-    }
-
-    @Override public long getTimestamp() throws IOException {
-        return delegate.getTimestamp();
     }
 
     @Override public Map<String, String> getUserData() throws IOException {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import org.server.search.env.Environment;
 import org.server.search.env.FailedToResolveConfigException;
 import org.server.search.util.MapBuilder;
+import org.server.search.util.settings.ImmutableSettings;
 import org.server.search.util.settings.Settings;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class LogConfigurator {
     private static boolean loaded;
 
     private static ImmutableMap<String, String> replacements = new MapBuilder<String, String>()
-            .put("console", "org.server.search.util.logging.log4j.ConsoleAppender")
+            .put("console", "org.apache.logging.log4j.core.appender.ConsoleAppender")
             .put("async", "org.apache.log4j.AsyncAppender")
             .put("dailyRollingFile", "org.apache.log4j.DailyRollingFileAppender")
             .put("externallyRolledFile", "org.apache.log4j.ExternallyRolledFileAppender")
@@ -71,23 +72,23 @@ public class LogConfigurator {
         Environment environment = new Environment(settings);
         Settings.Builder settingsBuilder = settingsBuilder().putAll(settings);
         try {
-            settingsBuilder.loadFromUrl(environment.resolveConfig("logging.yml"));
+            ((ImmutableSettings.Builder) settingsBuilder).loadFromUrl(environment.resolveConfig("logging.yml"));
         } catch (FailedToResolveConfigException e) {
             // ignore
         } catch (NoClassDefFoundError e) {
             // ignore, no yaml
         }
         try {
-            settingsBuilder.loadFromUrl(environment.resolveConfig("logging.json"));
+            ((ImmutableSettings.Builder) settingsBuilder).loadFromUrl(environment.resolveConfig("logging.json"));
         } catch (FailedToResolveConfigException e) {
             // ignore
         }
         try {
-            settingsBuilder.loadFromUrl(environment.resolveConfig("logging.properties"));
+            ((ImmutableSettings.Builder) settingsBuilder).loadFromUrl(environment.resolveConfig("logging.properties"));
         } catch (FailedToResolveConfigException e) {
             // ignore
         }
-        settingsBuilder
+        ((ImmutableSettings.Builder) settingsBuilder)
                 .putProperties("elasticsearch.", System.getProperties())
                 .putProperties("es.", System.getProperties())
                 .replacePropertyPlaceholders();
@@ -106,6 +107,6 @@ public class LogConfigurator {
                 props.setProperty(key, value);
             }
         }
-        PropertyConfigurator.configure(props);
+//        PropertyConfigurator.configure(props);
     }
 }

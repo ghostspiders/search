@@ -21,6 +21,7 @@ package org.server.search.util.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 
 /**
  * @author kimchy (Shay Banon)
@@ -32,22 +33,22 @@ public class DocumentBuilder {
     }
 
     public static FieldBuilder field(String name, String value) {
-        return field(name, value, Field.Store.YES, Field.Index.ANALYZED);
+        return field(name, value, Field.Store.YES, new FieldType());
     }
 
-    public static FieldBuilder field(String name, String value, Field.Store store, Field.Index index) {
+    public static FieldBuilder field(String name, String value, Field.Store store, FieldType index) {
         return new FieldBuilder(name, value, store, index);
     }
 
-    public static FieldBuilder field(String name, String value, Field.Store store, Field.Index index, Field.TermVector termVector) {
+    public static FieldBuilder field(String name, String value, Field.Store store, FieldType index, FieldType termVector) {
         return new FieldBuilder(name, value, store, index, termVector);
     }
 
-    public static FieldBuilder field(String name, byte[] value, Field.Store store) {
+    public static FieldBuilder field(String name, byte[] value, FieldType store) {
         return new FieldBuilder(name, value, store);
     }
 
-    public static FieldBuilder field(String name, byte[] value, int offset, int length, Field.Store store) {
+    public static FieldBuilder field(String name, byte[] value, int offset, int length, FieldType store) {
         return new FieldBuilder(name, value, offset, length, store);
     }
 
@@ -58,11 +59,11 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder boost(float boost) {
-        document.setBoost(boost);
+//        document.setBoost(boost);
         return this;
     }
 
-    public DocumentBuilder add(Fieldable field) {
+    public DocumentBuilder add(Field field) {
         document.add(field);
         return this;
     }

@@ -54,11 +54,6 @@ public class ReaderSearcherHolder implements Releasable {
 
     @Override public boolean release() throws ElasticSearchException {
         try {
-            indexSearcher.close();
-        } catch (Exception e) {
-            // do nothing
-        }
-        try {
             indexReader.close();
         } catch (Exception e) {
             // do nothing

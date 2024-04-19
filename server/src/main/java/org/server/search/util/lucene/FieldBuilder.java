@@ -20,6 +20,7 @@
 package org.server.search.util.lucene;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 
 /**
  * @author kimchy (Shay Banon)
@@ -28,34 +29,34 @@ public class FieldBuilder {
 
     private final Field field;
 
-    FieldBuilder(String name, String value, Field.Store store, Field.Index index) {
-        field = new Field(name, value, store, index);
+    FieldBuilder(String name, String value, Field.Store store, FieldType index) {
+        field = new Field(name, value, index);
     }
 
-    FieldBuilder(String name, String value, Field.Store store, Field.Index index, Field.TermVector termVector) {
-        field = new Field(name, value, store, index, termVector);
+    FieldBuilder(String name, String value, Field.Store store, FieldType index, FieldType termVector) {
+        field = new Field(name, value,index);
     }
 
-    FieldBuilder(String name, byte[] value, Field.Store store) {
+    FieldBuilder(String name, byte[] value, FieldType store) {
         field = new Field(name, value, store);
     }
 
-    FieldBuilder(String name, byte[] value, int offset, int length, Field.Store store) {
+    FieldBuilder(String name, byte[] value, int offset, int length, FieldType store) {
         field = new Field(name, value, offset, length, store);
     }
 
     public FieldBuilder boost(float boost) {
-        field.setBoost(boost);
+//        field.setBoost(boost);
         return this;
     }
 
     public FieldBuilder omitNorms(boolean omitNorms) {
-        field.setOmitNorms(omitNorms);
+//        field.setOmitNorms(omitNorms);
         return this;
     }
 
     public FieldBuilder omitTermFreqAndPositions(boolean omitTermFreqAndPositions) {
-        field.setOmitTermFreqAndPositions(omitTermFreqAndPositions);
+//        field.setOmitTermFreqAndPositions(omitTermFreqAndPositions);
         return this;
     }
 
