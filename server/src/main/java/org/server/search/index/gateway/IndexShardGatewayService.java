@@ -109,7 +109,7 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
             // update the last up to date values
             indexShard.snapshot(new Engine.SnapshotHandler() {
                 @Override public void snapshot(SnapshotIndexCommit snapshotIndexCommit, Translog.Snapshot translogSnapshot) throws EngineException {
-                    lastIndexVersion = snapshotIndexCommit.getVersion();
+                    lastIndexVersion = snapshotIndexCommit.getGeneration();
                     lastTranslogId = translogSnapshot.translogId();
                     lastTranslogSize = translogSnapshot.size();
                 }
@@ -149,11 +149,11 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
         }
         indexShard.snapshot(new Engine.SnapshotHandler() {
             @Override public void snapshot(SnapshotIndexCommit snapshotIndexCommit, Translog.Snapshot translogSnapshot) throws EngineException {
-                if (lastIndexVersion != snapshotIndexCommit.getVersion() || lastTranslogId != translogSnapshot.translogId() || lastTranslogSize != translogSnapshot.size()) {
+                if (lastIndexVersion != snapshotIndexCommit.getGeneration() || lastTranslogId != translogSnapshot.translogId() || lastTranslogSize != translogSnapshot.size()) {
 
                     shardGateway.snapshot(snapshotIndexCommit, translogSnapshot);
 
-                    lastIndexVersion = snapshotIndexCommit.getVersion();
+                    lastIndexVersion = snapshotIndexCommit.getGeneration();
                     lastTranslogId = translogSnapshot.translogId();
                     lastTranslogSize = translogSnapshot.size();
                 }

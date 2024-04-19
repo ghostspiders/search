@@ -111,7 +111,7 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
         // update the last up to date values
         indexShard.snapshot(new Engine.SnapshotHandler() {
             @Override public void snapshot(SnapshotIndexCommit snapshotIndexCommit, Translog.Snapshot translogSnapshot) throws EngineException {
-                lastIndexVersion = snapshotIndexCommit.getVersion();
+                lastIndexVersion = snapshotIndexCommit.getGeneration();
                 lastTranslogId = translogSnapshot.translogId();
                 lastTranslogSize = translogSnapshot.size();
             }
@@ -123,7 +123,7 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
         boolean indexDirty = false;
         boolean translogDirty = false;
 
-        if (lastIndexVersion != snapshotIndexCommit.getVersion()) {
+        if (lastIndexVersion != snapshotIndexCommit.getGeneration()) {
             indexDirty = true;
             // snapshot into the index
             final CountDownLatch latch = new CountDownLatch(snapshotIndexCommit.getFiles().length);
@@ -241,7 +241,7 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
         }
 
 
-        lastIndexVersion = snapshotIndexCommit.getVersion();
+        lastIndexVersion = snapshotIndexCommit.getGeneration();
         lastTranslogId = translogSnapshot.translogId();
         lastTranslogSize = translogSnapshot.size();
     }

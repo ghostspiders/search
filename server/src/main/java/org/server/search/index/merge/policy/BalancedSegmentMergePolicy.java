@@ -45,7 +45,7 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
     private int _maxSegments = _numLargeSegments + _maxSmallSegments;
 
     public BalancedSegmentMergePolicy(IndexWriter writer) {
-        super(writer);
+        super();
     }
 
     public void setMergePolicyParams(MergePolicyParams params) {
@@ -106,7 +106,7 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
         int numToOptimize = 0;
         SegmentInfo optimizeInfo = null;
         for (int i = 0; i < numSegments && numToOptimize <= maxNumSegments; i++) {
-            final SegmentInfo info = infos.info(i);
+            final SegmentInfo info = infos.info(i).info;
             if (segmentsToOptimize.contains(info)) {
                 numToOptimize++;
                 optimizeInfo = info;
@@ -117,57 +117,8 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
                 (numToOptimize != 1 || isOptimized(writer, optimizeInfo));
     }
 
-    private boolean isOptimized(IndexWriter writer, SegmentInfo info)
-            throws IOException {
-        return !info.hasDeletions() &&
-                !info.hasSeparateNorms() &&
-                info.dir == writer.getDirectory() &&
-                info.getUseCompoundFile() == getUseCompoundFile();
-    }
-
-    @Override
-    public MergeSpecification findMergesForOptimize(SegmentInfos infos, int maxNumSegments, Set<SegmentInfo> segmentsToOptimize) throws IOException {
-
-        assert maxNumSegments > 0;
-
-        MergeSpecification spec = null;
-
-        if (!isOptimized(infos, writer, maxNumSegments, segmentsToOptimize)) {
-
-            // Find the newest (rightmost) segment that needs to
-            // be optimized (other segments may have been flushed
-            // since optimize started):
-            int last = infos.size();
-            while (last > 0) {
-
-                final SegmentInfo info = infos.info(--last);
-                if (segmentsToOptimize.contains(info)) {
-
-                    last++;
-                    break;
-                }
-            }
-
-            if (last > 0) {
-
-                if (maxNumSegments == 1) {
-
-                    // Since we must optimize down to 1 segment, the
-                    // choice is simple:
-                    boolean useCompoundFile = getUseCompoundFile();
-                    if (last > 1 || !isOptimized(writer, infos.info(0))) {
-
-                        spec = new MergeSpecification();
-                        spec.add(new OneMerge(infos.range(0, last), useCompoundFile));
-                    }
-                } else if (last > maxNumSegments) {
-
-                    // find most balanced merges
-                    spec = findBalancedMerges(infos, last, maxNumSegments, _partialExpunge);
-                }
-            }
-        }
-        return spec;
+    private boolean isOptimized(IndexWriter writer, SegmentInfo info){
+        return info.dir == writer.getDirectory();
     }
 
     private MergeSpecification findBalancedMerges(SegmentInfos infos, int infoLen, int maxNumSegments, boolean partialExpunge)
@@ -175,8 +126,6 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
         if (infoLen <= maxNumSegments) return null;
 
         MergeSpecification spec = new MergeSpecification();
-        boolean useCompoundFile = getUseCompoundFile();
-
         // use Viterbi algorithm to find the best segmentation.
         // we will try to minimize the size variance of resulting segments.
 
@@ -216,11 +165,11 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
             prev = backLink[i][prev];
             int mergeStart = i + prev;
             if ((mergeEnd - mergeStart) > 1) {
-                spec.add(new OneMerge(infos.range(mergeStart, mergeEnd), useCompoundFile));
+                spec.add(new OneMerge(infos.asList()));
             } else {
                 if (partialExpunge) {
-                    SegmentInfo info = infos.info(mergeStart);
-                    int delCount = info.getDelCount();
+                    SegmentInfo info = infos.info(mergeStart).info;
+                    int delCount = 0;
                     if (delCount > maxDelCount) {
                         expungeCandidate = mergeStart;
                         maxDelCount = delCount;
@@ -232,7 +181,7 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
 
         if (partialExpunge && maxDelCount > 0) {
             // expunge deletes
-            spec.add(new OneMerge(infos.range(expungeCandidate, expungeCandidate + 1), useCompoundFile));
+            spec.add(new OneMerge(infos.asList()));
         }
 
         return spec;
@@ -246,7 +195,7 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
         long optSize = 0;
         long[] sizeArr = new long[last];
         for (int i = 0; i < sizeArr.length; i++) {
-            sizeArr[i] = size(infos.info(i));
+            sizeArr[i] = size(infos.info(i),null);
             optSize += sizeArr[i];
         }
         optSize = (optSize / maxNumSegments);
@@ -265,113 +214,6 @@ public class BalancedSegmentMergePolicy extends LogByteSizeMergePolicy {
         }
         return variance;
     }
-
-    @Override
-    public MergeSpecification findMergesToExpungeDeletes(SegmentInfos infos)
-            throws CorruptIndexException, IOException {
-        final int numSegs = infos.size();
-        final int numLargeSegs = (numSegs < _numLargeSegments ? numSegs : _numLargeSegments);
-        MergeSpecification spec = null;
-
-        if (numLargeSegs < numSegs) {
-            SegmentInfos smallSegments = infos.range(numLargeSegs, numSegs);
-            spec = super.findMergesToExpungeDeletes(smallSegments);
-        }
-
-        if (spec == null) spec = new MergeSpecification();
-        for (int i = 0; i < numLargeSegs; i++) {
-            SegmentInfo info = infos.info(i);
-            if (info.hasDeletions()) {
-                spec.add(new OneMerge(infos.range(i, i + 1), getUseCompoundFile()));
-            }
-        }
-        return spec;
-    }
-
-    @Override
-    public MergeSpecification findMerges(SegmentInfos infos) throws IOException {
-        final int numSegs = infos.size();
-        final int numLargeSegs = _numLargeSegments;
-
-        if (numSegs <= numLargeSegs) {
-            return null;
-        }
-
-        long totalLargeSegSize = 0;
-        long totalSmallSegSize = 0;
-        SegmentInfo info;
-
-        // compute the total size of large segments
-        for (int i = 0; i < numLargeSegs; i++) {
-            info = infos.info(i);
-            totalLargeSegSize += size(info);
-        }
-        // compute the total size of small segments
-        for (int i = numLargeSegs; i < numSegs; i++) {
-            info = infos.info(i);
-            totalSmallSegSize += size(info);
-        }
-
-        long targetSegSize = (totalLargeSegSize / (numLargeSegs - 1));
-        if (targetSegSize <= totalSmallSegSize) {
-            // the total size of small segments is big enough,
-            // promote the small segments to a large segment and do balanced merge,
-
-            if (totalSmallSegSize < targetSegSize * 2) {
-                MergeSpecification spec = findBalancedMerges(infos, numLargeSegs, (numLargeSegs - 1), _partialExpunge);
-                if (spec == null) spec = new MergeSpecification(); // should not happen
-                spec.add(new OneMerge(infos.range(numLargeSegs, numSegs), getUseCompoundFile()));
-                return spec;
-            } else {
-                return findBalancedMerges(infos, numSegs, numLargeSegs, _partialExpunge);
-            }
-        } else if (_maxSegments < numSegs) {
-            // we have more than _maxSegments, merge small segments smaller than targetSegSize/4
-            MergeSpecification spec = new MergeSpecification();
-            int startSeg = numLargeSegs;
-            long sizeThreshold = (targetSegSize / 4);
-            while (startSeg < numSegs) {
-                info = infos.info(startSeg);
-                if (size(info) < sizeThreshold) break;
-                startSeg++;
-            }
-            spec.add(new OneMerge(infos.range(startSeg, numSegs), getUseCompoundFile()));
-            return spec;
-        } else {
-            // apply the log merge policy to small segments.
-            SegmentInfos smallSegments = infos.range(numLargeSegs, numSegs);
-            MergeSpecification spec = super.findMerges(smallSegments);
-
-            if (_partialExpunge) {
-                OneMerge expunge = findOneSegmentToExpunge(infos, numLargeSegs);
-                if (expunge != null) {
-                    if (spec == null) spec = new MergeSpecification();
-                    spec.add(expunge);
-                }
-            }
-            return spec;
-        }
-    }
-
-    private OneMerge findOneSegmentToExpunge(SegmentInfos infos, int maxNumSegments) throws IOException {
-        int expungeCandidate = -1;
-        int maxDelCount = 0;
-
-        for (int i = maxNumSegments - 1; i >= 0; i--) {
-            SegmentInfo info = infos.info(i);
-            int delCount = info.getDelCount();
-            if (delCount > maxDelCount) {
-                expungeCandidate = i;
-                maxDelCount = delCount;
-            }
-        }
-        if (maxDelCount > 0) {
-            return new OneMerge(infos.range(expungeCandidate, expungeCandidate + 1), getUseCompoundFile());
-        }
-        return null;
-    }
-
-
     public static class MergePolicyParams {
         private int _numLargeSegments;
         private int _maxSmallSegments;
