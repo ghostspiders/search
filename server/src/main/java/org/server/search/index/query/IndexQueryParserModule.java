@@ -71,18 +71,6 @@ public class IndexQueryParserModule extends AbstractModule {
             jsonQueryBinder.addBinding(qName).toProvider(FactoryProvider.newFactory(JsonQueryParserFactory.class,
                     qSettings.getAsClass("type", null))).in(Scopes.SINGLETON);
         }
-
-        // handle JsonFilterParsers
-        MapBinder<String, JsonFilterParserFactory> jsonFilterBinder
-                = MapBinder.newMapBinder(binder(), String.class, JsonFilterParserFactory.class);
-        Map<String, Settings> jsonFilterParserGroups = settings.getGroups(JsonIndexQueryParser.Defaults.JSON_FILTER_PREFIX);
-        for (Map.Entry<String, Settings> entry : jsonFilterParserGroups.entrySet()) {
-            String fName = entry.getKey();
-            Settings fSettings = entry.getValue();
-            jsonFilterBinder.addBinding(fName).toProvider(FactoryProvider.newFactory(JsonFilterParserFactory.class,
-                    fSettings.getAsClass("type", null))).in(Scopes.SINGLETON);
-        }
-
         bind(IndexQueryParserService.class).asEagerSingleton();
     }
 }

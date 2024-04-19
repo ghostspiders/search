@@ -30,7 +30,7 @@ import org.apache.lucene.util.PriorityQueue;
 public class ScoreDocQueue extends PriorityQueue<ScoreDoc> {
 
     public ScoreDocQueue(int size) {
-        initialize(size);
+        super(size);
     }
 
     protected final boolean lessThan(ScoreDoc hitA, ScoreDoc hitB) {

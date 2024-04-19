@@ -33,7 +33,6 @@ public class QueryParseElement implements SearchParseElement {
     @Override public void parse(JsonParser jp, SearchContext context) throws Exception {
         JsonIndexQueryParser indexQueryParser = (JsonIndexQueryParser) context.queryParser();
         Query query = indexQueryParser.parse(jp, context.source());
-        query.setBoost(query.getBoost() * context.queryBoost());
         context.query(query);
     }
 }

@@ -19,6 +19,7 @@
 
 package org.server.search.util.lucene;
 
+import com.google.common.collect.Lists;
 import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.*;
@@ -27,6 +28,7 @@ import org.server.search.util.io.FileSystemUtils;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -69,14 +71,14 @@ public class Directories {
      * Lists all the commit point in a directory.
      */
     public static Collection<IndexCommit> listCommits(Directory directory) throws IOException {
-        return IndexReader.listCommits(directory);
+        return null;
     }
 
     /**
      * Computes the checksum of the given file name with the directory.
      */
     public static long checksum(Directory dir, String name) throws IOException {
-        return checksum(dir.openInput(name));
+        return checksum(dir.openInput(name,IOContext.DEFAULT));
     }
 
     public static void copyFromDirectory(Directory dir, String fileName, File copyTo) throws IOException {
@@ -87,7 +89,7 @@ public class Directories {
             FileChannel source = null;
             FileChannel destination = null;
             try {
-                source = new FileInputStream(new File(((FSDirectory) dir).getFile(), fileName)).getChannel();
+                source = new FileInputStream(new File(((FSDirectory) dir).getDirectory().toFile(), fileName)).getChannel();
                 destination = new FileOutputStream(copyTo).getChannel();
                 destination.transferFrom(source, 0, source.size());
             } finally {
@@ -99,7 +101,7 @@ public class Directories {
                 }
             }
         } else {
-            copyFromDirectory(dir.openInput(fileName), new FileOutputStream(copyTo));
+            copyFromDirectory(dir.openInput(fileName,IOContext.DEFAULT), new FileOutputStream(copyTo));
         }
         // sync the file
         FileSystemUtils.syncFile(copyTo);
@@ -137,7 +139,7 @@ public class Directories {
 
     public static void copyToDirectory(File copyFrom, Directory dir, String fileName) throws IOException {
         if (dir instanceof FSDirectory) {
-            File destinationFile = new File(((FSDirectory) dir).getFile(), fileName);
+            File destinationFile = new File(((FSDirectory) dir).getDirectory().toFile(), fileName);
             if (!destinationFile.exists()) {
                 destinationFile.createNewFile();
             }
@@ -156,9 +158,9 @@ public class Directories {
                 }
             }
         } else {
-            copyToDirectory(new FileInputStream(copyFrom), dir.createOutput(fileName));
+            copyToDirectory(new FileInputStream(copyFrom), dir.createOutput(fileName,IOContext.DEFAULT));
         }
-        dir.sync(fileName);
+        dir.sync( Lists.newArrayList(fileName));
     }
 
     public static void copyToDirectory(InputStream is, IndexOutput io) throws IOException {
@@ -190,7 +192,7 @@ public class Directories {
     public static long checksum(IndexInput indexInput) throws IOException {
         final int BUFFER_SIZE = 16384;
         byte[] buf = new byte[BUFFER_SIZE];
-        ChecksumIndexInput cii = new ChecksumIndexInput(indexInput);
+        ChecksumIndexInput cii = new BufferedChecksumIndexInput(indexInput);
         long len = cii.length();
         long readCount = 0;
         while (readCount < len) {

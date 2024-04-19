@@ -83,15 +83,13 @@ public class BoolJsonQueryParser extends AbstractIndexComponent implements JsonQ
                 }
             }
         }
-
-        BooleanQuery query = new BooleanQuery(disableCoord);
+        BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
         for (BooleanClause clause : clauses) {
-            query.add(clause);
+            booleanQueryBuilder.add(clause);
         }
-        query.setBoost(boost);
         if (minimumNumberShouldMatch != -1) {
-            query.setMinimumNumberShouldMatch(minimumNumberShouldMatch);
+            booleanQueryBuilder.setMinimumNumberShouldMatch(minimumNumberShouldMatch);
         }
-        return query;
+        return booleanQueryBuilder.build();
     }
 }
