@@ -19,28 +19,16 @@
 
 package org.server.search.index.query.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.google.inject.Inject;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.PrefixFilter;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
-import org.server.search.index.mapper.FieldMapper;
-import org.server.search.index.mapper.MapperService;
-import org.server.search.index.query.QueryParsingException;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
-
-import java.io.IOException;
-
-import static org.server.search.index.query.support.QueryParsers.*;
 
 /**
  * @author kimchy (Shay Banon)
  */
-public class PrefixJsonFilterParser extends AbstractIndexComponent implements JsonFilterParser {
+public class PrefixJsonFilterParser extends AbstractIndexComponent{
 
     public static final String NAME = "prefix";
 
@@ -48,38 +36,7 @@ public class PrefixJsonFilterParser extends AbstractIndexComponent implements Js
         super(index, settings);
     }
 
-    @Override public String name() {
+    public String name() {
         return NAME;
-    }
-
-    @Override public Filter parse(JsonQueryParseContext parseContext) throws IOException, QueryParsingException {
-        JsonParser jp = parseContext.jp();
-
-        JsonToken token = jp.getCurrentToken();
-        if (token == JsonToken.START_OBJECT) {
-            token = jp.nextToken();
-        }
-        assert token == JsonToken.FIELD_NAME;
-        String fieldName = jp.getCurrentName();
-        jp.nextToken();
-        String value = jp.getText();
-        jp.nextToken();
-
-        if (value == null) {
-            throw new QueryParsingException(index, "No value specified for prefix query");
-        }
-
-        MapperService.SmartNameFieldMappers smartNameFieldMappers = parseContext.smartFieldMappers(fieldName);
-        if (smartNameFieldMappers != null) {
-            FieldMapper fieldMapper = smartNameFieldMappers.fieldMappers().mapper();
-            if (fieldMapper != null) {
-                fieldName = fieldMapper.indexName();
-                value = fieldMapper.indexedValue(value);
-            }
-        }
-
-        Filter prefixFilter = new PrefixFilter(new Term(fieldName, value));
-        prefixFilter = parseContext.cacheFilterIfPossible(prefixFilter);
-        return wrapSmartNameFilter(prefixFilter, smartNameFieldMappers, parseContext.filterCache());
     }
 }

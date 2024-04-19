@@ -79,10 +79,6 @@ public class IndexQueryParserModule extends AbstractModule {
         for (Map.Entry<String, Settings> entry : jsonFilterParserGroups.entrySet()) {
             String fName = entry.getKey();
             Settings fSettings = entry.getValue();
-            Class<? extends JsonFilterParser> type = fSettings.getAsClass("type", null);
-            if (type == null) {
-                throw new IllegalArgumentException("Json Filter Parser [" + fName + "] must be provided with a type");
-            }
             jsonFilterBinder.addBinding(fName).toProvider(FactoryProvider.newFactory(JsonFilterParserFactory.class,
                     fSettings.getAsClass("type", null))).in(Scopes.SINGLETON);
         }

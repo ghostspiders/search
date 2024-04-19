@@ -20,9 +20,9 @@
 package org.server.search.index.query.json;
 
 import com.google.inject.Inject;
+import org.apache.lucene.queries.spans.SpanNearQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanQuery;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.index.AbstractIndexComponent;
@@ -97,8 +97,7 @@ public class SpanNearJsonQueryParser extends AbstractIndexComponent implements J
             throw new QueryParsingException(index, "spanNear must include [slop]");
         }
 
-        SpanNearQuery query = new SpanNearQuery(clauses.toArray(new SpanQuery[clauses.size()]), slop, inOrder, collectPayloads);
-        query.setBoost(boost);
+        SpanNearQuery query = new SpanNearQuery(clauses.toArray(new SpanQuery[clauses.size()]), slop, inOrder);
         return query;
     }
 }

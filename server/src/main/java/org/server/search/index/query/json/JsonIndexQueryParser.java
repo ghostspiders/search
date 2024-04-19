@@ -72,7 +72,6 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
                                         MapperService mapperService,
                                         AnalysisService analysisService,
                                         @Nullable Map<String, JsonQueryParserFactory> jsonQueryParsers,
-                                        @Nullable Map<String, JsonFilterParserFactory> jsonFilterParsers,
                                         String name, @Nullable Settings settings) {
         super(index, indexSettings);
         this.name = name;
@@ -90,19 +89,7 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
             }
         }
 
-        List<JsonFilterParser> filterParsers = newArrayList();
-        if (jsonFilterParsers != null) {
-            Map<String, Settings> jsonFilterParserGroups = indexSettings.getGroups(Defaults.JSON_FILTER_PREFIX);
-            for (Map.Entry<String, JsonFilterParserFactory> entry : jsonFilterParsers.entrySet()) {
-                String filterParserName = entry.getKey();
-                JsonFilterParserFactory filterParserFactory = entry.getValue();
-                Settings filterParserSettings = jsonFilterParserGroups.get(filterParserName);
-
-                filterParsers.add(filterParserFactory.create(filterParserName, filterParserSettings));
-            }
-        }
-
-        this.queryParserRegistry = new JsonQueryParserRegistry(index, indexSettings, analysisService, queryParsers, filterParsers);
+        this.queryParserRegistry = new JsonQueryParserRegistry(index, indexSettings, analysisService, queryParsers);
     }
 
     @Override public String name() {

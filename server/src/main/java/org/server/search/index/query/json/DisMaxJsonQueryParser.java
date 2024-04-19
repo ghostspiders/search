@@ -83,7 +83,7 @@ public class DisMaxJsonQueryParser extends AbstractIndexComponent implements Jso
         }
 
         DisjunctionMaxQuery query = new DisjunctionMaxQuery(queries, tieBreakerMultiplier);
-        query.setBoost(boost);
+//        query.setBoost(boost);
         return query;
     }
 }

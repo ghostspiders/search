@@ -67,8 +67,8 @@ public class MatchAllJsonQueryParser extends AbstractIndexComponent implements J
             }
         }
 
-        MatchAllDocsQuery query = new MatchAllDocsQuery(normsField);
-        query.setBoost(boost);
+        MatchAllDocsQuery query = new MatchAllDocsQuery();
+//        query.setBoost(boost);
         return query;
     }
 }

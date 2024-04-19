@@ -37,13 +37,10 @@ public class JsonQueryParserRegistry {
 
     private final Map<String, JsonQueryParser> queryParsers;
 
-    private final Map<String, JsonFilterParser> filterParsers;
-
     public JsonQueryParserRegistry(Index index,
                                    @IndexSettings Settings indexSettings,
                                    AnalysisService analysisService,
-                                   @Nullable Iterable<JsonQueryParser> queryParsers,
-                                   @Nullable Iterable<JsonFilterParser> filterParsers) {
+                                   @Nullable Iterable<JsonQueryParser> queryParsers) {
 
         Map<String, JsonQueryParser> queryParsersMap = newHashMap();
         // add defaults
@@ -55,7 +52,6 @@ public class JsonQueryParserRegistry {
         add(queryParsersMap, new RangeJsonQueryParser(index, indexSettings));
         add(queryParsersMap, new PrefixJsonQueryParser(index, indexSettings));
         add(queryParsersMap, new WildcardJsonQueryParser(index, indexSettings));
-        add(queryParsersMap, new FilteredQueryJsonQueryParser(index, indexSettings));
         add(queryParsersMap, new ConstantScoreQueryJsonQueryParser(index, indexSettings));
         add(queryParsersMap, new SpanTermJsonQueryParser(index, indexSettings));
         add(queryParsersMap, new SpanNotJsonQueryParser(index, indexSettings));
@@ -70,33 +66,10 @@ public class JsonQueryParserRegistry {
             }
         }
         this.queryParsers = ImmutableMap.copyOf(queryParsersMap);
-
-        Map<String, JsonFilterParser> filterParsersMap = newHashMap();
-        // add defaults
-        add(filterParsersMap, new TermJsonFilterParser(index, indexSettings));
-        add(filterParsersMap, new RangeJsonFilterParser(index, indexSettings));
-        add(filterParsersMap, new PrefixJsonFilterParser(index, indexSettings));
-        add(filterParsersMap, new QueryJsonFilterParser(index, indexSettings));
-        add(filterParsersMap, new BoolJsonFilterParser(index, indexSettings));
-
-        if (filterParsers != null) {
-            for (JsonFilterParser filterParser : filterParsers) {
-                add(filterParsersMap, filterParser);
-            }
-        }
-        this.filterParsers = ImmutableMap.copyOf(filterParsersMap);
     }
 
     public JsonQueryParser queryParser(String name) {
         return queryParsers.get(name);
-    }
-
-    public JsonFilterParser filterParser(String name) {
-        return filterParsers.get(name);
-    }
-
-    private void add(Map<String, JsonFilterParser> map, JsonFilterParser filterParser) {
-        map.put(filterParser.name(), filterParser);
     }
 
     private void add(Map<String, JsonQueryParser> map, JsonQueryParser jsonQueryParser) {

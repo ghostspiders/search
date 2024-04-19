@@ -73,7 +73,7 @@ public class IndexQueryParserService extends AbstractIndexComponent {
             }
         }
         if (!qparsers.containsKey(Defaults.DEFAULT)) {
-            IndexQueryParser defaultQueryParser = new JsonIndexQueryParser(index, indexSettings, mapperService, analysisService, null, null, Defaults.DEFAULT, null);
+            IndexQueryParser defaultQueryParser = new JsonIndexQueryParser(index, indexSettings, mapperService, analysisService, null, null, null);
             qparsers.put(Defaults.DEFAULT, defaultQueryParser);
         }
 

@@ -18,64 +18,19 @@
  */
 
 package org.server.search.index.query.json;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.google.inject.Inject;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanFilter;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilterClause;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
-import org.server.search.index.query.QueryParsingException;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-import java.io.IOException;
-import java.util.List;
-
-import static com.google.common.collect.Lists.*;
-
 /**
- * @author kimchy (Shay Banon)
+ * @author kimchy (Shay Banon)Ø
  */
-public class BoolJsonFilterParser extends AbstractIndexComponent implements JsonFilterParser {
+public class BoolJsonFilterParser extends AbstractIndexComponent{
 
     @Inject public BoolJsonFilterParser(Index index, @IndexSettings Settings settings) {
         super(index, settings);
     }
 
-    @Override public String name() {
-        return "bool";
-    }
-
-    @Override public Filter parse(JsonQueryParseContext parseContext) throws IOException, QueryParsingException {
-        JsonParser jp = parseContext.jp();
-
-        List<FilterClause> clauses = newArrayList();
-
-        String currentFieldName = null;
-        JsonToken token;
-        while ((token = jp.nextToken()) != JsonToken.END_OBJECT) {
-            if (token == JsonToken.FIELD_NAME) {
-                currentFieldName = jp.getCurrentName();
-            } else if (token == JsonToken.START_OBJECT) {
-                if ("must".equals(currentFieldName)) {
-                    clauses.add(new FilterClause(parseContext.parseInnerFilter(), BooleanClause.Occur.MUST));
-                } else if ("mustNot".equals(currentFieldName)) {
-                    clauses.add(new FilterClause(parseContext.parseInnerFilter(), BooleanClause.Occur.MUST_NOT));
-                } else if ("should".equals(currentFieldName)) {
-                    clauses.add(new FilterClause(parseContext.parseInnerFilter(), BooleanClause.Occur.SHOULD));
-                }
-            }
-        }
-
-        BooleanFilter booleanFilter = new BooleanFilter();
-        for (FilterClause filterClause : clauses) {
-            booleanFilter.add(filterClause);
-        }
-        // no need to cache this one, inner queries will be cached and thats good enough (I think...)
-        return booleanFilter;
-    }
 }

@@ -20,9 +20,9 @@
 package org.server.search.index.query.json;
 
 import com.google.inject.Inject;
+import org.apache.lucene.queries.spans.SpanOrQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.index.AbstractIndexComponent;
@@ -84,7 +84,6 @@ public class SpanOrJsonQueryParser extends AbstractIndexComponent implements Jso
         }
 
         SpanOrQuery query = new SpanOrQuery(clauses.toArray(new SpanQuery[clauses.size()]));
-        query.setBoost(boost);
         return query;
     }
 }

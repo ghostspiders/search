@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.inject.Inject;
 import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
@@ -51,7 +50,6 @@ public class ConstantScoreQueryJsonQueryParser extends AbstractIndexComponent im
     @Override public Query parse(JsonQueryParseContext parseContext) throws IOException, QueryParsingException {
         JsonParser jp = parseContext.jp();
 
-        Filter filter = null;
         float boost = 1.0f;
 
         String currentFieldName = null;
@@ -60,21 +58,16 @@ public class ConstantScoreQueryJsonQueryParser extends AbstractIndexComponent im
             if (token == JsonToken.FIELD_NAME) {
                 currentFieldName = jp.getCurrentName();
             } else if (token == JsonToken.START_OBJECT) {
-                if ("filter".equals(currentFieldName)) {
-                    filter = parseContext.parseInnerFilter();
-                }
+
             } else if (token == JsonToken.VALUE_NUMBER_INT || token == JsonToken.VALUE_NUMBER_FLOAT) {
                 if ("boost".equals(currentFieldName)) {
                     boost = jp.getFloatValue();
                 }
             }
         }
-        if (filter == null) {
-            throw new QueryParsingException(index, "[constantScore] requires 'filter' element");
-        }
+
         // we don't cache the filter, we assume it is already cached in the filter parsers...
-        ConstantScoreQuery query = new ConstantScoreQuery(filter);
-        query.setBoost(boost);
+        ConstantScoreQuery query = new ConstantScoreQuery(parseContext.parseInnerQuery());
         return query;
     }
 }

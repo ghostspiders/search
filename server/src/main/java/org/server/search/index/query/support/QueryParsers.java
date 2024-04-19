@@ -20,7 +20,6 @@
 package org.server.search.index.query.support;
 
 import org.apache.lucene.search.*;
-import org.server.search.index.cache.filter.FilterCache;
 import org.server.search.index.mapper.DocumentMapper;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.util.Nullable;
@@ -34,8 +33,7 @@ public final class QueryParsers {
 
     }
 
-    public static Query wrapSmartNameQuery(Query query, @Nullable MapperService.SmartNameFieldMappers smartFieldMappers,
-                                           @Nullable FilterCache filterCache) {
+    public static Query wrapSmartNameQuery(Query query, @Nullable MapperService.SmartNameFieldMappers smartFieldMappers) {
         if (smartFieldMappers == null) {
             return query;
         }
@@ -43,34 +41,6 @@ public final class QueryParsers {
             return query;
         }
         DocumentMapper docMapper = smartFieldMappers.docMapper();
-        Filter typeFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
-        if (filterCache != null) {
-            typeFilter = filterCache.cache(typeFilter);
-        }
-        return new FilteredQuery(query, typeFilter);
-    }
-
-    public static Filter wrapSmartNameFilter(Filter filter, @Nullable MapperService.SmartNameFieldMappers smartFieldMappers,
-                                             @Nullable FilterCache filterCache) {
-        if (smartFieldMappers == null) {
-            return filter;
-        }
-        if (!smartFieldMappers.hasDocMapper()) {
-            return filter;
-        }
-        DocumentMapper docMapper = smartFieldMappers.docMapper();
-        BooleanFilter booleanFilter = new BooleanFilter();
-        Filter typeFilter = new TermFilter(docMapper.typeMapper().term(docMapper.type()));
-        if (filterCache != null) {
-            typeFilter = filterCache.cache(typeFilter);
-        }
-        booleanFilter.add(new FilterClause(typeFilter, BooleanClause.Occur.MUST));
-        booleanFilter.add(new FilterClause(filter, BooleanClause.Occur.MUST));
-
-        Filter result = booleanFilter;
-        if (filterCache != null) {
-            result = filterCache.cache(result);
-        }
-        return result;
+        return query;
     }
 }

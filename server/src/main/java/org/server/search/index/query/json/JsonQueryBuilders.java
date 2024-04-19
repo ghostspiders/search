@@ -108,10 +108,6 @@ public abstract class JsonQueryBuilders {
         return new SpanOrJsonQueryBuilder();
     }
 
-    public static FilteredQueryJsonQueryBuilder filteredQuery(JsonQueryBuilder queryBuilder, JsonFilterBuilder filterBuilder) {
-        return new FilteredQueryJsonQueryBuilder(queryBuilder, filterBuilder);
-    }
-
     public static ConstantScoreQueryJsonQueryBuilder constantScoreQuery(JsonFilterBuilder filterBuilder) {
         return new ConstantScoreQueryJsonQueryBuilder(filterBuilder);
     }

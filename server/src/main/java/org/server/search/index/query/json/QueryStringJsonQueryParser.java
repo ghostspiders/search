@@ -66,7 +66,7 @@ public class QueryStringJsonQueryParser extends AbstractIndexComponent implement
         boolean allowLeadingWildcard = true;
         boolean lowercaseExpandedTerms = true;
         boolean enablePositionIncrements = true;
-        float fuzzyMinSim = FuzzyQuery.defaultMinSimilarity;
+        float fuzzyMinSim = FuzzyQuery.defaultMaxEdits;
         int fuzzyPrefixLength = FuzzyQuery.defaultPrefixLength;
         int phraseSlop = 0;
         float boost = 1.0f;
@@ -127,9 +127,8 @@ public class QueryStringJsonQueryParser extends AbstractIndexComponent implement
             analyzer = parseContext.mapperService().searchAnalyzer();
         }
 
-        MapperQueryParser queryParser = new MapperQueryParser(defaultField, analyzer, parseContext.mapperService(), parseContext.filterCache());
+        MapperQueryParser queryParser = new MapperQueryParser(defaultField, analyzer, parseContext.mapperService());
         queryParser.setEnablePositionIncrements(enablePositionIncrements);
-        queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
         queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
         queryParser.setDefaultOperator(defaultOperator);
         queryParser.setFuzzyMinSim(fuzzyMinSim);
@@ -138,7 +137,6 @@ public class QueryStringJsonQueryParser extends AbstractIndexComponent implement
 
         try {
             Query query = queryParser.parse(queryString);
-            query.setBoost(boost);
             return query;
         } catch (ParseException e) {
             throw new QueryParsingException(index, "Failed to parse query [" + queryString + "]", e);

@@ -21,8 +21,8 @@ package org.server.search.index.query.json;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.index.AbstractIndexComponent;
@@ -99,7 +99,6 @@ public class SpanTermJsonQueryParser extends AbstractIndexComponent implements J
         }
 
         SpanTermQuery query = new SpanTermQuery(new Term(fieldName, value));
-        query.setBoost(boost);
-        return wrapSmartNameQuery(query, smartNameFieldMappers, parseContext.filterCache());
+        return wrapSmartNameQuery(query, smartNameFieldMappers);
     }
 }

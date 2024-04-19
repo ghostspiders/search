@@ -24,6 +24,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermRangeQuery;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.util.BytesRef;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.mapper.FieldMapper;
@@ -103,9 +104,8 @@ public class RangeJsonQueryParser extends AbstractIndexComponent implements Json
             }
         }
         if (query == null) {
-            query = new TermRangeQuery(fieldName, from, to, includeLower, includeUpper);
+            query = new TermRangeQuery(fieldName, new BytesRef(from), new BytesRef(to), includeLower, includeUpper);
         }
-        query.setBoost(boost);
-        return wrapSmartNameQuery(query, smartNameFieldMappers, parseContext.filterCache());
+        return wrapSmartNameQuery(query, smartNameFieldMappers);
     }
 }

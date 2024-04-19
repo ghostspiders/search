@@ -34,7 +34,7 @@ import java.io.IOException;
 /**
  * @author kimchy (Shay Banon)
  */
-public class QueryJsonFilterParser extends AbstractIndexComponent implements JsonFilterParser {
+public class QueryJsonFilterParser extends AbstractIndexComponent{
 
     public static final String NAME = "query";
 
@@ -42,16 +42,8 @@ public class QueryJsonFilterParser extends AbstractIndexComponent implements Jso
         super(index, settings);
     }
 
-    @Override public String name() {
+     public String name() {
         return NAME;
     }
 
-    @Override public Filter parse(JsonQueryParseContext parseContext) throws IOException, QueryParsingException {
-        JsonParser jp = parseContext.jp();
-
-        Query query = parseContext.parseInnerQuery();
-        Filter filter = new QueryWrapperFilter(query);
-        filter = parseContext.cacheFilterIfPossible(filter);
-        return filter;
-    }
 }
