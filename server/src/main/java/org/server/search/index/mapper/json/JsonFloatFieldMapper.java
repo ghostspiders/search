@@ -20,6 +20,7 @@
 package org.server.search.index.mapper.json;
 
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.FloatRangeDocValuesField;
@@ -64,7 +65,7 @@ public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
                                    float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                    Float nullValue) {
         super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                null, null);
+                new StandardAnalyzer(), new StandardAnalyzer());
         this.nullValue = nullValue;
     }
 

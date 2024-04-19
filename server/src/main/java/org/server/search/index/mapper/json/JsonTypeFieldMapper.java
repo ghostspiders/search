@@ -21,7 +21,8 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.server.search.index.mapper.TypeFieldMapper;
 import org.server.search.util.lucene.Lucene;
@@ -36,7 +37,7 @@ public class JsonTypeFieldMapper extends JsonFieldMapper<String> implements Type
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_type";
         public static final String INDEX_NAME = "_type";
-        public static final Field.Index INDEX = Field.Index.NOT_ANALYZED;
+        public static final FieldType INDEX = new FieldType();
         public static final Field.Store STORE = Field.Store.NO;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
@@ -67,22 +68,22 @@ public class JsonTypeFieldMapper extends JsonFieldMapper<String> implements Type
                 Defaults.OMIT_NORMS, Defaults.OMIT_TERM_FREQ_AND_POSITIONS);
     }
 
-    public JsonTypeFieldMapper(String name, String indexName, Field.Store store, Field.TermVector termVector,
+    public JsonTypeFieldMapper(String name, String indexName, Field.Store store, FieldType termVector,
                                float boost, boolean omitNorms, boolean omitTermFreqAndPositions) {
         super(name, indexName, name, Defaults.INDEX, store, termVector, boost, omitNorms, omitTermFreqAndPositions,
                 Lucene.KEYWORD_ANALYZER, Lucene.KEYWORD_ANALYZER);
     }
 
     @Override public String value(Document document) {
-        Fieldable field = document.getFieldable(indexName);
-        return field == null ? null : value(field);
+        IndexableField field = document.getField(indexName);
+        return field == null ? null : field.stringValue();
     }
 
-    @Override public String value(Fieldable field) {
+    @Override public String value(Field field) {
         return field.stringValue();
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return value(field);
     }
 
@@ -95,6 +96,6 @@ public class JsonTypeFieldMapper extends JsonFieldMapper<String> implements Type
     }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {
-        return new Field(indexName, jsonContext.type(), store, index);
+        return new Field(indexName, jsonContext.type(),index);
     }
 }

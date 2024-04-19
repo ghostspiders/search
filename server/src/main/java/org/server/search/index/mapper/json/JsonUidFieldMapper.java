@@ -98,11 +98,6 @@ public class JsonUidFieldMapper extends JsonFieldMapper<Uid> implements UidField
         return value;
     }
 
-    @Override
-    public Query rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return null;
-    }
-
     @Override public Term term(String type, String id) {
         return term(Uid.createUid(type, id));
     }

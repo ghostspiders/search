@@ -21,7 +21,8 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexableField;
 import org.server.search.index.mapper.FieldMapperListener;
 import org.server.search.index.mapper.IdFieldMapper;
 import org.server.search.index.mapper.MapperParsingException;
@@ -37,7 +38,7 @@ public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFiel
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_id";
         public static final String INDEX_NAME = "_id";
-        public static final Field.Index INDEX = Field.Index.NOT_ANALYZED;
+        public static final FieldType INDEX = new FieldType();
         public static final Field.Store STORE = Field.Store.NO;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
@@ -68,22 +69,22 @@ public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFiel
                 Defaults.OMIT_NORMS, Defaults.OMIT_TERM_FREQ_AND_POSITIONS);
     }
 
-    public JsonIdFieldMapper(String name, String indexName, Field.Store store, Field.TermVector termVector,
+    public JsonIdFieldMapper(String name, String indexName, Field.Store store, FieldType termVector,
                              float boost, boolean omitNorms, boolean omitTermFreqAndPositions) {
         super(name, indexName, name, Defaults.INDEX, store, termVector, boost, omitNorms, omitTermFreqAndPositions,
                 Lucene.KEYWORD_ANALYZER, Lucene.KEYWORD_ANALYZER);
     }
 
     @Override public String value(Document document) {
-        Fieldable field = document.getFieldable(indexName);
-        return field == null ? null : value(field);
+        IndexableField field = document.getField(indexName);
+        return field == null ? null : field.stringValue();
     }
 
-    @Override public String value(Fieldable field) {
+    @Override public String value(Field field) {
         return field.stringValue();
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return value(field);
     }
 
@@ -99,12 +100,12 @@ public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFiel
             }
             jsonContext.id(id);
             jsonContext.parsedId(JsonParseContext.ParsedIdState.PARSED);
-            return new Field(indexName, jsonContext.id(), store, index);
+            return new Field(indexName, jsonContext.id(), index);
         } else if (jsonContext.parsedIdState() == JsonParseContext.ParsedIdState.EXTERNAL) {
             if (jsonContext.id() == null) {
                 throw new MapperParsingException("No id mapping with [" + name() + "] found in the json, and not explicitly set");
             }
-            return new Field(indexName, jsonContext.id(), store, index);
+            return new Field(indexName, jsonContext.id(), index);
         } else {
             throw new MapperParsingException("Illegal parsed id state");
         }

@@ -20,11 +20,11 @@
 package org.server.search.index.mapper.json;
 
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.search.*;
-import org.apache.lucene.util.NumericUtils;
-import org.server.search.index.analysis.NumericLongAnalyzer;
 import org.server.search.util.Numbers;
 
 import java.io.IOException;
@@ -60,11 +60,11 @@ public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
 
     private final Long nullValue;
 
-    protected JsonLongFieldMapper(String name, String indexName, String fullName, int precisionStep, Field.Index index, Field.Store store,
+    protected JsonLongFieldMapper(String name, String indexName, String fullName, int precisionStep, FieldType index, Field.Store store,
                                   float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                   Long nullValue) {
         super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                new NumericLongAnalyzer(precisionStep), new NumericLongAnalyzer(Integer.MAX_VALUE));
+                new StandardAnalyzer(), new StandardAnalyzer());
         this.nullValue = nullValue;
     }
 
@@ -72,8 +72,8 @@ public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
         return 64;
     }
 
-    @Override public Long value(Fieldable field) {
-        byte[] value = field.getBinaryValue();
+    @Override public Long value(Field field) {
+        byte[] value = field.binaryValue().bytes;
         if (value == null) {
             return Long.MIN_VALUE;
         }
@@ -85,21 +85,13 @@ public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
     }
 
     @Override public String indexedValue(Long value) {
-        return NumericUtils.longToPrefixCoded(value);
+        return String.valueOf(value);
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeQuery.newLongRange(indexName, precisionStep,
+        return LongField.newRangeQuery(indexName,
                 lowerTerm == null ? null : Long.parseLong(lowerTerm),
-                upperTerm == null ? null : Long.parseLong(upperTerm),
-                includeLower, includeUpper);
-    }
-
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeFilter.newLongRange(indexName, precisionStep,
-                lowerTerm == null ? null : Long.parseLong(lowerTerm),
-                upperTerm == null ? null : Long.parseLong(upperTerm),
-                includeLower, includeUpper);
+                upperTerm == null ? null : Long.parseLong(upperTerm));
     }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {
@@ -114,17 +106,17 @@ public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
         }
         Field field = null;
         if (stored()) {
-            field = new Field(indexName, Numbers.longToBytes(value), store);
+            field = new Field(indexName, Numbers.longToBytes(value), index);
             if (indexed()) {
                 field.setTokenStream(popCachedStream(precisionStep).setLongValue(value));
             }
         } else if (indexed()) {
-            field = new Field(indexName, popCachedStream(precisionStep).setLongValue(value));
+            field = new Field(indexName, popCachedStream(precisionStep).setLongValue(value),index);
         }
         return field;
     }
 
     @Override public SortField.Type sortType() {
-        return SortField.LONG;
+        return SortField.Type.LONG;
     }
 }

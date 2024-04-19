@@ -20,12 +20,14 @@
 package org.server.search.index.mapper.json;
 
 import com.fasterxml.jackson.core.JsonToken;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.IntField;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
-import org.server.search.index.analysis.NumericIntegerAnalyzer;
 import org.server.search.util.Numbers;
+import org.server.search.util.Strings;
 
 import java.io.IOException;
 
@@ -60,11 +62,11 @@ public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
 
     private final Integer nullValue;
 
-    protected JsonIntegerFieldMapper(String name, String indexName, String fullName, int precisionStep, Field.Index index, Field.Store store,
+    protected JsonIntegerFieldMapper(String name, String indexName, String fullName, int precisionStep, FieldType index, Field.Store store,
                                      float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                      Integer nullValue) {
         super(name, indexName, fullName, precisionStep, index, store, boost, omitNorms, omitTermFreqAndPositions,
-                new NumericIntegerAnalyzer(precisionStep), new NumericIntegerAnalyzer(Integer.MAX_VALUE));
+                new StandardAnalyzer(), new StandardAnalyzer());
         this.nullValue = nullValue;
     }
 
@@ -72,8 +74,8 @@ public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
         return 32;
     }
 
-    @Override public Integer value(Fieldable field) {
-        byte[] value = field.getBinaryValue();
+    @Override public Integer value(Field field) {
+        byte[] value = field.binaryValue().bytes;
         if (value == null) {
             return Integer.MIN_VALUE;
         }
@@ -85,22 +87,15 @@ public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
     }
 
     @Override public String indexedValue(Integer value) {
-        return NumericUtils.intToPrefixCoded(value);
+        return String.valueOf(value);
     }
 
     @Override public Query rangeQuery(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeQuery.newIntRange(indexName, precisionStep,
+        return IntField.newRangeQuery(indexName,
                 lowerTerm == null ? null : Integer.parseInt(lowerTerm),
-                upperTerm == null ? null : Integer.parseInt(upperTerm),
-                includeLower, includeUpper);
+                upperTerm == null ? null : Integer.parseInt(upperTerm));
     }
 
-    @Override public Filter rangeFilter(String lowerTerm, String upperTerm, boolean includeLower, boolean includeUpper) {
-        return NumericRangeFilter.newIntRange(indexName, precisionStep,
-                lowerTerm == null ? null : Integer.parseInt(lowerTerm),
-                upperTerm == null ? null : Integer.parseInt(upperTerm),
-                includeLower, includeUpper);
-    }
 
     @Override protected Field parseCreateField(JsonParseContext jsonContext) throws IOException {
         int value;
@@ -114,17 +109,17 @@ public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
         }
         Field field = null;
         if (stored()) {
-            field = new Field(indexName, Numbers.intToBytes(value), store);
+            field = new Field(indexName, Numbers.intToBytes(value), index);
             if (indexed()) {
                 field.setTokenStream(popCachedStream(precisionStep).setIntValue(value));
             }
         } else if (indexed()) {
-            field = new Field(indexName, popCachedStream(precisionStep).setIntValue(value));
+            field = new Field(indexName, popCachedStream(precisionStep).setIntValue(value),index);
         }
         return field;
     }
 
     @Override public SortField.Type sortType() {
-        return SortField.INT;
+        return SortField.Type.INT;
     }
 }

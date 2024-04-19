@@ -20,6 +20,7 @@
 package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.server.search.index.mapper.MapperCompressionException;
 import org.server.search.index.mapper.SourceFieldMapper;
@@ -117,10 +118,10 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
         }
         Field sourceField;
         if (compressionThreshold == Defaults.NO_COMPRESSION || jsonContext.source().length() < compressionThreshold) {
-            sourceField = new Field(name, jsonContext.source(), store, index);
+            sourceField = new Field(name, jsonContext.source(), index);
         } else {
             try {
-                sourceField = new Field(name, compressor.compressString(jsonContext.source()), store);
+                sourceField = new Field(name, compressor.compressString(jsonContext.source()), index);
             } catch (IOException e) {
                 throw new MapperCompressionException("Failed to compress data", e);
             }
@@ -129,8 +130,8 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
     }
 
     @Override public String value(Document document) {
-        Field field = document.getFieldable(indexName);
-        return field == null ? null : value(field);
+        IndexableField field = document.getField(indexName);
+        return field == null ? null : field.stringValue();
     }
 
     @Override public String value(Field field) {
@@ -148,7 +149,7 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
         }
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return value(field);
     }
 
@@ -156,19 +157,4 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
         return value;
     }
 
-    private static class SourceFieldSelector implements FieldSelector {
-
-        private final String name;
-
-        private SourceFieldSelector(String name) {
-            this.name = name;
-        }
-
-        @Override public FieldSelectorResult accept(String fieldName) {
-            if (fieldName.equals(name)) {
-                return FieldSelectorResult.LOAD_AND_BREAK;
-            }
-            return FieldSelectorResult.NO_LOAD;
-        }
-    }
 }

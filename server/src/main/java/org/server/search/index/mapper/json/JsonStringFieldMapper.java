@@ -22,8 +22,7 @@ package org.server.search.index.mapper.json;
 import com.fasterxml.jackson.core.JsonToken;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
-
+import org.apache.lucene.document.FieldType;
 import java.io.IOException;
 
 /**
@@ -59,18 +58,18 @@ public class JsonStringFieldMapper extends JsonFieldMapper<String> {
 
     private final String nullValue;
 
-    protected JsonStringFieldMapper(String name, String indexName, String fullName, Field.Index index, Field.Store store, Field.TermVector termVector,
+    protected JsonStringFieldMapper(String name, String indexName, String fullName, FieldType index, Field.Store store, FieldType termVector,
                                     float boost, boolean omitNorms, boolean omitTermFreqAndPositions,
                                     String nullValue, Analyzer indexAnalyzer, Analyzer searchAnalyzer) {
         super(name, indexName, fullName, index, store, termVector, boost, omitNorms, omitTermFreqAndPositions, indexAnalyzer, searchAnalyzer);
         this.nullValue = nullValue;
     }
 
-    @Override public String value(Fieldable field) {
+    @Override public String value(Field field) {
         return field.stringValue();
     }
 
-    @Override public String valueAsString(Fieldable field) {
+    @Override public String valueAsString(Field field) {
         return value(field);
     }
 
@@ -88,6 +87,6 @@ public class JsonStringFieldMapper extends JsonFieldMapper<String> {
         if (value == null) {
             return null;
         }
-        return new Field(indexName, value, store, index, termVector);
+        return new Field(indexName, value, index);
     }
 }

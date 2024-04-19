@@ -21,7 +21,7 @@ package org.server.search.index.similarity;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.lucene.search.DefaultSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
@@ -29,16 +29,16 @@ import org.server.search.util.settings.Settings;
 /**
  * @author kimchy (Shay Banon)
  */
-public class DefaultSimilarityProvider extends AbstractSimilarityProvider<DefaultSimilarity> {
+public class DefaultSimilarityProvider extends AbstractSimilarityProvider<ClassicSimilarity> {
 
-    private DefaultSimilarity similarity;
+    private ClassicSimilarity similarity;
 
     @Inject public DefaultSimilarityProvider(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name);
-        this.similarity = new DefaultSimilarity();
+        this.similarity = new ClassicSimilarity();
     }
 
-    @Override public DefaultSimilarity get() {
+    @Override public ClassicSimilarity get() {
         return similarity;
     }
 }

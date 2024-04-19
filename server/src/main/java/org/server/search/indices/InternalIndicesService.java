@@ -30,8 +30,6 @@ import org.server.search.gateway.Gateway;
 import org.server.search.index.*;
 import org.server.search.index.analysis.AnalysisModule;
 import org.server.search.index.analysis.AnalysisService;
-import org.server.search.index.cache.filter.FilterCache;
-import org.server.search.index.cache.filter.FilterCacheModule;
 import org.server.search.index.gateway.IndexGateway;
 import org.server.search.index.gateway.IndexGatewayModule;
 import org.server.search.index.mapper.MapperServiceModule;
@@ -177,7 +175,6 @@ public class InternalIndicesService extends AbstractComponent implements Indices
                 new IndexSettingsModule(indexSettings),
                 new AnalysisModule(indexSettings),
                 new SimilarityModule(indexSettings),
-                new FilterCacheModule(indexSettings),
                 new IndexQueryParserModule(indexSettings),
                 new MapperServiceModule(),
                 new IndexGatewayModule(indexSettings, injector.getInstance(Gateway.class)),
@@ -215,7 +212,6 @@ public class InternalIndicesService extends AbstractComponent implements Indices
 
         indexService.close();
 
-        indexInjector.getInstance(FilterCache.class).close();
         indexInjector.getInstance(AnalysisService.class).close();
         indexInjector.getInstance(IndexServiceManagement.class).close();
 
