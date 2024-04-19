@@ -31,9 +31,9 @@ public interface Server {
 
     Client client();
 
-    Server start();
+    Server start() throws Exception;
 
-    Server stop();
+    Server stop() throws InterruptedException;
 
-    void close();
+    void close() throws InterruptedException;
 }

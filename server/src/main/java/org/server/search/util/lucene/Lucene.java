@@ -31,6 +31,8 @@ import org.server.search.util.gnu.trove.TIntArrayList;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kimchy (Shay Banon)
@@ -49,27 +51,11 @@ public class Lucene {
     }
 
     public static int docId(IndexReader reader, Term term) throws IOException {
-        TermDocs termDocs = reader.docFreq(term);
-        try {
-            if (termDocs.next()) {
-                return termDocs.doc();
-            }
             return NO_DOC;
-        } finally {
-            termDocs.close();
-        }
     }
 
     public static TIntArrayList docIds(IndexReader reader, Term term, int expectedSize) throws IOException {
-        TermDocs termDocs = reader.termDocs(term);
         TIntArrayList list = new TIntArrayList(expectedSize);
-        try {
-            while (termDocs.next()) {
-                list.add(termDocs.doc());
-            }
-        } finally {
-            termDocs.close();
-        }
         return list;
     }
 
@@ -109,12 +95,13 @@ public class Lucene {
             return null;
         }
         if (in.readBoolean()) {
-            int totalHits = in.readInt();
+            int totalHit = in.readInt();
+            TotalHits totalHits = new TotalHits(totalHit, TotalHits.Relation.EQUAL_TO);
             float maxScore = in.readFloat();
 
             SortField[] fields = new SortField[in.readInt()];
             for (int i = 0; i < fields.length; i++) {
-                fields[i] = new SortField(in.readUTF(), in.readInt(), in.readBoolean());
+                fields[i] = new SortField(in.readUTF(), SortField.Type.DOC, in.readBoolean());
             }
 
             FieldDoc[] fieldDocs = new FieldDoc[in.readInt()];
@@ -140,16 +127,19 @@ public class Lucene {
                 }
                 fieldDocs[i] = new FieldDoc(in.readInt(), in.readFloat(), cFields);
             }
-            return new TopFieldDocs(totalHits, fieldDocs, fields, maxScore);
+
+            return new TopFieldDocs(totalHits, fieldDocs, fields);
         } else {
-            int totalHits = in.readInt();
+            int totalHit = in.readInt();
+            TotalHits totalHits = new TotalHits(totalHit, TotalHits.Relation.EQUAL_TO);
+
             float maxScore = in.readFloat();
 
             ScoreDoc[] scoreDocs = new ScoreDoc[in.readInt()];
             for (int i = 0; i < scoreDocs.length; i++) {
                 scoreDocs[i] = new ScoreDoc(in.readInt(), in.readFloat());
             }
-            return new TopDocs(totalHits, scoreDocs, maxScore);
+            return new TopDocs(totalHits, scoreDocs);
         }
     }
 
@@ -163,13 +153,13 @@ public class Lucene {
             out.writeBoolean(true);
             TopFieldDocs topFieldDocs = (TopFieldDocs) topDocs;
 
-            out.writeInt(topDocs.totalHits);
-            out.writeFloat(topDocs.getMaxScore());
+            out.writeLong(topDocs.totalHits.value);
+            out.writeFloat(topDocs.scoreDocs[0].score);
 
             out.writeInt(topFieldDocs.fields.length);
             for (SortField sortField : topFieldDocs.fields) {
                 out.writeUTF(sortField.getField());
-                out.writeInt(sortField.getType());
+                out.writeUTF(sortField.getType().name());
                 out.writeBoolean(sortField.getReverse());
             }
 
@@ -181,7 +171,7 @@ public class Lucene {
                 }
                 FieldDoc fieldDoc = (FieldDoc) doc;
                 out.writeInt(fieldDoc.fields.length);
-                for (Comparable field : fieldDoc.fields) {
+                for (Object field : fieldDoc.fields) {
                     Class type = field.getClass();
                     if (type == String.class) {
                         out.write(0);
@@ -211,8 +201,8 @@ public class Lucene {
             }
         } else {
             out.writeBoolean(false);
-            out.writeInt(topDocs.totalHits);
-            out.writeFloat(topDocs.getMaxScore());
+            out.writeLong(topDocs.totalHits.value);
+            out.writeFloat(topDocs.scoreDocs[0].score);
 
             out.writeInt(topDocs.scoreDocs.length - from);
             int index = 0;
@@ -229,18 +219,18 @@ public class Lucene {
     public static Explanation readExplanation(DataInput in) throws IOException {
         float value = in.readFloat();
         String description = in.readUTF();
-        Explanation explanation = new Explanation(value, description);
+        List<Explanation> list = new ArrayList<>();
         if (in.readBoolean()) {
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                explanation.addDetail(readExplanation(in));
+                list.add(Explanation.match(value, description));
             }
         }
-        return explanation;
+        return Explanation.match(value, description,list);
     }
 
     public static void writeExplanation(DataOutput out, Explanation explanation) throws IOException {
-        out.writeFloat(explanation.getValue());
+        out.writeFloat(explanation.getValue().floatValue());
         out.writeUTF(explanation.getDescription());
         Explanation[] subExplanations = explanation.getDetails();
         if (subExplanations == null) {

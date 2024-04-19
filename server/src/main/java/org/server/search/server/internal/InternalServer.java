@@ -58,6 +58,7 @@ import org.server.search.util.component.Lifecycle;
 import org.server.search.util.guice.Injectors;
 import org.server.search.util.io.FileSystemUtils;
 import org.server.search.util.logging.Loggers;
+import org.server.search.util.settings.ImmutableSettings;
 import org.server.search.util.settings.Settings;
 import org.server.search.util.settings.SettingsModule;
 import org.slf4j.Logger;
@@ -84,7 +85,7 @@ public final class InternalServer implements Server {
     private final Client client;
 
     public InternalServer() throws ElasticSearchException {
-        this(Builder.EMPTY_SETTINGS, true);
+        this(ImmutableSettings.Builder.EMPTY_SETTINGS, true);
     }
 
     public InternalServer(Settings pSettings, boolean loadConfigSettings) throws ElasticSearchException {
@@ -130,7 +131,7 @@ public final class InternalServer implements Server {
         return client;
     }
 
-    public Server start() {
+    public Server start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -156,7 +157,7 @@ public final class InternalServer implements Server {
         return this;
     }
 
-    @Override public Server stop() {
+    @Override public Server stop() throws InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -191,7 +192,7 @@ public final class InternalServer implements Server {
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }
@@ -239,7 +240,11 @@ public final class InternalServer implements Server {
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override public void run() {
-                server.close();
+                try {
+                    server.close();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

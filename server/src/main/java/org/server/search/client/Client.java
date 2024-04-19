@@ -40,7 +40,7 @@ import org.server.search.action.search.SearchScrollRequest;
  */
 public interface Client {
 
-    void close();
+    void close() throws InterruptedException;
 
     AdminClient admin();
 

@@ -82,7 +82,7 @@ public class DiscoveryService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    @Override public DiscoveryService stop() throws ElasticSearchException {
+    @Override public DiscoveryService stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -90,7 +90,7 @@ public class DiscoveryService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws ElasticSearchException, InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

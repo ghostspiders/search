@@ -73,7 +73,7 @@ public class GatewayService extends AbstractComponent implements ClusterStateLis
         return lifecycle.state();
     }
 
-    @Override public GatewayService start() throws ElasticSearchException {
+    @Override public GatewayService start() throws Exception {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -83,7 +83,7 @@ public class GatewayService extends AbstractComponent implements ClusterStateLis
         return this;
     }
 
-    @Override public GatewayService stop() throws ElasticSearchException {
+    @Override public GatewayService stop() throws ElasticSearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -98,7 +98,7 @@ public class GatewayService extends AbstractComponent implements ClusterStateLis
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

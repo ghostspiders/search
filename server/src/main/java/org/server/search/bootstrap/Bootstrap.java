@@ -74,7 +74,11 @@ public class Bootstrap {
         if (addShutdownHook) {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override public void run() {
-                    server.close();
+                    try {
+                        server.close();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         }
@@ -90,14 +94,14 @@ public class Bootstrap {
     /**
      * hook for JSVC
      */
-    public void start() {
+    public void start() throws Exception {
         server.start();
     }
 
     /**
      * hook for JSVC
      */
-    public void stop() {
+    public void stop() throws InterruptedException {
         server.stop();
     }
 
@@ -105,7 +109,7 @@ public class Bootstrap {
     /**
      * hook for JSVC
      */
-    public void destroy() {
+    public void destroy() throws InterruptedException {
         server.close();
     }
 

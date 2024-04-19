@@ -60,7 +60,7 @@ public class ServerBuilder {
     /**
      * {@link #build()}s and starts the server.
      */
-    public Server server() {
+    public Server server() throws Exception {
         return build().start();
     }
 }

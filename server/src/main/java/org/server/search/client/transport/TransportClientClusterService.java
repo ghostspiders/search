@@ -46,13 +46,13 @@ public class TransportClientClusterService extends AbstractComponent {
         clusterService.add(nodesService);
     }
 
-    public void start() {
+    public void start() throws Exception {
         clusterService.add(nodesService);
         clusterService.start();
         discoveryService.start();
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         clusterService.remove(nodesService);
         clusterService.close();
         discoveryService.close();

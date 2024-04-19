@@ -78,15 +78,15 @@ public class TransportClient implements Client {
     private final InternalTransportClient internalClient;
 
 
-    public TransportClient() throws ElasticSearchException {
+    public TransportClient() throws Exception {
         this(ImmutableSettings.Builder.EMPTY_SETTINGS, true);
     }
 
-    public TransportClient(Settings settings) {
+    public TransportClient(Settings settings) throws Exception {
         this(settings, true);
     }
 
-    public TransportClient(Settings pSettings, boolean loadConfigSettings) throws ElasticSearchException {
+    public TransportClient(Settings pSettings, boolean loadConfigSettings) throws Exception {
         Tuple<Settings, Environment> tuple = InternalSettingsPerparer.prepareSettings(pSettings, loadConfigSettings);
         this.settings = settingsBuilder().putAll(tuple.v1())
                 .putBoolean("network.server", false)
@@ -163,7 +163,7 @@ public class TransportClient implements Client {
     /**
      * Closes the client.
      */
-    @Override public void close() {
+    @Override public void close() throws InterruptedException {
         try {
             injector.getInstance(TransportClientClusterService.class).close();
         } catch (Exception e) {
