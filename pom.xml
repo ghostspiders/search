@@ -84,14 +84,14 @@
     </dependency>
     <!-- 添加 Guava 核心库依赖 -->
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>31.0.1-jre</version> <!-- 请使用最新的稳定版本 -->
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>5.7.13</version>  <!-- 请使用最新版本 -->
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.0.0</version> <!-- 使用最新版本 -->
+      <version>4.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

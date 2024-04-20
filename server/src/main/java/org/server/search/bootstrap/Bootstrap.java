@@ -24,6 +24,7 @@ import com.google.inject.spi.Message;
 import org.server.search.ExceptionsHelper;
 import org.server.search.Version;
 import org.server.search.env.Environment;
+import org.server.search.env.Profile;
 import org.server.search.jmx.JmxService;
 import org.server.search.server.Server;
 import org.server.search.server.ServerBuilder;
@@ -113,29 +114,21 @@ public class Bootstrap {
         server.close();
     }
 
-
     public static void main(String[] args) {
         Bootstrap bootstrap = new Bootstrap();
-        String pidFile = System.getProperty("es-pidfile");
-
-        boolean foreground = System.getProperty("es-foreground") != null;
+        String active = System.getProperty("profile");
 
         String stage = "Initialization";
         try {
-            if (!foreground) {
+            if (!Profile.Type.DEV.equals(Profile.readVale(active))){
                 Loggers.disableConsoleLogging();
                 System.out.close();
             }
             bootstrap.setup(true);
-
-            if (pidFile != null) {
-                new File(pidFile).deleteOnExit();
-            }
-
             stage = "Startup";
             bootstrap.start();
 
-            if (!foreground) {
+            if (!Profile.value(Profile.Type.DEV).equalsIgnoreCase(active)){
                 System.err.close();
             }
         } catch (Throwable e) {
@@ -168,12 +161,7 @@ public class Bootstrap {
             } else {
                 errorMessage.append("- ").append(ExceptionsHelper.detailedMessage(e, true, 0));
             }
-            if (foreground) {
-                logger.error(errorMessage.toString());
-            } else {
-                System.err.println(errorMessage);
-                System.err.flush();
-            }
+            logger.error(errorMessage.toString());
             Loggers.disableConsoleLogging();
             if (logger.isDebugEnabled()) {
                 logger.debug("Exception", e);
