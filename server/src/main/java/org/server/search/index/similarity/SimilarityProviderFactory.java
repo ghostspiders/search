@@ -22,7 +22,7 @@ package org.server.search.index.similarity;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SimilarityProviderFactory {
 

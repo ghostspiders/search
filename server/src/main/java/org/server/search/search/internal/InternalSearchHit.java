@@ -37,7 +37,7 @@ import static org.server.search.search.internal.InternalSearchHitField.*;
 import static org.server.search.util.lucene.Lucene.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalSearchHit implements SearchHit {
 

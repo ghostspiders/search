@@ -29,7 +29,7 @@ import java.io.IOException;
 import static org.server.search.search.dfs.AggregatedDfs.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class QuerySearchRequest implements Streamable {
 

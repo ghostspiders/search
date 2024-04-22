@@ -21,9 +21,7 @@ package org.server.search.action.admin.cluster.node.info;
 
 import org.server.search.action.support.nodes.NodesOperationRequest;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class NodesInfoRequest extends NodesOperationRequest {
 
     protected NodesInfoRequest() {

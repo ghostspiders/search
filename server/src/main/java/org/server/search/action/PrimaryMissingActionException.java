@@ -19,12 +19,12 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class PrimaryMissingActionException extends ElasticSearchException {
+public class PrimaryMissingActionException extends SearchException {
 
     public PrimaryMissingActionException(String message) {
         super(message);

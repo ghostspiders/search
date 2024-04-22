@@ -24,7 +24,7 @@ import org.server.search.util.concurrent.NotThreadSafe;
 import java.io.DataInputStream;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class ByteArrayDataInputStream extends DataInputStream {

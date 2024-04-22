@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentMap;
  * and if the deletion policy is used with all open index writers (JVM level) then the snapshot
  * state will not be deleted until it will be released.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public class SnapshotDeletionPolicy extends AbstractIndexShardComponent{

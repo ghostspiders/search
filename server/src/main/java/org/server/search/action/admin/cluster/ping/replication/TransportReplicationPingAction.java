@@ -29,9 +29,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportReplicationPingAction extends TransportIndicesReplicationOperationAction<ReplicationPingRequest, ReplicationPingResponse, IndexReplicationPingRequest, IndexReplicationPingResponse, ShardReplicationPingRequest, ShardReplicationPingResponse> {
 
     @Inject public TransportReplicationPingAction(Settings settings, TransportService transportService, ClusterService clusterService, ThreadPool threadPool, TransportIndexReplicationPingAction indexAction) {

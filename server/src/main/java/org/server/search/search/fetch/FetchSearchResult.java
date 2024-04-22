@@ -31,7 +31,7 @@ import static org.server.search.search.SearchShardTarget.*;
 import static org.server.search.search.internal.InternalSearchHits.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FetchSearchResult implements Streamable, FetchSearchResultProvider {
 

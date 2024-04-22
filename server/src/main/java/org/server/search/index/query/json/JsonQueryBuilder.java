@@ -23,7 +23,7 @@ import org.server.search.index.query.QueryBuilder;
 import org.server.search.util.json.ToJson;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface JsonQueryBuilder extends QueryBuilder, ToJson {
 

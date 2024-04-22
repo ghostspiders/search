@@ -23,7 +23,7 @@ import org.apache.lucene.index.MergeScheduler;
 import org.server.search.index.shard.IndexShardComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface MergeSchedulerProvider<T extends MergeScheduler> extends IndexShardComponent {
 

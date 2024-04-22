@@ -39,7 +39,7 @@ import static org.server.search.monitor.dump.thread.ThreadDumpContributor.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DumpMonitorService extends AbstractComponent {
 

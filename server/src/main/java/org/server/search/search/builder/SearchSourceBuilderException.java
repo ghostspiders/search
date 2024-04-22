@@ -19,12 +19,12 @@
 
 package org.server.search.search.builder;
 
-import org.server.search.search.SearchException;
+import org.server.search.search.Search1Exception;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class SearchSourceBuilderException extends SearchException {
+public class SearchSourceBuilderException extends Search1Exception {
 
     public SearchSourceBuilderException(String msg) {
         super(msg);

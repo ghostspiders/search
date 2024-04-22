@@ -23,7 +23,7 @@ import org.apache.lucene.index.Term;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface UidFieldMapper extends FieldMapper<Uid> {

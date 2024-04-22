@@ -29,7 +29,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyHttpChannel implements HttpChannel {
     private final Channel channel;

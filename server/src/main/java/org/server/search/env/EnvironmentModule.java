@@ -22,7 +22,7 @@ package org.server.search.env;
 import com.google.inject.AbstractModule;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class EnvironmentModule extends AbstractModule {
 

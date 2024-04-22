@@ -30,7 +30,7 @@ import org.server.search.util.Numbers;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonFloatFieldMapper extends JsonNumberFieldMapper<Float> {
 

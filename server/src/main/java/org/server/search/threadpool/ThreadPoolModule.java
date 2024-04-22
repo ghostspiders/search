@@ -24,7 +24,7 @@ import org.server.search.threadpool.cached.CachedThreadPool;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ThreadPoolModule extends AbstractModule {
 

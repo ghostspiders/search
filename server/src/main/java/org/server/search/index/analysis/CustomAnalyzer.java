@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class CustomAnalyzer extends Analyzer implements PositionIncrementGapAnalyzer {
 

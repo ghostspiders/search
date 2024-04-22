@@ -36,7 +36,7 @@ import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardRoutingTable implements Iterable<ShardRouting> {
 

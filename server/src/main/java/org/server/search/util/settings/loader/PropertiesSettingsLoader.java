@@ -30,7 +30,7 @@ import static com.google.common.collect.Maps.*;
 /**
  * Loads the settings from a properties file.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PropertiesSettingsLoader implements SettingsLoader {
 

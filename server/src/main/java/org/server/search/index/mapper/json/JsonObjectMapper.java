@@ -22,7 +22,7 @@ package org.server.search.index.mapper.json;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.ImmutableMap;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.index.mapper.FieldMapper;
 import org.server.search.index.mapper.FieldMapperListener;
 import org.server.search.util.concurrent.ThreadSafe;
@@ -39,7 +39,7 @@ import static org.server.search.index.mapper.json.JsonMapperBuilders.*;
 import static org.server.search.util.MapBuilder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class JsonObjectMapper implements JsonMapper {
@@ -324,7 +324,7 @@ public class JsonObjectMapper implements JsonMapper {
                 mapper = booleanField(currentFieldName).build(builderContext);
             } else {
                 // TODO how do we identify dynamically that its a binary value?
-                throw new ElasticSearchIllegalStateException("Can't handle serializing a dynamic type with json token [" + token + "] and field name [" + currentFieldName + "]");
+                throw new SearchIllegalStateException("Can't handle serializing a dynamic type with json token [" + token + "] and field name [" + currentFieldName + "]");
             }
             putMapper(mapper);
             jsonContext.docMapper().addFieldMapper((FieldMapper) mapper);

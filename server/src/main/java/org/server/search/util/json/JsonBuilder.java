@@ -22,14 +22,14 @@ package org.server.search.util.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.lucene.util.UnicodeUtil;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.util.concurrent.NotThreadSafe;
 import org.server.search.util.io.FastCharArrayWriter;
 
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class JsonBuilder {
@@ -50,7 +50,7 @@ public class JsonBuilder {
                 try {
                     return new Cached(new JsonBuilder());
                 } catch (IOException e) {
-                    throw new ElasticSearchException("Failed to create json generator", e);
+                    throw new SearchException("Failed to create json generator", e);
                 }
             }
         };

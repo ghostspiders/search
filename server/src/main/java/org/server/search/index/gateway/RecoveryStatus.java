@@ -22,7 +22,7 @@ package org.server.search.index.gateway;
 import org.server.search.util.SizeValue;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RecoveryStatus {
 

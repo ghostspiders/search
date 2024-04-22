@@ -29,9 +29,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportGatewaySnapshotAction extends TransportIndicesReplicationOperationAction<GatewaySnapshotRequest, GatewaySnapshotResponse, IndexGatewaySnapshotRequest, IndexGatewaySnapshotResponse, ShardGatewaySnapshotRequest, ShardGatewaySnapshotResponse> {
 
     @Inject public TransportGatewaySnapshotAction(Settings settings, TransportService transportService, ClusterService clusterService,

@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FsStores {
 

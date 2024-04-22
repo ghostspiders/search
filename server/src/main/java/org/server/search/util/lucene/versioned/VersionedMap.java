@@ -27,7 +27,7 @@ import org.server.search.util.concurrent.ThreadSafe;
  * <p/>
  * <p>Note. versions can be assumed to be >= 0.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface VersionedMap {

@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.lucene.search.DocIdSet;
 
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.SearchPhase;
 import org.server.search.search.internal.SearchContext;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FacetsPhase implements SearchPhase {
 
@@ -44,7 +44,7 @@ public class FacetsPhase implements SearchPhase {
         return ImmutableMap.of("facets", new FacetsParseElement());
     }
 
-    @Override public void execute(SearchContext context) throws ElasticSearchException {
+    @Override public void execute(SearchContext context) throws SearchException {
         if (context.facets() == null) {
             return;
         }
@@ -64,7 +64,7 @@ public class FacetsPhase implements SearchPhase {
                 } else if (contextFacets.queryType() == SearchContextFacets.QueryExecutionType.IDSET) {
                     count = executeQueryIdSetCount(context, queryFacet);
                 } else {
-                    throw new ElasticSearchIllegalStateException("No matching for type [" + contextFacets.queryType() + "]");
+                    throw new SearchIllegalStateException("No matching for type [" + contextFacets.queryType() + "]");
                 }
                 facets.add(new CountFacet(queryFacet.name(), count));
             }

@@ -20,7 +20,7 @@
 package org.server.search.transport;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.node.Node;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.component.Lifecycle;
@@ -38,7 +38,7 @@ import static org.server.search.util.concurrent.ConcurrentMaps.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportService extends AbstractComponent implements LifecycleComponent<TransportService> {
 
@@ -86,7 +86,7 @@ public class TransportService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    public TransportService stop() throws ElasticSearchException, InterruptedException {
+    public TransportService stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

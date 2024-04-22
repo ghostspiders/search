@@ -22,7 +22,7 @@ package org.server.search.index.shard;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public interface IndexShardComponent {

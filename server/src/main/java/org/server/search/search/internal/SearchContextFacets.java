@@ -24,7 +24,7 @@ import org.apache.lucene.search.Query;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchContextFacets {
 

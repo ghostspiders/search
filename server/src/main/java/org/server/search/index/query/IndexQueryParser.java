@@ -20,17 +20,17 @@
 package org.server.search.index.query;
 
 import org.apache.lucene.search.Query;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.IndexComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface IndexQueryParser extends IndexComponent {
 
     String name();
 
-    Query parse(String source) throws ElasticSearchException;
+    Query parse(String source) throws SearchException;
 
-    Query parse(QueryBuilder queryBuilder) throws ElasticSearchException;
+    Query parse(QueryBuilder queryBuilder) throws SearchException;
 }

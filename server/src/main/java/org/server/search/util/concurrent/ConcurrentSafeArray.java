@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * A concurrent version of {@link SafeArray}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class ConcurrentSafeArray<T> implements SafeArray<T> {

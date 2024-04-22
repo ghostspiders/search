@@ -26,7 +26,7 @@ import org.slf4j.Marker;
  * A Logger that wraps another logger and adds the provided prefix to every log
  * message.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 // TODO is there a way to do this without String concatenation?
 public class PrefixLoggerAdapter implements Logger {

@@ -22,7 +22,7 @@ package org.server.search.cluster;
 import org.server.search.util.TimeValue;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TimeoutClusterStateListener extends ClusterStateListener {
 

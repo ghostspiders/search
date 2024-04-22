@@ -22,7 +22,7 @@ package org.server.search.server.internal;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.Version;
 import org.server.search.action.TransportActionModule;
 import org.server.search.client.Client;
@@ -70,7 +70,7 @@ import java.util.concurrent.TimeUnit;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class InternalServer implements Server {
 
@@ -84,12 +84,12 @@ public final class InternalServer implements Server {
 
     private final Client client;
 
-    public InternalServer() throws ElasticSearchException {
+    public InternalServer() throws SearchException {
         this(ImmutableSettings.Builder.EMPTY_SETTINGS, true);
     }
 
-    public InternalServer(Settings pSettings, boolean loadConfigSettings) throws ElasticSearchException {
-        Tuple<Settings, Environment> tuple = InternalSettingsPerparer.prepareSettings(pSettings, loadConfigSettings);
+    public InternalServer(Settings pSettings, boolean loadConfigSettings) throws SearchException {
+        Tuple<Settings, Environment> tuple = InternalSettingsPrepare.prepareSettings(pSettings, loadConfigSettings);
         this.settings = tuple.v1();
         this.environment = tuple.v2();
 
@@ -162,7 +162,7 @@ public final class InternalServer implements Server {
             return this;
         }
         Logger logger = Loggers.getLogger(Server.class, settings.get("name"));
-        logger.info("{ElasticSearch/{}}: Stopping ...", Version.full());
+        logger.info("{Search/{}}: Stopping ...", Version.full());
 
         if (settings.getAsBoolean("http.enabled", true)) {
             injector.getInstance(HttpServer.class).stop();
@@ -235,17 +235,17 @@ public final class InternalServer implements Server {
         return this.injector;
     }
 
-    public static void main(String[] args) throws Exception {
-        final InternalServer server = new InternalServer();
-        server.start();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override public void run() {
-                try {
-                    server.close();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
+//    public static void main(String[] args) throws Exception {
+//        final InternalServer server = new InternalServer();
+//        server.start();
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            @Override public void run() {
+//                try {
+//                    server.close();
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//    }
 }

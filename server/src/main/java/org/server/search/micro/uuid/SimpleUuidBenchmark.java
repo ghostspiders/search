@@ -24,9 +24,6 @@ import org.server.search.util.StopWatch;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class SimpleUuidBenchmark {
 
     private static long NUMBER_OF_ITERATIONS = 10000;

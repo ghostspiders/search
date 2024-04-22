@@ -31,7 +31,7 @@ import org.server.search.index.query.QueryParsingException;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonQueryParseContext {
 

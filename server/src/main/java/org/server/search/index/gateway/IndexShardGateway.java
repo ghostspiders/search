@@ -24,7 +24,7 @@ import org.server.search.index.shard.IndexShardComponent;
 import org.server.search.index.translog.Translog;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface IndexShardGateway extends IndexShardComponent {
 

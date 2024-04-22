@@ -20,7 +20,7 @@
 package org.server.search.search.action;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchServiceListener<T> {
 

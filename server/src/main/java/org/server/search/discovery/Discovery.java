@@ -23,7 +23,7 @@ import org.server.search.cluster.ClusterState;
 import org.server.search.util.component.LifecycleComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Discovery extends LifecycleComponent<Discovery> {
 

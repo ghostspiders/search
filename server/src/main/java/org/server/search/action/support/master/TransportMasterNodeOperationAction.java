@@ -19,7 +19,7 @@
 
 package org.server.search.action.support.master;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionResponse;
 import org.server.search.action.support.BaseAction;
@@ -32,7 +32,7 @@ import org.server.search.util.settings.Settings;
 /**
  * A base class for operations that needs to be performed on the master node.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportMasterNodeOperationAction<Request extends MasterNodeOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 
@@ -57,7 +57,7 @@ public abstract class TransportMasterNodeOperationAction<Request extends MasterN
 
     protected abstract Response newResponse();
 
-    protected abstract Response masterOperation(Request request) throws ElasticSearchException;
+    protected abstract Response masterOperation(Request request) throws SearchException;
 
     @Override protected void doExecute(final Request request, final ActionListener<Response> listener) {
         Nodes nodes = clusterService.state().nodes();

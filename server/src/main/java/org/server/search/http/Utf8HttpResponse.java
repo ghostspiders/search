@@ -25,7 +25,7 @@ import org.apache.lucene.util.UnicodeUtil;
  * <p/>
  * <p>Note, this class assumes that the utf8 result is not thread safe.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Utf8HttpResponse extends AbstractHttpResponse implements HttpResponse {
 

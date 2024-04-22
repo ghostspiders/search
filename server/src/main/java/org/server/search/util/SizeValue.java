@@ -19,7 +19,7 @@
 
 package org.server.search.util;
 
-import org.server.search.ElasticSearchParseException;
+import org.server.search.SearchParseException;
 import org.server.search.util.io.Streamable;
 
 import java.io.DataInput;
@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SizeValue implements Serializable, Streamable {
 
@@ -96,7 +96,7 @@ public class SizeValue implements Serializable, Streamable {
         return Strings.format1Decimals(value, suffix);
     }
 
-    public static SizeValue parse(String sValue, SizeValue defaultValue) throws ElasticSearchParseException {
+    public static SizeValue parse(String sValue, SizeValue defaultValue) throws SearchParseException {
         if (sValue == null) {
             return defaultValue;
         }
@@ -120,7 +120,7 @@ public class SizeValue implements Serializable, Streamable {
                 bytes = Long.parseLong(sValue);
             }
         } catch (NumberFormatException e) {
-            throw new ElasticSearchParseException("Failed to parse [" + sValue + "]", e);
+            throw new SearchParseException("Failed to parse [" + sValue + "]", e);
         }
         return new SizeValue(bytes, SizeUnit.BYTES);
     }

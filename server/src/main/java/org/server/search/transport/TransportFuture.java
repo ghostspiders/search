@@ -19,14 +19,14 @@
 
 package org.server.search.transport;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TransportFuture<V> extends Future<V> {
 
@@ -34,12 +34,12 @@ public interface TransportFuture<V> extends Future<V> {
      * Waits if necessary for the computation to complete, and then
      * retrieves its result.
      */
-    V txGet() throws ElasticSearchException;
+    V txGet() throws SearchException;
 
     /**
      * Waits if necessary for at most the given time for the computation
      * to complete, and then retrieves its result, if available.
      */
-    V txGet(long timeout, TimeUnit unit) throws ElasticSearchException, TimeoutException;
+    V txGet(long timeout, TimeUnit unit) throws SearchException, TimeoutException;
 }
 

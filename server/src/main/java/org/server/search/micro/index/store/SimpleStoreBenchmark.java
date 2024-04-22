@@ -46,9 +46,7 @@ import static java.util.concurrent.TimeUnit.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * @author kimchy
- */
+
 public class SimpleStoreBenchmark {
 
     private final AtomicLong dynamicFilesCounter = new AtomicLong();

@@ -24,7 +24,7 @@ import org.server.search.util.io.Streamable;
 import java.io.Serializable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TransportAddress extends Streamable, Serializable {
 

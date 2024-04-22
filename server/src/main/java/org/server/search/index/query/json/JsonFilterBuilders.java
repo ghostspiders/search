@@ -20,7 +20,7 @@
 package org.server.search.index.query.json;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class JsonFilterBuilders {
 

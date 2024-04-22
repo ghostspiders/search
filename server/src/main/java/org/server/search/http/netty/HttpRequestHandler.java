@@ -26,7 +26,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpRequest;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ChannelHandler.Sharable
 public class HttpRequestHandler extends ChannelInboundHandlerAdapter {

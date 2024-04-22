@@ -23,7 +23,7 @@ import org.server.search.util.TimeValue;
 import org.server.search.util.component.LifecycleComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ClusterService extends LifecycleComponent<ClusterService> {
 

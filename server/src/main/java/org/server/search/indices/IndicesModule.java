@@ -24,7 +24,7 @@ import org.server.search.indices.cluster.IndicesClusterStateService;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndicesModule extends AbstractModule {
 

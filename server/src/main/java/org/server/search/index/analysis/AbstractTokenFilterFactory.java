@@ -25,7 +25,7 @@ import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class AbstractTokenFilterFactory extends AbstractIndexComponent implements TokenFilterFactory {
 

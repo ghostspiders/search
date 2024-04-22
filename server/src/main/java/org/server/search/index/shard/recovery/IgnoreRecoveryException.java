@@ -19,14 +19,14 @@
 
 package org.server.search.index.shard.recovery;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
  * An exception marking that this recovery attempt should be ignored (since probably, we already recovered).
  *
- * @author kimchy (Shay Banon)
+ * 
  */
-public class IgnoreRecoveryException extends ElasticSearchException {
+public class IgnoreRecoveryException extends SearchException {
 
     public IgnoreRecoveryException(String msg) {
         super(msg);

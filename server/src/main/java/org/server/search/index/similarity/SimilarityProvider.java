@@ -24,7 +24,7 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.server.search.index.IndexComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SimilarityProvider<T extends Similarity> extends IndexComponent, Provider<T> {
 

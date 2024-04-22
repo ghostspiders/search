@@ -26,7 +26,7 @@ import org.server.search.util.json.ToJson;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchHit extends Streamable, ToJson {
 

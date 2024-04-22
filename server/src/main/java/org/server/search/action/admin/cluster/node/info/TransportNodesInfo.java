@@ -20,7 +20,7 @@
 package org.server.search.action.admin.cluster.node.info;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.nodes.NodeOperationRequest;
 import org.server.search.action.support.nodes.TransportNodesOperationAction;
@@ -34,9 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportNodesInfo extends TransportNodesOperationAction<NodesInfoRequest, NodesInfoResponse, TransportNodesInfo.NodeInfoRequest, NodeInfo> {
 
     @Inject public TransportNodesInfo(Settings settings, ClusterName clusterName, ThreadPool threadPool,
@@ -79,7 +77,7 @@ public class TransportNodesInfo extends TransportNodesOperationAction<NodesInfoR
         return new NodeInfo();
     }
 
-    @Override protected NodeInfo nodeOperation(NodeInfoRequest nodeInfoRequest) throws ElasticSearchException {
+    @Override protected NodeInfo nodeOperation(NodeInfoRequest nodeInfoRequest) throws SearchException {
         return new NodeInfo(clusterService.state().nodes().localNode());
     }
 

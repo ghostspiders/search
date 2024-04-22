@@ -37,7 +37,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SpanOrJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 

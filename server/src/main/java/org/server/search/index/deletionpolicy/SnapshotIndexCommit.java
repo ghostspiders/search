@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * was not called, no files will be deleted that relates to this commit point
  * ({@link #getFileNames()}).
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SnapshotIndexCommit extends IndexCommitDelegate implements Releasable {
 

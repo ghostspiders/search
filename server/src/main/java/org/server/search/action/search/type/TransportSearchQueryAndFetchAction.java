@@ -41,9 +41,6 @@ import java.util.Map;
 
 import static org.server.search.action.search.type.TransportSearchHelper.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchQueryAndFetchAction extends TransportSearchTypeAction {
 
     @Inject public TransportSearchQueryAndFetchAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, IndicesService indicesService,

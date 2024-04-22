@@ -20,19 +20,19 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class ElasticSearchIllegalStateException extends ElasticSearchException {
+public class SearchIllegalStateException extends SearchException {
 
-    public ElasticSearchIllegalStateException() {
+    public SearchIllegalStateException() {
         super(null);
     }
 
-    public ElasticSearchIllegalStateException(String msg) {
+    public SearchIllegalStateException(String msg) {
         super(msg);
     }
 
-    public ElasticSearchIllegalStateException(String msg, Throwable cause) {
+    public SearchIllegalStateException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

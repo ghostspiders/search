@@ -20,7 +20,7 @@
 package org.server.search.http;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.component.Lifecycle;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import static org.server.search.http.HttpResponse.Status.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpServer extends AbstractComponent implements LifecycleComponent<HttpServer> {
 
@@ -91,7 +91,7 @@ public class HttpServer extends AbstractComponent implements LifecycleComponent<
         return this;
     }
 
-    public HttpServer stop() throws ElasticSearchException, InterruptedException {
+    public HttpServer stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

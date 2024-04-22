@@ -30,7 +30,7 @@ import org.server.search.util.settings.Settings;
 import java.io.Reader;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class LetterTokenizerFactory extends AbstractTokenizerFactory {
 

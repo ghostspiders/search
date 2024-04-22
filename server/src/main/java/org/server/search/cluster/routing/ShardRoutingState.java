@@ -19,10 +19,10 @@
 
 package org.server.search.cluster.routing;
 
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum ShardRoutingState {
     UNASSIGNED((byte) 1), INITIALIZING((byte) 2), STARTED((byte) 3), RELOCATING((byte) 4);
@@ -48,7 +48,7 @@ public enum ShardRoutingState {
             case 4:
                 return RELOCATING;
             default:
-                throw new ElasticSearchIllegalStateException("No should routing state mapped for [" + value + "]");
+                throw new SearchIllegalStateException("No should routing state mapped for [" + value + "]");
         }
     }
 }

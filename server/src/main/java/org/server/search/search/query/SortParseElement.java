@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SortParseElement implements SearchParseElement {
 

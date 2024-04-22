@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionFuture;
 import org.server.search.action.ActionListener;
 import org.server.search.action.count.CountRequest;
@@ -47,7 +47,7 @@ import org.server.search.cluster.ClusterNameModule;
 import org.server.search.cluster.node.Node;
 import org.server.search.env.Environment;
 import org.server.search.env.EnvironmentModule;
-import org.server.search.server.internal.InternalSettingsPerparer;
+import org.server.search.server.internal.InternalSettingsPrepare;
 import org.server.search.threadpool.ThreadPoolModule;
 import org.server.search.transport.TransportModule;
 import org.server.search.transport.TransportService;
@@ -62,7 +62,7 @@ import java.util.ArrayList;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportClient implements Client {
 
@@ -87,7 +87,7 @@ public class TransportClient implements Client {
     }
 
     public TransportClient(Settings pSettings, boolean loadConfigSettings) throws Exception {
-        Tuple<Settings, Environment> tuple = InternalSettingsPerparer.prepareSettings(pSettings, loadConfigSettings);
+        Tuple<Settings, Environment> tuple = InternalSettingsPrepare.prepareSettings(pSettings, loadConfigSettings);
         this.settings = settingsBuilder().putAll(tuple.v1())
                 .putBoolean("network.server", false)
                 .putBoolean("discovery.client", true)

@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 /**
  * Factory and utility methods for handling {@link DynamicThreadPoolExecutor}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DynamicExecutors {
     /**
@@ -130,9 +130,9 @@ public class DynamicExecutors {
     public static ThreadFactory daemonThreadFactory(Settings settings, String namePrefix) {
         String name = settings.get("name");
         if (name == null) {
-            name = "elasticsearch";
+            name = "Search";
         } else {
-            name = "elasticsearch[" + name + "]";
+            name = "Search[" + name + "]";
         }
         return daemonThreadFactory(name + namePrefix);
     }

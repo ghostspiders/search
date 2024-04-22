@@ -19,7 +19,7 @@
 
 package org.server.search.action.index;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.action.ActionRequestValidationException;
 import org.server.search.action.support.replication.ShardReplicationOperationRequest;
 import org.server.search.util.Required;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import static org.server.search.action.Actions.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexRequest extends ShardReplicationOperationRequest {
 
@@ -64,7 +64,7 @@ public class IndexRequest extends ShardReplicationOperationRequest {
             } else if (id == 1) {
                 return CREATE;
             } else {
-                throw new ElasticSearchIllegalArgumentException("No type match for [" + id + "]");
+                throw new SearchIllegalArgumentException("No type match for [" + id + "]");
             }
         }
     }

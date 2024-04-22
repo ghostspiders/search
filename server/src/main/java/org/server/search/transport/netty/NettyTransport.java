@@ -35,8 +35,8 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.cluster.node.Node;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.*;
@@ -71,7 +71,7 @@ import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.transport.NetworkExceptionHelper.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyTransport extends AbstractComponent implements Transport {
 
@@ -279,7 +279,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
         return this;
     }
 
-    @Override public Transport stop() throws ElasticSearchException, InterruptedException {
+    @Override public Transport stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -394,7 +394,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
 
     @Override public void nodesAdded(Iterable<Node> nodes) {
         if (!lifecycle.started()) {
-            throw new ElasticSearchIllegalStateException("Can't add nodes to a stopped transport");
+            throw new SearchIllegalStateException("Can't add nodes to a stopped transport");
         }
         for (Node node : nodes) {
             try {

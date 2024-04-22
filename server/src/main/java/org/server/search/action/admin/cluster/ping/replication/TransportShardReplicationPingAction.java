@@ -29,9 +29,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportShardReplicationPingAction extends TransportShardReplicationOperationAction<ShardReplicationPingRequest, ShardReplicationPingResponse> {
 
     @Inject public TransportShardReplicationPingAction(Settings settings, TransportService transportService,

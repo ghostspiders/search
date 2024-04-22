@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicStampedReference;
  * <p>Yea, I now, the fact that the resouce itself is releasable basically means that
  * users of this class should take care... .
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NonBlockingAcquirableResource<T extends Releasable> implements AcquirableResource<T> {
 

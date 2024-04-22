@@ -23,7 +23,7 @@ import org.server.search.util.io.Streamable;
 import org.server.search.util.json.ToJson;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchHits extends Streamable, ToJson {
 

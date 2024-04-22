@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndicesMemoryCleaner extends AbstractComponent {
 

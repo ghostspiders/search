@@ -20,7 +20,7 @@
 package org.server.search.index.shard;
 
 import org.apache.lucene.index.Term;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.routing.ShardRouting;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineException;
@@ -29,7 +29,7 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 @ThreadSafe
@@ -42,25 +42,25 @@ public interface IndexShard extends IndexShardComponent {
     /**
      * Returns the estimated flushable memory size. Returns <tt>null</tt> if not available.
      */
-    SizeValue estimateFlushableMemorySize() throws ElasticSearchException;
+    SizeValue estimateFlushableMemorySize() throws SearchException;
 
-    void create(String type, String id, String source) throws ElasticSearchException;
+    void create(String type, String id, String source) throws SearchException;
 
-    void index(String type, String id, String source) throws ElasticSearchException;
+    void index(String type, String id, String source) throws SearchException;
 
     void delete(String type, String id);
 
     void delete(Term uid);
 
-    void deleteByQuery(String querySource, @Nullable String queryParserName, String... types) throws ElasticSearchException;
+    void deleteByQuery(String querySource, @Nullable String queryParserName, String... types) throws SearchException;
 
-    String get(String type, String id) throws ElasticSearchException;
+    String get(String type, String id) throws SearchException;
 
-    long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws ElasticSearchException;
+    long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws SearchException;
 
-    void refresh(boolean waitForOperations) throws ElasticSearchException;
+    void refresh(boolean waitForOperations) throws SearchException;
 
-    void flush() throws ElasticSearchException;
+    void flush() throws SearchException;
 
     void snapshot(Engine.SnapshotHandler snapshotHandler) throws EngineException;
 

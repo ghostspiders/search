@@ -29,7 +29,7 @@ import java.io.IOException;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Scroll implements Streamable {
 

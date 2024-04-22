@@ -19,12 +19,12 @@
 
 package org.server.search.util.concurrent;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class UncategorizedExecutionException extends ElasticSearchException {
+public class UncategorizedExecutionException extends SearchException {
 
     public UncategorizedExecutionException(String msg) {
         super(msg);

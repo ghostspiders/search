@@ -23,7 +23,7 @@ import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardGatewayException extends IndexShardException {
 

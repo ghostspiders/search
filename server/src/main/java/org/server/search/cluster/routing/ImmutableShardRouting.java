@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ImmutableShardRouting implements Streamable, Serializable, ShardRouting {
 

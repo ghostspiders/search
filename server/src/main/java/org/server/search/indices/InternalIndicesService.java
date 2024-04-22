@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.routing.GroupShardsIterator;
 import org.server.search.gateway.Gateway;
@@ -55,7 +55,7 @@ import static org.server.search.util.MapBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class InternalIndicesService extends AbstractComponent implements IndicesService {
@@ -80,7 +80,7 @@ public class InternalIndicesService extends AbstractComponent implements Indices
         return lifecycle.state();
     }
 
-    @Override public IndicesService start() throws ElasticSearchException {
+    @Override public IndicesService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -88,7 +88,7 @@ public class InternalIndicesService extends AbstractComponent implements Indices
         return this;
     }
 
-    @Override public IndicesService stop() throws ElasticSearchException {
+    @Override public IndicesService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -141,7 +141,7 @@ public class InternalIndicesService extends AbstractComponent implements Indices
         return indexService;
     }
 
-    @Override public GroupShardsIterator searchShards(ClusterState clusterState, String[] indexNames, String queryHint) throws ElasticSearchException {
+    @Override public GroupShardsIterator searchShards(ClusterState clusterState, String[] indexNames, String queryHint) throws SearchException {
         if (indexNames == null || indexNames.length == 0) {
             ImmutableMap<String, IndexService> indices = this.indices;
             indexNames = indices.keySet().toArray(new String[indices.keySet().size()]);
@@ -153,7 +153,7 @@ public class InternalIndicesService extends AbstractComponent implements Indices
         return its;
     }
 
-    public synchronized IndexService createIndex(String sIndexName, Settings settings, String localNodeId) throws ElasticSearchException {
+    public synchronized IndexService createIndex(String sIndexName, Settings settings, String localNodeId) throws SearchException {
         Index index = new Index(sIndexName);
         if (indicesInjectors.containsKey(index.name())) {
             throw new IndexAlreadyExistsException(index);
@@ -190,11 +190,11 @@ public class InternalIndicesService extends AbstractComponent implements Indices
         return indexService;
     }
 
-    public synchronized void deleteIndex(String index) throws ElasticSearchException {
+    public synchronized void deleteIndex(String index) throws SearchException {
         deleteIndex(index, false);
     }
 
-    private synchronized void deleteIndex(String index, boolean internalClose) throws ElasticSearchException {
+    private synchronized void deleteIndex(String index, boolean internalClose) throws SearchException {
         Injector indexInjector = indicesInjectors.remove(index);
         if (indexInjector == null) {
             if (internalClose) {

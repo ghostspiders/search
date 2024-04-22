@@ -19,16 +19,16 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchWrapperException;
+import org.server.search.SearchWrapperException;
 import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
 /**
  * An exception indicating that a failure occurred performing an operation on the shard.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
-public class ShardOperationFailedException extends IndexShardException implements ElasticSearchWrapperException {
+public class ShardOperationFailedException extends IndexShardException implements SearchWrapperException {
 
     public ShardOperationFailedException(ShardId shardId, Throwable cause) {
         super(shardId, "", cause);

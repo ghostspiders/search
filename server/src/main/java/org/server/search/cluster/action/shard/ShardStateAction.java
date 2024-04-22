@@ -20,7 +20,7 @@
 package org.server.search.cluster.action.shard;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.ClusterStateUpdateTask;
@@ -43,7 +43,7 @@ import static com.google.common.collect.Lists.*;
 import static org.server.search.cluster.ClusterState.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ShardStateAction extends AbstractComponent {
 
@@ -67,7 +67,7 @@ public class ShardStateAction extends AbstractComponent {
         transportService.registerHandler(ShardFailedTransportHandler.ACTION, new ShardFailedTransportHandler());
     }
 
-    public void shardFailed(final ShardRouting shardRouting) throws ElasticSearchException {
+    public void shardFailed(final ShardRouting shardRouting) throws SearchException {
         logger.warn("Sending failed shard for {}", shardRouting);
         Nodes nodes = clusterService.state().nodes();
         if (nodes.localNodeMaster()) {
@@ -82,7 +82,7 @@ public class ShardStateAction extends AbstractComponent {
         }
     }
 
-    public void shardStarted(final ShardRouting shardRouting) throws ElasticSearchException {
+    public void shardStarted(final ShardRouting shardRouting) throws SearchException {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending shard started for {}", shardRouting);
         }

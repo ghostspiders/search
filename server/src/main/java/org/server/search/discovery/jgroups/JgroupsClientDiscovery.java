@@ -21,8 +21,8 @@ package org.server.search.discovery.jgroups;
 
 import com.google.inject.Inject;
 import io.netty.channel.ChannelException;
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.cluster.ClusterName;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.ClusterState;
@@ -57,7 +57,7 @@ import static org.server.search.cluster.node.Nodes.*;
 /**
  * A simplified discovery implementation based on JGroups that only works in client mode.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JgroupsClientDiscovery extends AbstractComponent implements Discovery, Receiver {
 
@@ -107,7 +107,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
             }
 
             if (System.getProperty("jgroups.bind_addr") == null) {
-                // automatically set the bind address based on ElasticSearch default bindings...
+                // automatically set the bind address based on Search default bindings...
                 try {
                     InetAddress bindAddress = HostResolver.resultBindHostAddress(null, settings, HostResolver.LOCAL_IP);
                     if ((bindAddress instanceof Inet4Address && HostResolver.isIPv4()) || (bindAddress instanceof Inet6Address && !HostResolver.isIPv4())) {
@@ -148,7 +148,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
         return this;
     }
 
-    @Override public Discovery stop() throws ElasticSearchException {
+    @Override public Discovery stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -162,7 +162,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (lifecycle.started()) {
             stop();
         }
@@ -237,7 +237,7 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
     }
 
     @Override public void publish(ClusterState clusterState) {
-        throw new ElasticSearchIllegalStateException("When in client mode, cluster state should not be published");
+        throw new SearchIllegalStateException("When in client mode, cluster state should not be published");
     }
 
     @Override public boolean firstMaster() {

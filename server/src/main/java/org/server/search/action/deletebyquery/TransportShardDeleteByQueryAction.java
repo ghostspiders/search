@@ -20,7 +20,7 @@
 package org.server.search.action.deletebyquery;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.action.support.replication.TransportShardReplicationOperationAction;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.action.shard.ShardStateAction;
@@ -32,7 +32,7 @@ import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportShardDeleteByQueryAction extends TransportShardReplicationOperationAction<ShardDeleteByQueryRequest, ShardDeleteByQueryResponse> {
 
@@ -72,6 +72,6 @@ public class TransportShardDeleteByQueryAction extends TransportShardReplication
                 return shards;
             }
         }
-        throw new ElasticSearchIllegalStateException("No shards iterator found for shard [" + request.shardId() + "]");
+        throw new SearchIllegalStateException("No shards iterator found for shard [" + request.shardId() + "]");
     }
 }

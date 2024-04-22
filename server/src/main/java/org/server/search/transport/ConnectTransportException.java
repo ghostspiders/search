@@ -22,7 +22,7 @@ package org.server.search.transport;
 import org.server.search.cluster.node.Node;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ConnectTransportException extends TransportException {
 

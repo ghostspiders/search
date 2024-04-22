@@ -20,7 +20,7 @@
 package org.server.search.discovery;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterState;
 import org.server.search.util.TimeValue;
 import org.server.search.util.component.AbstractComponent;
@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DiscoveryService extends AbstractComponent implements LifecycleComponent<DiscoveryService> {
 
@@ -82,7 +82,7 @@ public class DiscoveryService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    @Override public DiscoveryService stop() throws ElasticSearchException, InterruptedException {
+    @Override public DiscoveryService stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -90,7 +90,7 @@ public class DiscoveryService extends AbstractComponent implements LifecycleComp
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException, InterruptedException {
+    @Override public void close() throws SearchException, InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

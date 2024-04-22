@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import static org.server.search.action.Actions.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class ShardReplicationOperationRequest implements ActionRequest {
 

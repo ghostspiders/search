@@ -21,9 +21,7 @@ package org.server.search.action.search.type;
 
 import org.server.search.util.Tuple;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class ParsedScrollId {
 
     public static String QUERY_THEN_FETCH_TYPE = "queryThenFetch";

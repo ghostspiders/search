@@ -19,12 +19,12 @@
 
 package org.server.search.util.lease;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Releasable {
 
-    boolean release() throws ElasticSearchException;
+    boolean release() throws SearchException;
 }

@@ -29,9 +29,6 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportFlushAction extends TransportIndicesReplicationOperationAction<FlushRequest, FlushResponse, IndexFlushRequest, IndexFlushResponse, ShardFlushRequest, ShardFlushResponse> {
 
     @Inject public TransportFlushAction(Settings settings, TransportService transportService, ClusterService clusterService, ThreadPool threadPool, TransportIndexFlushAction indexFlushAction) {

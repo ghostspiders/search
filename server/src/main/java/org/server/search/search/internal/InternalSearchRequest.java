@@ -50,7 +50,7 @@ import static org.server.search.util.TimeValue.*;
  * }
  * </pre>
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalSearchRequest implements Streamable {
 

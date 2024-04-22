@@ -19,13 +19,13 @@
 
 package org.server.search.search.fetch;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.search.internal.SearchContext;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class FetchPhaseExecutionException extends ElasticSearchException {
+public class FetchPhaseExecutionException extends SearchException {
 
     public FetchPhaseExecutionException(SearchContext context, String msg) {
         this(context, msg, null);

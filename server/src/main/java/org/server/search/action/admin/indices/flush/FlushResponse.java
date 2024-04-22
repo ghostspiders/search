@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class FlushResponse implements ActionResponse, Streamable {
 
     private Map<String, IndexFlushResponse> indices = new HashMap<String, IndexFlushResponse>();

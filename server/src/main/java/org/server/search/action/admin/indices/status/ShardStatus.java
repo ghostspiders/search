@@ -30,9 +30,7 @@ import java.io.IOException;
 
 import static org.server.search.util.SizeValue.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class ShardStatus extends ShardOperationResponse {
 
     public static class Docs {

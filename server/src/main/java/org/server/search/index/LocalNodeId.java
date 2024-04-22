@@ -29,7 +29,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER})

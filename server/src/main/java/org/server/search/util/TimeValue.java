@@ -19,7 +19,7 @@
 
 package org.server.search.util;
 
-import org.server.search.ElasticSearchParseException;
+import org.server.search.SearchParseException;
 import org.server.search.util.io.Streamable;
 
 import java.io.DataInput;
@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TimeValue implements Serializable, Streamable {
 
@@ -170,7 +170,7 @@ public class TimeValue implements Serializable, Streamable {
             }
             return new TimeValue(millis, TimeUnit.MILLISECONDS);
         } catch (NumberFormatException e) {
-            throw new ElasticSearchParseException("Failed to parse [" + sValue + "]", e);
+            throw new SearchParseException("Failed to parse [" + sValue + "]", e);
         }
     }
 

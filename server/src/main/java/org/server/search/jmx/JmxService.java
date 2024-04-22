@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.server.search.util.io.HostResolver.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JmxService {
 
@@ -80,7 +80,7 @@ public class JmxService {
         this.logger = logger;
         this.settings = settings;
 
-        this.jmxDomain = settings.get("jmx.domain", "{elasticsearch}");
+        this.jmxDomain = settings.get("jmx.domain", "{Search}");
 
         this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
     }

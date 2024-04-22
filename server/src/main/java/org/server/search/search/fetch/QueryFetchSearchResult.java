@@ -32,7 +32,7 @@ import static org.server.search.search.fetch.FetchSearchResult.*;
 import static org.server.search.search.query.QuerySearchResult.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class QueryFetchSearchResult implements Streamable, QuerySearchResultProvider, FetchSearchResultProvider {
 

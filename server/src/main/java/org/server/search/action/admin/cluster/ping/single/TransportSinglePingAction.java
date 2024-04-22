@@ -20,7 +20,7 @@
 package org.server.search.action.admin.cluster.ping.single;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.single.TransportSingleOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -29,9 +29,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportSinglePingAction extends TransportSingleOperationAction<SinglePingRequest, SinglePingResponse> {
 
     @Inject public TransportSinglePingAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, TransportService transportService, IndicesService indicesService) {
@@ -46,7 +44,7 @@ public class TransportSinglePingAction extends TransportSingleOperationAction<Si
         return "/cluster/ping/single/shard";
     }
 
-    @Override protected SinglePingResponse shardOperation(SinglePingRequest request, int shardId) throws ElasticSearchException {
+    @Override protected SinglePingResponse shardOperation(SinglePingRequest request, int shardId) throws SearchException {
         return new SinglePingResponse();
     }
 

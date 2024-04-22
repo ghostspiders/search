@@ -20,7 +20,7 @@
 package org.server.search.monitor.memory.alpha;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.indices.IndicesMemoryCleaner;
 import org.server.search.monitor.memory.MemoryMonitor;
 import org.server.search.threadpool.ThreadPool;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class AlphaMemoryMonitor extends AbstractComponent implements MemoryMonitor {
 
@@ -97,7 +97,7 @@ public class AlphaMemoryMonitor extends AbstractComponent implements MemoryMonit
         return lifecycle.state();
     }
 
-    @Override public MemoryMonitor start() throws ElasticSearchException {
+    @Override public MemoryMonitor start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -105,7 +105,7 @@ public class AlphaMemoryMonitor extends AbstractComponent implements MemoryMonit
         return this;
     }
 
-    @Override public MemoryMonitor stop() throws ElasticSearchException {
+    @Override public MemoryMonitor stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

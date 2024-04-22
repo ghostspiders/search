@@ -27,7 +27,7 @@ import org.server.search.search.internal.SearchContext;
 import java.util.ArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FieldsParseElement implements SearchParseElement {
 

@@ -19,12 +19,12 @@
 
 package org.server.search.index;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class IndexException extends ElasticSearchException {
+public class IndexException extends SearchException {
 
     private final Index index;
 

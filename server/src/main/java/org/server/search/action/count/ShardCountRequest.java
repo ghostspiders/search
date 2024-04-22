@@ -27,9 +27,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class ShardCountRequest extends BroadcastShardOperationRequest {
 
     private float minScore;

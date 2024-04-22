@@ -22,10 +22,6 @@ package org.server.search.lucene;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.util.PriorityQueue;
 
-/**
- * @author kimchy (Shay Banon)
- */
-// LUCENE TRACK
 public class ShardFieldDocSortedHitQueue extends PriorityQueue {
 
     public ShardFieldDocSortedHitQueue(SortField[] fields, int size) {

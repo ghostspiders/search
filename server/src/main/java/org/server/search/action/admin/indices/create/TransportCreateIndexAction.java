@@ -20,7 +20,7 @@
 package org.server.search.action.admin.indices.create;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.master.TransportMasterNodeOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -29,9 +29,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportCreateIndexAction extends TransportMasterNodeOperationAction<CreateIndexRequest, CreateIndexResponse> {
 
     private final MetaDataService metaDataService;
@@ -54,7 +52,7 @@ public class TransportCreateIndexAction extends TransportMasterNodeOperationActi
         return new CreateIndexResponse();
     }
 
-    @Override protected CreateIndexResponse masterOperation(CreateIndexRequest request) throws ElasticSearchException {
+    @Override protected CreateIndexResponse masterOperation(CreateIndexRequest request) throws SearchException {
         metaDataService.createIndex(request.index(), request.settings(), request.timeout());
         return new CreateIndexResponse();
     }

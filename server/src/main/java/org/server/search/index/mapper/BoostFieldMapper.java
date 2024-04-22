@@ -23,7 +23,7 @@ package org.server.search.index.mapper;
  * A field mapper that allows to control the boosting of a parsed document. Can be treated as
  * any other field mapper by being stored and analyzed, though, by default, it does neither.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface BoostFieldMapper extends FieldMapper<Float> {
 

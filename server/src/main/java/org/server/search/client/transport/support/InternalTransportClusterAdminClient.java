@@ -43,7 +43,7 @@ import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalTransportClusterAdminClient extends AbstractComponent implements ClusterAdminClient {
 

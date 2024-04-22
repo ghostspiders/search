@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.http.HttpServerTransport;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyHttpServerTransportModule extends AbstractModule {
 

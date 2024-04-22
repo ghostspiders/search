@@ -22,9 +22,7 @@ package org.server.search.action.admin.cluster.ping.replication;
 import org.server.search.action.support.replication.IndicesReplicationOperationRequest;
 import org.server.search.util.TimeValue;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class ReplicationPingRequest extends IndicesReplicationOperationRequest {
 
     public ReplicationPingRequest(String index) {

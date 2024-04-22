@@ -30,17 +30,14 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.util.Strings.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
-public class InternalSettingsPerparer {
+public class InternalSettingsPrepare {
 
     public static Tuple<Settings, Environment> prepareSettings(Settings pSettings, boolean loadConfigSettings) {
         // just create enough settings to build the environment
-        Builder settingsBuilder = settingsBuilder()
+        ImmutableSettings.Builder settingsBuilder = settingsBuilder()
                 .putAll(pSettings)
-                .putProperties("elasticsearch.", System.getProperties())
-                .putProperties("es.", System.getProperties())
+                .putProperties("Search.", System.getProperties())
+                .putProperties("se.", System.getProperties())
                 .replacePropertyPlaceholders();
 
         Environment environment = new Environment(settingsBuilder.build());
@@ -54,33 +51,33 @@ public class InternalSettingsPerparer {
 
         if (loadConfigSettings) {
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("elasticsearch.yml"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.yml"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             } catch (NoClassDefFoundError e) {
                 // ignore, no yaml
             }
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("elasticsearch.json"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.json"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             }
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("elasticsearch.properties"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.properties"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             }
             if (System.getProperty("es.config") != null) {
-                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("es.config")));
+                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("se.config")));
             }
-            if (System.getProperty("elasticsearch.config") != null) {
-                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("elasticsearch.config")));
+            if (System.getProperty("Search.config") != null) {
+                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("Search.config")));
             }
         }
 
         settingsBuilder.putAll(pSettings)
-                .putProperties("elasticsearch.", System.getProperties())
-                .putProperties("es.", System.getProperties())
+                .putProperties("Search.", System.getProperties())
+                .putProperties("se.", System.getProperties())
                 .replacePropertyPlaceholders();
 
         // generate the name

@@ -19,14 +19,14 @@
 
 package org.server.search.index.shard.recovery;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.node.Node;
 import org.server.search.index.shard.ShardId;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class RecoveryFailedException extends ElasticSearchException {
+public class RecoveryFailedException extends SearchException {
 
     public RecoveryFailedException(ShardId shardId, Node node, Node targetNode, Throwable cause) {
         super(shardId + ": Recovery failed from " + targetNode + " into " + node, cause);

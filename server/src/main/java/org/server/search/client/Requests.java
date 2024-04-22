@@ -40,7 +40,7 @@ import org.server.search.action.search.SearchRequest;
 import org.server.search.action.search.SearchScrollRequest;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Requests {
 

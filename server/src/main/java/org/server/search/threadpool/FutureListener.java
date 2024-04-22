@@ -20,7 +20,7 @@
 package org.server.search.threadpool;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface FutureListener<T> {
 

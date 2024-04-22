@@ -20,7 +20,7 @@
 package org.server.search.util.transport;
 
 import com.google.common.collect.ImmutableMap;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.util.logging.Loggers;
 import org.slf4j.Logger;
 
@@ -37,7 +37,7 @@ import static org.server.search.util.MapBuilder.*;
  * <p/>
  * <p>By defualt, adds {@link org.server.search.util.transport.InetSocketTransportAddress}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportAddressSerializers {
 
@@ -56,7 +56,7 @@ public abstract class TransportAddressSerializers {
 
     public static synchronized void addAddressType(TransportAddress address) throws Exception {
         if (addressConstructors.containsKey(address.uniqueAddressTypeId())) {
-            throw new ElasticSearchIllegalStateException("Address [" + address.uniqueAddressTypeId() + "] already bound");
+            throw new SearchIllegalStateException("Address [" + address.uniqueAddressTypeId() + "] already bound");
         }
         Constructor<? extends TransportAddress> constructor = address.getClass().getDeclaredConstructor();
         constructor.setAccessible(true);

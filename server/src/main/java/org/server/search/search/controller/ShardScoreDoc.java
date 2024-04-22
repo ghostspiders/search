@@ -23,7 +23,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.server.search.search.SearchShardTarget;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ShardScoreDoc extends ScoreDoc implements ShardDoc {
 

@@ -20,7 +20,7 @@
 package org.server.search.action.support.replication;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionResponse;
 import org.server.search.action.support.BaseAction;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportIndexReplicationOperationAction<Request extends IndexReplicationOperationRequest, Response extends ActionResponse, ShardRequest extends ShardReplicationOperationRequest, ShardResponse extends ActionResponse>
         extends BaseAction<Request, Response> {
@@ -115,7 +115,7 @@ public abstract class TransportIndexReplicationOperationAction<Request extends I
 
     protected abstract String transportAction();
 
-    protected abstract GroupShardsIterator shards(Request request) throws ElasticSearchException;
+    protected abstract GroupShardsIterator shards(Request request) throws SearchException;
 
     protected abstract ShardRequest newShardRequestInstance(Request request, int shardId);
 

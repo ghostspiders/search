@@ -22,7 +22,7 @@ package org.server.search.util.settings;
 import com.google.inject.AbstractModule;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SettingsModule extends AbstractModule {
 

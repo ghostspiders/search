@@ -20,7 +20,7 @@
 package org.server.search.index.translog;
 
 import org.apache.lucene.index.Term;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.shard.IndexShard;
 import org.server.search.index.shard.IndexShardComponent;
@@ -37,7 +37,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface Translog extends IndexShardComponent {
@@ -145,7 +145,7 @@ public interface Translog extends IndexShardComponent {
 
         long estimateSize();
 
-        void execute(IndexShard indexShard) throws ElasticSearchException;
+        void execute(IndexShard indexShard) throws SearchException;
     }
 
     static class Create implements Operation {
@@ -186,7 +186,7 @@ public interface Translog extends IndexShardComponent {
             return this.type;
         }
 
-        @Override public void execute(IndexShard indexShard) throws ElasticSearchException {
+        @Override public void execute(IndexShard indexShard) throws SearchException {
             indexShard.create(type, id, source);
         }
 
@@ -241,7 +241,7 @@ public interface Translog extends IndexShardComponent {
             return this.source;
         }
 
-        @Override public void execute(IndexShard indexShard) throws ElasticSearchException {
+        @Override public void execute(IndexShard indexShard) throws SearchException {
             indexShard.index(type, id, source);
         }
 
@@ -284,7 +284,7 @@ public interface Translog extends IndexShardComponent {
             return this.uid;
         }
 
-        @Override public void execute(IndexShard indexShard) throws ElasticSearchException {
+        @Override public void execute(IndexShard indexShard) throws SearchException {
             indexShard.delete(uid);
         }
 
@@ -336,7 +336,7 @@ public interface Translog extends IndexShardComponent {
             return this.types;
         }
 
-        @Override public void execute(IndexShard indexShard) throws ElasticSearchException {
+        @Override public void execute(IndexShard indexShard) throws SearchException {
             indexShard.deleteByQuery(source, queryParserName, types);
         }
 

@@ -24,7 +24,7 @@ import org.server.search.index.IndexLifecycle;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public class IndexSettingsModule extends AbstractModule {

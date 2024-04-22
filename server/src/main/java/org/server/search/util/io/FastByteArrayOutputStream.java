@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * Similar to {@link java.io.ByteArrayOutputStream} just not synced.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FastByteArrayOutputStream extends OutputStream {
 

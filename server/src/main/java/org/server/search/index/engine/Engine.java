@@ -25,7 +25,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.shard.IndexShardComponent;
 import org.server.search.index.shard.IndexShardLifecycle;
@@ -36,7 +36,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 import org.server.search.util.lease.Releasable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 @IndexShardLifecycle
@@ -81,7 +81,7 @@ public interface Engine extends IndexShardComponent {
      */
     SizeValue estimateFlushableMemorySize();
 
-    void close() throws ElasticSearchException;
+    void close() throws SearchException;
 
     /**
      * Recovery allow to start the recovery process. It is built of three phases.
@@ -97,11 +97,11 @@ public interface Engine extends IndexShardComponent {
      */
     static interface RecoveryHandler {
 
-        void phase1(SnapshotIndexCommit snapshot) throws ElasticSearchException;
+        void phase1(SnapshotIndexCommit snapshot) throws SearchException;
 
-        void phase2(Translog.Snapshot snapshot) throws ElasticSearchException;
+        void phase2(Translog.Snapshot snapshot) throws SearchException;
 
-        void phase3(Translog.Snapshot snapshot) throws ElasticSearchException;
+        void phase3(Translog.Snapshot snapshot) throws SearchException;
     }
 
     /**

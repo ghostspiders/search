@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpClusterStateAction extends BaseHttpServerHandler {
 

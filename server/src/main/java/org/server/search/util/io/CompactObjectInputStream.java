@@ -24,7 +24,7 @@ import org.server.search.util.Classes;
 import java.io.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 class CompactObjectInputStream extends ObjectInputStream {
 

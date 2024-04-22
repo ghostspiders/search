@@ -31,7 +31,7 @@ import static com.google.common.collect.Sets.*;
 import static org.server.search.cluster.routing.ShardRoutingState.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DefaultShardsRoutingStrategy implements ShardsRoutingStrategy {
 

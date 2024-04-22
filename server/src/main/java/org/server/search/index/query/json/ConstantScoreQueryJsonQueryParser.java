@@ -33,7 +33,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ConstantScoreQueryJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 

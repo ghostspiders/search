@@ -32,9 +32,6 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportIndexFlushAction extends TransportIndexReplicationOperationAction<IndexFlushRequest, IndexFlushResponse, ShardFlushRequest, ShardFlushResponse> {
 
     private final ClusterService clusterService;

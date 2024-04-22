@@ -26,7 +26,7 @@ import org.server.search.client.transport.support.InternalTransportClusterAdminC
 import org.server.search.client.transport.support.InternalTransportIndicesAdminClient;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClientTransportModule extends AbstractModule {
 

@@ -20,15 +20,15 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class ElasticSearchParseException extends ElasticSearchException {
+public class SearchParseException extends SearchException {
 
-    public ElasticSearchParseException(String msg) {
+    public SearchParseException(String msg) {
         super(msg);
     }
 
-    public ElasticSearchParseException(String msg, Throwable cause) {
+    public SearchParseException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

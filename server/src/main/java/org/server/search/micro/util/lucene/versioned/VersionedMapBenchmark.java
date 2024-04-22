@@ -32,9 +32,7 @@ import java.util.concurrent.CyclicBarrier;
 
 import static java.util.concurrent.TimeUnit.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class VersionedMapBenchmark {
 
     private final VersionedMap versionedMap;

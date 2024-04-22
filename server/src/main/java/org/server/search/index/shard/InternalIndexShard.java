@@ -25,9 +25,9 @@ import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalArgumentException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalArgumentException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.cluster.routing.ShardRouting;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineException;
@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 @ThreadSafe
@@ -113,7 +113,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
 
     public InternalIndexShard routingEntry(ShardRouting shardRouting) {
         if (!shardRouting.shardId().equals(shardId())) {
-            throw new ElasticSearchIllegalArgumentException("Trying to set a routing entry with shardId [" + shardRouting.shardId() + "] on a shard with shardId [" + shardId() + "]");
+            throw new SearchIllegalArgumentException("Trying to set a routing entry with shardId [" + shardRouting.shardId() + "] on a shard with shardId [" + shardId() + "]");
         }
         if (this.shardRouting != null) {
             if (!shardRouting.primary() && this.shardRouting.primary()) {
@@ -190,12 +190,12 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
     /**
      * Returns the estimated flushable memory size. Returns <tt>null</tt> if not available.
      */
-    public SizeValue estimateFlushableMemorySize() throws ElasticSearchException {
+    public SizeValue estimateFlushableMemorySize() throws SearchException {
         writeAllowed();
         return engine.estimateFlushableMemorySize();
     }
 
-    public void create(String type, String id, String source) throws ElasticSearchException {
+    public void create(String type, String id, String source) throws SearchException {
         writeAllowed();
         innerCreate(type, id, source);
     }
@@ -212,7 +212,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         engine.create(new Engine.Create(doc.doc(), docMapper.mappers().indexAnalyzer(), docMapper.type(), doc.id(), doc.source()));
     }
 
-    public void index(String type, String id, String source) throws ElasticSearchException {
+    public void index(String type, String id, String source) throws SearchException {
         writeAllowed();
         innerIndex(type, id, source);
     }
@@ -250,7 +250,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         engine.delete(new Engine.Delete(uid));
     }
 
-    public void deleteByQuery(String querySource, @Nullable String queryParserName, String... types) throws ElasticSearchException {
+    public void deleteByQuery(String querySource, @Nullable String queryParserName, String... types) throws SearchException {
         writeAllowed();
         if (types == null) {
             types = Strings.EMPTY_ARRAY;
@@ -276,7 +276,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         engine.delete(new Engine.DeleteByQuery(query, querySource, queryParserName, types));
     }
 
-    public String get(String type, String id) throws ElasticSearchException {
+    public String get(String type, String id) throws SearchException {
         readAllowed();
         DocumentMapper docMapper = mapperService.type(type);
         if (docMapper == null) {
@@ -298,13 +298,13 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
             }
             return docMapper.sourceMapper().value(doc);
         } catch (IOException e) {
-            throw new ElasticSearchException("Failed to get type [" + type + "] and id [" + id + "]", e);
+            throw new SearchException("Failed to get type [" + type + "] and id [" + id + "]", e);
         } finally {
             searcher.release();
         }
     }
 
-    public long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws ElasticSearchException {
+    public long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws SearchException {
         readAllowed();
         IndexQueryParser queryParser = queryParserService.defaultIndexQueryParser();
         if (queryParserName != null) {
@@ -323,13 +323,13 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
             }
             return count;
         } catch (IOException e) {
-            throw new ElasticSearchException("Failed to count query [" + query + "]", e);
+            throw new SearchException("Failed to count query [" + query + "]", e);
         } finally {
             searcher.release();
         }
     }
 
-    public void refresh(boolean waitForOperations) throws ElasticSearchException {
+    public void refresh(boolean waitForOperations) throws SearchException {
         writeAllowed();
         if (logger.isTraceEnabled()) {
             logger.trace("Refresh, waitForOperations[{}]", waitForOperations);
@@ -337,7 +337,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         engine.refresh(waitForOperations);
     }
 
-    public void flush() throws ElasticSearchException {
+    public void flush() throws SearchException {
         writeAllowed();
         if (logger.isTraceEnabled()) {
             logger.trace("Flush");
@@ -372,7 +372,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         }
     }
 
-    public void performRecovery(Iterable<Translog.Operation> operations) throws ElasticSearchException {
+    public void performRecovery(Iterable<Translog.Operation> operations) throws SearchException {
         if (state != IndexShardState.RECOVERING) {
             throw new IndexShardNotRecoveringException(shardId, state);
         }
@@ -384,7 +384,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         scheduleRefresherIfNeeded();
     }
 
-    public void performRecovery(Translog.Snapshot snapshot, boolean phase3) throws ElasticSearchException {
+    public void performRecovery(Translog.Snapshot snapshot, boolean phase3) throws SearchException {
         if (state != IndexShardState.RECOVERING) {
             throw new IndexShardNotRecoveringException(shardId, state);
         }
@@ -421,7 +421,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
                     innerDeleteByQuery(deleteByQuery.source(), deleteByQuery.queryParserName(), deleteByQuery.types());
                     break;
                 default:
-                    throw new ElasticSearchIllegalStateException("No operation defined for [" + operation + "]");
+                    throw new SearchIllegalStateException("No operation defined for [" + operation + "]");
             }
         }
     }

@@ -25,7 +25,7 @@ import org.server.search.index.shard.ShardId;
 /**
  * An exception marking that this recovery attempt should be ignored (since probably, we already recovered).
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IgnoreGatewayRecoveryException extends IndexShardException {
 

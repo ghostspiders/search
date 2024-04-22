@@ -20,7 +20,7 @@
 package org.server.search.index.query;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface QueryBuilder {
 

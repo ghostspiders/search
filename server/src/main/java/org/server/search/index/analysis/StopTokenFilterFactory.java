@@ -34,7 +34,7 @@ import org.server.search.util.settings.Settings;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class StopTokenFilterFactory extends AbstractTokenFilterFactory {
 

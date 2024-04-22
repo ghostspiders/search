@@ -29,7 +29,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ZipCompressor implements Compressor {
 

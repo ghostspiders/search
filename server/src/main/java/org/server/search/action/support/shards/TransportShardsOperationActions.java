@@ -19,7 +19,7 @@
 
 package org.server.search.action.support.shards;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ShardNotActiveException;
 import org.server.search.action.ShardOperationFailedException;
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import static org.server.search.action.Actions.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportShardsOperationActions<Request extends ShardsOperationRequest, Response extends ShardsOperationResponse, ShardRequest extends ShardOperationRequest, ShardResponse extends ShardOperationResponse> extends BaseAction<Request, Response> {
 
@@ -83,7 +83,7 @@ public abstract class TransportShardsOperationActions<Request extends ShardsOper
 
     protected abstract ShardResponse newShardResponse();
 
-    protected abstract ShardResponse shardOperation(ShardRequest request) throws ElasticSearchException;
+    protected abstract ShardResponse shardOperation(ShardRequest request) throws SearchException;
 
     protected abstract boolean accumulateExceptions();
 

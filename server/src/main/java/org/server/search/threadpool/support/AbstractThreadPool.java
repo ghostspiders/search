@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class AbstractThreadPool extends AbstractComponent implements ThreadPool {
 

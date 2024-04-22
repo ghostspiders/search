@@ -31,7 +31,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class AbstractStore<T extends Directory> extends AbstractIndexShardComponent implements Store<T> {
 

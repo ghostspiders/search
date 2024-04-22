@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class GroupShardsIterator implements Iterable<ShardsIterator> {
 

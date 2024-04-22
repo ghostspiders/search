@@ -21,7 +21,7 @@ package org.server.search.search.internal;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.IndexService;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.mapper.MapperService;
@@ -40,7 +40,7 @@ import org.server.search.util.lease.Releasable;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchContext implements Releasable {
 
@@ -106,7 +106,7 @@ public class SearchContext implements Releasable {
         this.searcher = new ContextIndexSearcher(this, engineSearcher.reader());
     }
 
-    @Override public boolean release() throws ElasticSearchException {
+    @Override public boolean release() throws SearchException {
         engineSearcher.release();
         return true;
     }

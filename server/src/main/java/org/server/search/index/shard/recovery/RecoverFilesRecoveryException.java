@@ -24,7 +24,7 @@ import org.server.search.index.shard.ShardId;
 import org.server.search.util.SizeValue;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RecoverFilesRecoveryException extends IndexShardException {
 

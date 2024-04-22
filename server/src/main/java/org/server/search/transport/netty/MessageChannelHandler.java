@@ -36,7 +36,7 @@ import java.io.InputStream;
 import static org.server.search.transport.Transport.Helper.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MessageChannelHandler extends ChannelInboundHandlerAdapter  {
 

@@ -41,7 +41,7 @@ import static java.util.Arrays.asList;
  * {@link LoggerFactory#getLogger(Class)}. It will use the package name as the
  * logging level without the actual class name.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Loggers {
 

@@ -26,9 +26,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class ShardFlushResponse implements ActionResponse, Streamable {
 
     ShardFlushResponse() {

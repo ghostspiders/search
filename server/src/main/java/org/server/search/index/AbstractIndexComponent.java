@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import static org.server.search.index.IndexServiceManagement.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public abstract class AbstractIndexComponent implements IndexComponent {

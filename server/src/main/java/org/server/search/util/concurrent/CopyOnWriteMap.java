@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Provides the semantics of a thread safe copy on write map.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class CopyOnWriteMap<K, V> implements ConcurrentMap<K, V> {

@@ -29,7 +29,7 @@ import org.server.search.util.gnu.trove.THashSet;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DfsPhase implements SearchPhase {
 

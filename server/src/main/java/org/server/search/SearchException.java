@@ -20,16 +20,16 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon) (Shay Banon)
+ *  (Shay Banon)
  */
-public class ElasticSearchException extends RuntimeException {
+public class SearchException extends RuntimeException {
 
     /**
      * Construct a <code>NestedRuntimeException</code> with the specified detail message.
      *
      * @param msg the detail message
      */
-    public ElasticSearchException(String msg) {
+    public SearchException(String msg) {
         super(msg);
     }
 
@@ -40,7 +40,7 @@ public class ElasticSearchException extends RuntimeException {
      * @param msg   the detail message
      * @param cause the nested exception
      */
-    public ElasticSearchException(String msg, Throwable cause) {
+    public SearchException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
@@ -115,8 +115,8 @@ public class ElasticSearchException extends RuntimeException {
         if (cause == this) {
             return false;
         }
-        if (cause instanceof ElasticSearchException) {
-            return ((ElasticSearchException) cause).contains(exType);
+        if (cause instanceof SearchException) {
+            return ((SearchException) cause).contains(exType);
         } else {
             while (cause != null) {
                 if (exType.isInstance(cause)) {

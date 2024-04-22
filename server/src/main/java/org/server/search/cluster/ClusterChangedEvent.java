@@ -22,7 +22,7 @@ package org.server.search.cluster;
 import org.server.search.cluster.node.Nodes;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClusterChangedEvent {
 

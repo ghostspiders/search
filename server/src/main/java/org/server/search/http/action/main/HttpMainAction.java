@@ -36,7 +36,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpMainAction extends BaseHttpServerHandler {
 
@@ -49,7 +49,7 @@ public class HttpMainAction extends BaseHttpServerHandler {
         JsonNode rootNode;
         int quotesSize;
         try {
-            rootNode = Jackson.newObjectMapper().readValue(Classes.getDefaultClassLoader().getResourceAsStream("org/elasticsearch/http/action/main/quotes.json"), JsonNode.class);
+            rootNode = Jackson.newObjectMapper().readValue(Classes.getDefaultClassLoader().getResourceAsStream("org/Search/http/action/main/quotes.json"), JsonNode.class);
             ArrayNode arrayNode = (ArrayNode) rootNode.get("quotes");
             quotesSize = Iterators.size(arrayNode.elements());
         } catch (Exception e) {

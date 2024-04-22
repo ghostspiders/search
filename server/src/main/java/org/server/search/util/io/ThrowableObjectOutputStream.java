@@ -25,7 +25,7 @@ import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ThrowableObjectOutputStream extends ObjectOutputStream {
 

@@ -24,7 +24,7 @@ import org.server.search.util.io.Streamable;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TransportChannel {
     String action();

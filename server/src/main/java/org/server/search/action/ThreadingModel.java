@@ -19,10 +19,10 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum ThreadingModel {
     NONE((byte) 0),
@@ -108,7 +108,7 @@ public enum ThreadingModel {
         } else if (id == 3) {
             return OPERATION_LISTENER;
         } else {
-            throw new ElasticSearchIllegalArgumentException("No threading model for [" + id + "]");
+            throw new SearchIllegalArgumentException("No threading model for [" + id + "]");
         }
     }
 }

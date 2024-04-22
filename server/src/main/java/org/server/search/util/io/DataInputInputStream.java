@@ -26,7 +26,7 @@ import java.io.InputStream;
 /**
  * A wrapper {@link InputStream} around {@link DataInput}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DataInputInputStream extends InputStream {
 

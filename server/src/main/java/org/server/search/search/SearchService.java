@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import org.apache.lucene.search.TopDocs;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.index.IndexService;
 import org.server.search.index.engine.Engine;
@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchService extends AbstractComponent implements LifecycleComponent<SearchService> {
 
@@ -103,14 +103,14 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return lifecycle.state();
     }
 
-    @Override public SearchService start() throws ElasticSearchException {
+    @Override public SearchService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
         return this;
     }
 
-    @Override public SearchService stop() throws ElasticSearchException {
+    @Override public SearchService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -121,7 +121,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (lifecycle.started()) {
             stop();
         }
@@ -130,28 +130,28 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         }
     }
 
-    public DfsSearchResult executeDfsPhase(InternalSearchRequest request) throws ElasticSearchException {
+    public DfsSearchResult executeDfsPhase(InternalSearchRequest request) throws SearchException {
         SearchContext context = createContext(request);
         activeContexts.put(context.id(), context);
         dfsPhase.execute(context);
         return context.dfsResult();
     }
 
-    public QuerySearchResult executeQueryPhase(InternalSearchRequest request) throws ElasticSearchException {
+    public QuerySearchResult executeQueryPhase(InternalSearchRequest request) throws SearchException {
         SearchContext context = createContext(request);
         activeContexts.put(context.id(), context);
         queryPhase.execute(context);
         return context.queryResult();
     }
 
-    public QuerySearchResult executeQueryPhase(InternalScrollSearchRequest request) throws ElasticSearchException {
+    public QuerySearchResult executeQueryPhase(InternalScrollSearchRequest request) throws SearchException {
         SearchContext context = findContext(request.id());
         processScroll(request, context);
         queryPhase.execute(context);
         return context.queryResult();
     }
 
-    public QuerySearchResult executeQueryPhase(QuerySearchRequest request) throws ElasticSearchException {
+    public QuerySearchResult executeQueryPhase(QuerySearchRequest request) throws SearchException {
         SearchContext context = findContext(request.id());
         try {
             context.searcher().dfSource(new CachedDfSource(request.dfs(), context.similarityService().defaultSearchSimilarity()));
@@ -162,7 +162,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return context.queryResult();
     }
 
-    public QueryFetchSearchResult executeFetchPhase(InternalSearchRequest request) throws ElasticSearchException {
+    public QueryFetchSearchResult executeFetchPhase(InternalSearchRequest request) throws SearchException {
         SearchContext context = createContext(request);
         queryPhase.execute(context);
         shortcutDocIdsToLoad(context);
@@ -173,7 +173,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return new QueryFetchSearchResult(context.queryResult(), context.fetchResult());
     }
 
-    public QueryFetchSearchResult executeFetchPhase(QuerySearchRequest request) throws ElasticSearchException {
+    public QueryFetchSearchResult executeFetchPhase(QuerySearchRequest request) throws SearchException {
         SearchContext context = findContext(request.id());
         try {
             context.searcher().dfSource(new CachedDfSource(request.dfs(), context.similarityService().defaultSearchSimilarity()));
@@ -189,7 +189,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return new QueryFetchSearchResult(context.queryResult(), context.fetchResult());
     }
 
-    public QueryFetchSearchResult executeFetchPhase(InternalScrollSearchRequest request) throws ElasticSearchException {
+    public QueryFetchSearchResult executeFetchPhase(InternalScrollSearchRequest request) throws SearchException {
         SearchContext context = findContext(request.id());
         processScroll(request, context);
         queryPhase.execute(context);
@@ -201,7 +201,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return new QueryFetchSearchResult(context.queryResult(), context.fetchResult());
     }
 
-    public FetchSearchResult executeFetchPhase(FetchSearchRequest request) throws ElasticSearchException {
+    public FetchSearchResult executeFetchPhase(FetchSearchRequest request) throws SearchException {
         SearchContext context = findContext(request.id());
         context.docIdsToLoad(request.docIds());
         fetchPhase.execute(context);
@@ -219,7 +219,7 @@ public class SearchService extends AbstractComponent implements LifecycleCompone
         return context;
     }
 
-    private SearchContext createContext(InternalSearchRequest request) throws ElasticSearchException {
+    private SearchContext createContext(InternalSearchRequest request) throws SearchException {
         IndexService indexService = indicesService.indexServiceSafe(request.index());
         IndexShard indexShard = indexService.shardSafe(request.shardId());
         Engine.Searcher engineSearcher = indexShard.searcher();

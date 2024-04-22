@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.collect.Lists.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 @Immutable

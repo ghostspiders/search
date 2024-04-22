@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.deletionpolicy.DeletionPolicyModule;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineModule;
@@ -57,7 +57,7 @@ import static com.google.common.collect.Sets.*;
 import static org.server.search.util.MapBuilder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public class InternalIndexService extends AbstractIndexComponent implements IndexService {
@@ -144,7 +144,7 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
         }
     }
 
-    @Override public Injector shardInjector(int shardId) throws ElasticSearchException {
+    @Override public Injector shardInjector(int shardId) throws SearchException {
         return shardsInjectors.get(shardId);
     }
 
@@ -156,7 +156,7 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
         return shardInjector;
     }
 
-    @Override public synchronized IndexShard createShard(int sShardId) throws ElasticSearchException {
+    @Override public synchronized IndexShard createShard(int sShardId) throws SearchException {
         ShardId shardId = new ShardId(index, sShardId);
         if (shardsInjectors.containsKey(shardId.id())) {
             throw new IndexShardAlreadyExistsException(shardId + " already exists");
@@ -191,11 +191,11 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
         return indexShard;
     }
 
-    @Override public synchronized void deleteShard(int shardId) throws ElasticSearchException {
+    @Override public synchronized void deleteShard(int shardId) throws SearchException {
         deleteShard(shardId, false);
     }
 
-    private synchronized void deleteShard(int shardId, boolean close) throws ElasticSearchException {
+    private synchronized void deleteShard(int shardId, boolean close) throws SearchException {
         Map<Integer, Injector> tmpShardInjectors = newHashMap(shardsInjectors);
         Injector shardInjector = tmpShardInjectors.remove(shardId);
         if (shardInjector == null) {

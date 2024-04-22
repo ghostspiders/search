@@ -20,7 +20,7 @@
 package org.server.search.action.admin.cluster.state;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.master.TransportMasterNodeOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -28,9 +28,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportClusterStateAction extends TransportMasterNodeOperationAction<ClusterStateRequest, ClusterStateResponse> {
 
     @Inject public TransportClusterStateAction(Settings settings, TransportService transportService, ClusterService clusterService, ThreadPool threadPool) {
@@ -49,7 +47,7 @@ public class TransportClusterStateAction extends TransportMasterNodeOperationAct
         return new ClusterStateResponse();
     }
 
-    @Override protected ClusterStateResponse masterOperation(ClusterStateRequest request) throws ElasticSearchException {
+    @Override protected ClusterStateResponse masterOperation(ClusterStateRequest request) throws SearchException {
         return new ClusterStateResponse(clusterService.state());
     }
 }

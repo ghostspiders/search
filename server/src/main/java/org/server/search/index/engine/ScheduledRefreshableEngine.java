@@ -22,7 +22,7 @@ package org.server.search.index.engine;
 import org.server.search.util.TimeValue;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ScheduledRefreshableEngine {
 

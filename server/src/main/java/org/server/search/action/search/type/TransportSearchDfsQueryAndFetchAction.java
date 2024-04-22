@@ -47,9 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.server.search.action.search.type.TransportSearchHelper.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchDfsQueryAndFetchAction extends TransportSearchTypeAction {
 
     @Inject public TransportSearchDfsQueryAndFetchAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, IndicesService indicesService,

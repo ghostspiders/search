@@ -31,7 +31,7 @@ import org.server.search.index.mapper.FieldMapperListener;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 

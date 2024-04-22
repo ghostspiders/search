@@ -34,7 +34,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonDateFieldMapper extends JsonNumberFieldMapper<Long> {
 

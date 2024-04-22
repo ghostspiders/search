@@ -29,7 +29,7 @@ import static org.server.search.index.deletionpolicy.DeletionPolicyModule.Deleti
 import static org.server.search.index.deletionpolicy.DeletionPolicyModule.DeletionPolicySettings.TYPE;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public class DeletionPolicyModule extends AbstractModule {

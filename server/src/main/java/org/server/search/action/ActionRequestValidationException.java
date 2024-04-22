@@ -19,15 +19,15 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class ActionRequestValidationException extends ElasticSearchException {
+public class ActionRequestValidationException extends SearchException {
 
     private final List<String> validationErrors = new ArrayList<String>();
 

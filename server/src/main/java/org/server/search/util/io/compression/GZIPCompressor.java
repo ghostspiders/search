@@ -27,7 +27,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class GZIPCompressor implements Compressor {
 

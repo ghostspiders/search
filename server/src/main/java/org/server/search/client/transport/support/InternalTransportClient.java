@@ -49,7 +49,7 @@ import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalTransportClient extends AbstractComponent implements Client {
 

@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.transport.Transport;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyTransportModule extends AbstractModule {
 

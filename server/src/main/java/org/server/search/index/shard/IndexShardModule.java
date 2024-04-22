@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.index.shard.recovery.RecoveryAction;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public class IndexShardModule extends AbstractModule {

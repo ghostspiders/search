@@ -19,12 +19,12 @@
 
 package org.server.search.index.query;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class QueryBuilderException extends ElasticSearchException {
+public class QueryBuilderException extends SearchException {
 
     public QueryBuilderException(String msg) {
         super(msg);

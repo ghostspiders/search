@@ -22,7 +22,7 @@ package org.server.search.index.mapper;
 import org.apache.lucene.document.Document;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface IdFieldMapper extends FieldMapper<String> {
 

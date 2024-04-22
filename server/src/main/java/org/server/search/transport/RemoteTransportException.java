@@ -19,13 +19,13 @@
 
 package org.server.search.transport;
 
-import org.server.search.ElasticSearchWrapperException;
+import org.server.search.SearchWrapperException;
 import org.server.search.util.transport.TransportAddress;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class RemoteTransportException extends TransportException implements ElasticSearchWrapperException {
+public class RemoteTransportException extends TransportException implements SearchWrapperException {
 
     private TransportAddress address;
 

@@ -19,12 +19,12 @@
 
 package org.server.search.client.transport;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class NoNodeAvailableException extends ElasticSearchException {
+public class NoNodeAvailableException extends SearchException {
 
     public NoNodeAvailableException() {
         super("No node available");

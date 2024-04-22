@@ -19,13 +19,13 @@
 
 package org.server.search.search.dfs;
 
-import org.server.search.search.SearchException;
+import org.server.search.search.Search1Exception;
 import org.server.search.search.internal.SearchContext;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class DfsPhaseExecutionException extends SearchException {
+public class DfsPhaseExecutionException extends Search1Exception {
 
     public DfsPhaseExecutionException(SearchContext context) {
         super("Failed to execute dfs [" + context.query() + "]");

@@ -25,9 +25,6 @@ import org.server.search.util.SizeValue;
 
 import java.util.Iterator;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class IndexShardStatus implements Iterable<ShardStatus> {
 
     public static class Docs {

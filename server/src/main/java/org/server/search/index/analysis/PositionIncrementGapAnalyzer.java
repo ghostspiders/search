@@ -20,7 +20,7 @@
 package org.server.search.index.analysis;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface PositionIncrementGapAnalyzer {
 

@@ -41,7 +41,7 @@ import java.util.List;
  * }
  * </pre>
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FacetsParseElement implements SearchParseElement {
 

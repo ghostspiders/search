@@ -19,7 +19,7 @@
 
 package org.server.search.action.support.single;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionResponse;
 import org.server.search.action.NoShardAvailableActionException;
@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportSingleOperationAction<Request extends SingleOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 
@@ -73,7 +73,7 @@ public abstract class TransportSingleOperationAction<Request extends SingleOpera
 
     protected abstract String transportShardAction();
 
-    protected abstract Response shardOperation(Request request, int shardId) throws ElasticSearchException;
+    protected abstract Response shardOperation(Request request, int shardId) throws SearchException;
 
     protected abstract Request newRequest();
 

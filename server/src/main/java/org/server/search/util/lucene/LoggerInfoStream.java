@@ -32,7 +32,7 @@ import java.io.PrintStream;
  * <p>Provides also factory methods that basically append to the logger name provide the
  * {@link #SUFFIX}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class LoggerInfoStream extends PrintStream {
 

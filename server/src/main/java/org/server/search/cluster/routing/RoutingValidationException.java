@@ -20,7 +20,7 @@
 package org.server.search.cluster.routing;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RoutingValidationException extends RoutingException {
 

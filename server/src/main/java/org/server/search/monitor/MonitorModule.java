@@ -43,7 +43,7 @@ import static org.server.search.monitor.dump.summary.SummaryDumpContributor.*;
 import static org.server.search.monitor.dump.thread.ThreadDumpContributor.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MonitorModule extends AbstractModule {
 

@@ -25,9 +25,7 @@ import org.server.search.cluster.node.Node;
 import java.io.DataInput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class NodeInfo extends NodeOperationResponse {
 
     protected NodeInfo() {

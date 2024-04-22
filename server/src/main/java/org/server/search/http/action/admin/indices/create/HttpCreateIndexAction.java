@@ -42,7 +42,7 @@ import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpCreateIndexAction extends BaseHttpServerHandler {
 

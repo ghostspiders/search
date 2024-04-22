@@ -22,7 +22,7 @@ package org.server.search.util.transport;
 import java.util.StringTokenizer;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PortsRange {
 

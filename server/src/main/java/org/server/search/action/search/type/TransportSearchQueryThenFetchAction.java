@@ -45,9 +45,6 @@ import org.server.search.util.trove.ExtTIntArrayList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchQueryThenFetchAction extends TransportSearchTypeAction {
 
     @Inject public TransportSearchQueryThenFetchAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, IndicesService indicesService,

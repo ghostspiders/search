@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineException;
@@ -57,7 +57,7 @@ import static org.server.search.index.translog.TranslogStreams.*;
 import static org.server.search.util.lucene.Directories.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FsIndexShardGateway extends AbstractIndexShardComponent implements IndexShardGateway {
 
@@ -182,7 +182,7 @@ public class FsIndexShardGateway extends AbstractIndexShardComponent implements 
                 // double check that we managed to read/write correctly
                 translogFile.seek(0);
                 if (translogFile.readInt() != -1) {
-                    throw new ElasticSearchIllegalStateException("Wrote to snapshot file [" + f + "] but did not read...");
+                    throw new SearchIllegalStateException("Wrote to snapshot file [" + f + "] but did not read...");
                 }
                 for (Translog.Operation operation : translogSnapshot) {
                     writeTranslogOperation(translogFile, operation);

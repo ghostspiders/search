@@ -26,9 +26,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class CreateIndexResponse implements ActionResponse, Streamable {
 
     @Override public void readFrom(DataInput in) throws IOException, ClassNotFoundException {

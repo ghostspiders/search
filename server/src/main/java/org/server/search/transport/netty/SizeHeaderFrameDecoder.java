@@ -27,7 +27,7 @@ import java.io.StreamCorruptedException;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SizeHeaderFrameDecoder extends ByteToMessageDecoder {
     private int length;

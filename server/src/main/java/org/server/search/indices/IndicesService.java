@@ -19,7 +19,7 @@
 
 package org.server.search.indices;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.routing.GroupShardsIterator;
 import org.server.search.index.IndexService;
@@ -30,7 +30,7 @@ import org.server.search.util.settings.Settings;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface IndicesService extends Iterable<IndexService>, LifecycleComponent<IndicesService> {
@@ -53,9 +53,9 @@ public interface IndicesService extends Iterable<IndexService>, LifecycleCompone
      *
      * @see org.server.search.index.routing.OperationRouting#searchShards(org.server.search.cluster.ClusterState, String)
      */
-    GroupShardsIterator searchShards(ClusterState clusterState, String[] indices, String queryHint) throws ElasticSearchException;
+    GroupShardsIterator searchShards(ClusterState clusterState, String[] indices, String queryHint) throws SearchException;
 
-    IndexService createIndex(String index, Settings settings, String localNodeId) throws ElasticSearchException;
+    IndexService createIndex(String index, Settings settings, String localNodeId) throws SearchException;
 
-    void deleteIndex(String index) throws ElasticSearchException;
+    void deleteIndex(String index) throws SearchException;
 }

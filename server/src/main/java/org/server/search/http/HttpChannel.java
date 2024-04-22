@@ -20,7 +20,7 @@
 package org.server.search.http;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface HttpChannel {
     void sendResponse(HttpResponse response);

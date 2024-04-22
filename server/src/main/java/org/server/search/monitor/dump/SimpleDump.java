@@ -26,7 +26,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SimpleDump extends AbstractDump {
 

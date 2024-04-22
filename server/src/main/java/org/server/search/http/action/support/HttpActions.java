@@ -19,7 +19,7 @@
 
 package org.server.search.http.action.support;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.http.HttpRequest;
 import org.server.search.index.query.json.JsonQueryBuilders;
 import org.server.search.index.query.json.QueryStringJsonQueryBuilder;
@@ -28,7 +28,7 @@ import org.server.search.util.Strings;
 import java.util.regex.Pattern;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpActions {
 
@@ -49,7 +49,7 @@ public class HttpActions {
         }
         String queryString = request.param("q");
         if (queryString == null) {
-            throw new ElasticSearchIllegalArgumentException("No query to execute, not in body, and not bounded to 'q' parameter");
+            throw new SearchIllegalArgumentException("No query to execute, not in body, and not bounded to 'q' parameter");
         }
         QueryStringJsonQueryBuilder queryBuilder = JsonQueryBuilders.queryString(queryString);
         queryBuilder.defaultField(request.param("df"));
@@ -61,7 +61,7 @@ public class HttpActions {
             } else if ("AND".equals(defaultOperator)) {
                 queryBuilder.defualtOperator(QueryStringJsonQueryBuilder.Operator.AND);
             } else {
-                throw new ElasticSearchIllegalArgumentException("Unsupported defaultOperator [" + defaultOperator + "], can either be [OR] or [AND]");
+                throw new SearchIllegalArgumentException("Unsupported defaultOperator [" + defaultOperator + "], can either be [OR] or [AND]");
             }
         }
         return queryBuilder.build();

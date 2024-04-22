@@ -33,7 +33,7 @@ import org.server.search.action.admin.cluster.state.ClusterStateRequest;
 import org.server.search.action.admin.cluster.state.ClusterStateResponse;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ClusterAdminClient {
 

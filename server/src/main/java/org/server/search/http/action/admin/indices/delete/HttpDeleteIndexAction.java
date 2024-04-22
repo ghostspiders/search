@@ -39,7 +39,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.json.JsonBuilder.Cached.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpDeleteIndexAction extends BaseHttpServerHandler {
 

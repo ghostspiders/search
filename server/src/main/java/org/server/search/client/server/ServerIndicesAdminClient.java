@@ -48,7 +48,7 @@ import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ServerIndicesAdminClient extends AbstractComponent implements IndicesAdminClient {
 

@@ -37,7 +37,7 @@ import org.server.search.transport.*;
  * An encapsulation of {@link SearchService} operations exposed through
  * transport.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchServiceTransportAction {
 

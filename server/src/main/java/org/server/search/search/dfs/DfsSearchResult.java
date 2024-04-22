@@ -30,7 +30,7 @@ import java.io.IOException;
 import static org.server.search.search.SearchShardTarget.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DfsSearchResult implements Streamable {
 

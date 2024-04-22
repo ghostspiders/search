@@ -19,12 +19,12 @@
 
 package org.server.search.index.query;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class IndexQueryParserMissingException extends ElasticSearchException {
+public class IndexQueryParserMissingException extends SearchException {
 
     public IndexQueryParserMissingException(String name) {
         super("Index Query Parser [" + name + "] missing");

@@ -28,7 +28,7 @@ import java.util.Arrays;
 /**
  * A similar class to {@link java.io.CharArrayWriter} allowing to get the underlying <tt>char[]</tt> buffer.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class FastCharArrayWriter extends Writer {

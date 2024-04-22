@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.index.engine.Engine;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RobinEngineModule extends AbstractModule {
 

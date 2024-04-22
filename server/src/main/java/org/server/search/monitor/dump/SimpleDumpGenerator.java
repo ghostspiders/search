@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SimpleDumpGenerator implements DumpGenerator {
 

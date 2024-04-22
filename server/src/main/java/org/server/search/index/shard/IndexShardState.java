@@ -19,10 +19,10 @@
 
 package org.server.search.index.shard;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum IndexShardState {
     CREATED((byte) 0),
@@ -41,7 +41,7 @@ public enum IndexShardState {
         return this.id;
     }
 
-    public static IndexShardState fromId(byte id) throws ElasticSearchIllegalArgumentException {
+    public static IndexShardState fromId(byte id) throws SearchIllegalArgumentException {
         if (id == 0) {
             return CREATED;
         } else if (id == 1) {
@@ -53,6 +53,6 @@ public enum IndexShardState {
         } else if (id == 4) {
             return CLOSED;
         }
-        throw new ElasticSearchIllegalArgumentException("No mapping for id [" + id + "]");
+        throw new SearchIllegalArgumentException("No mapping for id [" + id + "]");
     }
 }

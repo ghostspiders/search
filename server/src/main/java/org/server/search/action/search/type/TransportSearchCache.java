@@ -31,9 +31,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchCache {
 
     private final Queue<Collection<DfsSearchResult>> cacheDfsResults = new ConcurrentLinkedQueue<Collection<DfsSearchResult>>();

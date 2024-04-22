@@ -27,7 +27,7 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.util.guice.ModulesFactory.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportModule extends AbstractModule {
 

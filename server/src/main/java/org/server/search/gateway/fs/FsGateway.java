@@ -21,7 +21,7 @@ package org.server.search.gateway.fs;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterName;
 import org.server.search.cluster.metadata.MetaData;
 import org.server.search.env.Environment;
@@ -37,7 +37,7 @@ import org.server.search.util.settings.Settings;
 import java.io.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FsGateway extends AbstractComponent implements Gateway {
 
@@ -68,21 +68,21 @@ public class FsGateway extends AbstractComponent implements Gateway {
         return lifecycle.state();
     }
 
-    @Override public Gateway start() throws ElasticSearchException {
+    @Override public Gateway start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
         return this;
     }
 
-    @Override public Gateway stop() throws ElasticSearchException {
+    @Override public Gateway stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (lifecycle.started()) {
             stop();
         }

@@ -24,7 +24,7 @@ import org.apache.lucene.document.Document;
 import org.server.search.util.concurrent.NotThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class JsonParseContext {

@@ -52,7 +52,7 @@ import org.server.search.action.search.TransportSearchScrollAction;
 import org.server.search.action.search.type.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportActionModule extends AbstractModule {
 

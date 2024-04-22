@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Version {
 
@@ -38,7 +38,7 @@ public class Version {
     static {
         Properties props = new Properties();
         try {
-            InputStream stream = Version.class.getClassLoader().getResourceAsStream("org/elasticsearch/version.properties");
+            InputStream stream = Version.class.getClassLoader().getResourceAsStream("org/Search/version.properties");
             props.load(stream);
             stream.close();
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class Version {
     }
 
     public static String full() {
-        StringBuilder sb = new StringBuilder("ElasticSearch/");
+        StringBuilder sb = new StringBuilder("Search/");
         sb.append(number);
         if (devBuild) {
             sb.append("/").append(date);

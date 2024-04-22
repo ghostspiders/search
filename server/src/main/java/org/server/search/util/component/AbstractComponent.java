@@ -24,7 +24,7 @@ import org.server.search.util.settings.Settings;
 import org.slf4j.Logger;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class AbstractComponent {
 

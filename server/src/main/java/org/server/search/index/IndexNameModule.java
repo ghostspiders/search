@@ -22,7 +22,7 @@ package org.server.search.index;
 import com.google.inject.AbstractModule;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexNameModule extends AbstractModule {
 

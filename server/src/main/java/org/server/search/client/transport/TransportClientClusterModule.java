@@ -28,7 +28,7 @@ import org.server.search.util.settings.NoClassSettingsException;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportClientClusterModule extends AbstractModule {
 

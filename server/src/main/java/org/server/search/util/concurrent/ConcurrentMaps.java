@@ -25,11 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class ConcurrentMaps {
 
-    private final static boolean useNonBlockingMap = Boolean.parseBoolean(System.getProperty("elasticsearch.useNonBlockingMap", "true"));
+    private final static boolean useNonBlockingMap = Boolean.parseBoolean(System.getProperty("Search.useNonBlockingMap", "true"));
 
     public static <K, V> ConcurrentMap<K, V> newConcurrentMap() {
         if (useNonBlockingMap) {

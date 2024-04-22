@@ -22,7 +22,7 @@ package org.server.search.index.gateway;
 import org.server.search.index.shard.ShardId;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardGatewaySnapshotFailedException extends IndexShardGatewayException {
 

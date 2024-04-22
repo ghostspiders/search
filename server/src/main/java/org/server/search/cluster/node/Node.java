@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Node implements Streamable, Serializable {
 

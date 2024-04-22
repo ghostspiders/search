@@ -34,7 +34,7 @@ import java.util.List;
 import static org.server.search.index.shard.IndexShardManagement.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class AbstractIndexShardComponent extends IndexDeletionPolicy implements IndexShardComponent {
 

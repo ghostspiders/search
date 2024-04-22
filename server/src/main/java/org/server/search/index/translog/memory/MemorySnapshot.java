@@ -20,8 +20,8 @@
 package org.server.search.index.translog.memory;
 
 import com.google.common.collect.Iterables;
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.index.translog.Translog;
 
 import java.io.DataInput;
@@ -33,7 +33,7 @@ import java.util.Iterator;
 import static org.server.search.index.translog.TranslogStreams.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemorySnapshot implements Translog.Snapshot {
 
@@ -57,7 +57,7 @@ public class MemorySnapshot implements Translog.Snapshot {
         return id;
     }
 
-    @Override public boolean release() throws ElasticSearchException {
+    @Override public boolean release() throws SearchException {
         return true;
     }
 
@@ -71,7 +71,7 @@ public class MemorySnapshot implements Translog.Snapshot {
 
     @Override public Iterable<Translog.Operation> skipTo(int skipTo) {
         if (operations.length < skipTo) {
-            throw new ElasticSearchIllegalArgumentException("skipTo [" + skipTo + "] is bigger than size [" + size() + "]");
+            throw new SearchIllegalArgumentException("skipTo [" + skipTo + "] is bigger than size [" + size() + "]");
         }
         return Arrays.asList(Arrays.copyOfRange(operations, skipTo, operations.length));
     }

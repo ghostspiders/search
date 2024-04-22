@@ -29,7 +29,7 @@ import org.server.search.util.Numbers;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
 

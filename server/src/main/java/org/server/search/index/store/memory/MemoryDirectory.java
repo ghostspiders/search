@@ -35,7 +35,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryDirectory extends Directory {
 

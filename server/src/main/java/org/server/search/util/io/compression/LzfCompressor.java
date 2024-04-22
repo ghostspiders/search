@@ -26,7 +26,7 @@ import org.server.search.util.io.compression.lzf.LZFEncoder;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class LzfCompressor implements Compressor {
 

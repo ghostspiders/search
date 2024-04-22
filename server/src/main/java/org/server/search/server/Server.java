@@ -23,7 +23,7 @@ import org.server.search.client.Client;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Server {
 

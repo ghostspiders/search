@@ -23,7 +23,7 @@ import org.apache.lucene.search.FieldDoc;
 import org.server.search.search.SearchShardTarget;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ShardFieldDoc extends FieldDoc implements ShardDoc {
 

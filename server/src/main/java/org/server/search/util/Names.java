@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.Random;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class Names {
 

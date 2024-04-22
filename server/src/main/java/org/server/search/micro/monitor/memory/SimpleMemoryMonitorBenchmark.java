@@ -33,9 +33,6 @@ import static org.server.search.cluster.metadata.IndexMetaData.*;
 import static org.server.search.server.ServerBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class SimpleMemoryMonitorBenchmark {
 
     public static void main(String[] args) throws Exception {

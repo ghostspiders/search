@@ -22,7 +22,7 @@ package org.server.search.action;
 import org.server.search.util.io.Streamable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ActionRequest extends Streamable {
 

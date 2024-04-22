@@ -24,7 +24,7 @@ import org.server.search.cluster.metadata.MetaData;
 import org.server.search.util.component.LifecycleComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Gateway extends LifecycleComponent<Gateway> {
 

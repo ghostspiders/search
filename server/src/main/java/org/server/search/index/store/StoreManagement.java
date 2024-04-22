@@ -27,7 +27,7 @@ import org.server.search.jmx.ManagedAttribute;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @MBean(objectName = "shardType=store", description = "The storage of the index shard")
 public class StoreManagement extends AbstractIndexShardComponent {

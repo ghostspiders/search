@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import static com.google.common.collect.Lists.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DisMaxJsonQueryBuilder extends BaseJsonQueryBuilder {
 

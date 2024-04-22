@@ -24,7 +24,7 @@ import org.server.search.util.io.Streamable;
 /**
  * A response handler to be used when all interaction will be done through the {@link TransportFuture}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class FutureTransportResponseHandler<T extends Streamable> extends BaseTransportResponseHandler<T> {
 

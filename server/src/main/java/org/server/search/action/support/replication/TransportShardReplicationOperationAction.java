@@ -19,7 +19,7 @@
 
 package org.server.search.action.support.replication;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionResponse;
 import org.server.search.action.PrimaryNotStartedActionException;
@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportShardReplicationOperationAction<Request extends ShardReplicationOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 
@@ -96,7 +96,7 @@ public abstract class TransportShardReplicationOperationAction<Request extends S
 
     protected abstract void shardOperationOnBackup(ShardOperationRequest shardRequest);
 
-    protected abstract ShardsIterator shards(Request request) throws ElasticSearchException;
+    protected abstract ShardsIterator shards(Request request) throws SearchException;
 
     /**
      * Should the operations be performed on the backups as well. Defaults to <tt>false</tt> meaning operations
@@ -211,7 +211,7 @@ public abstract class TransportShardReplicationOperationAction<Request extends S
         /**
          * Returns <tt>true</tt> if the action starting to be performed on the primary (or is done).
          */
-        public boolean start(final boolean fromClusterEvent) throws ElasticSearchException {
+        public boolean start(final boolean fromClusterEvent) throws SearchException {
             ClusterState clusterState = clusterService.state();
             nodes = clusterState.nodes();
             try {

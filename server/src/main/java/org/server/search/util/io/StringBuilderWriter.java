@@ -29,7 +29,7 @@ import java.io.Writer;
  * in such cases, the {@link #getBuilder()} should be called and used (usually <code>toString</code> it)
  * before another usage of the writer.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class StringBuilderWriter extends Writer {

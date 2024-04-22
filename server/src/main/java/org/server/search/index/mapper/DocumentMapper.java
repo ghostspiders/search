@@ -24,7 +24,7 @@ import org.server.search.util.Nullable;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface DocumentMapper {

@@ -41,7 +41,7 @@ import static org.server.search.index.query.support.QueryParsers.*;
  * <p>Also breaks fields with [type].[name] into a boolean query that must include the type
  * as well as the query on the name.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MapperQueryParser extends QueryParser {
 

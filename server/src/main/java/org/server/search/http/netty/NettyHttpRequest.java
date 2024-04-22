@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyHttpRequest implements HttpRequest {
 

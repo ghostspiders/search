@@ -30,9 +30,6 @@ import java.io.IOException;
 import static org.server.search.action.Actions.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class DeleteIndexRequest extends MasterNodeOperationRequest {
 
     private String index;

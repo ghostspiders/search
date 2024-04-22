@@ -50,9 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.server.search.util.lucene.DocumentBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class SimpleEngineBenchmark {
 
     private final Store store;

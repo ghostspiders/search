@@ -20,7 +20,7 @@
 package org.server.search.cluster;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ClusterStateListener {
 

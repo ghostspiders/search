@@ -22,7 +22,7 @@ package org.server.search.index.query.json;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface JsonQueryParserFactory {
 

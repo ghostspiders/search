@@ -41,7 +41,7 @@ import org.server.search.client.transport.action.search.ClientTransportSearchAct
 import org.server.search.client.transport.action.search.ClientTransportSearchScrollAction;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClientTransportActionModule extends AbstractModule {
 

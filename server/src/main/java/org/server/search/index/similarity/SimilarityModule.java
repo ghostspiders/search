@@ -28,7 +28,7 @@ import org.server.search.util.settings.Settings;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SimilarityModule extends AbstractModule {
 

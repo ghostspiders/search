@@ -24,7 +24,7 @@ import org.server.search.index.shard.ShardId;
 /**
  * An exception indicating that an {@link Engine} creation failed.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class EngineCreationFailureException extends EngineException {
 

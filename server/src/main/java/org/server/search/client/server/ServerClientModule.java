@@ -26,7 +26,7 @@ import org.server.search.client.ClusterAdminClient;
 import org.server.search.client.IndicesAdminClient;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ServerClientModule extends AbstractModule {
 

@@ -23,7 +23,7 @@ import java.net.ConnectException;
 import java.nio.channels.ClosedChannelException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NetworkExceptionHelper {
 

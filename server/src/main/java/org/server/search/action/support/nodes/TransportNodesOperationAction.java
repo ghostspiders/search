@@ -20,7 +20,7 @@
 package org.server.search.action.support.nodes;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.FailedNodeException;
 import org.server.search.action.NoSuchNodeException;
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportNodesOperationAction<Request extends NodesOperationRequest, Response extends NodesOperationResponse, NodeRequest extends NodeOperationRequest, NodeResponse extends NodeOperationResponse> extends BaseAction<Request, Response> {
 
@@ -79,7 +79,7 @@ public abstract class TransportNodesOperationAction<Request extends NodesOperati
 
     protected abstract NodeResponse newNodeResponse();
 
-    protected abstract NodeResponse nodeOperation(NodeRequest request) throws ElasticSearchException;
+    protected abstract NodeResponse nodeOperation(NodeRequest request) throws SearchException;
 
     protected abstract boolean accumulateExceptions();
 

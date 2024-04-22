@@ -20,7 +20,7 @@
 package org.server.search.jmx;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JmxConnectorCreationException extends JmxException {
 

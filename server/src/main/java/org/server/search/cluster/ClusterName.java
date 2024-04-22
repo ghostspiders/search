@@ -27,13 +27,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClusterName implements Streamable {
 
     public static final String SETTING = "cluster.name";
 
-    public static final ClusterName DEFAULT = new ClusterName("elasticsearch");
+    public static final ClusterName DEFAULT = new ClusterName("Search");
 
     private String value;
 

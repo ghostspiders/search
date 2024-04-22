@@ -24,13 +24,13 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.Similarity;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.engine.Engine;
 
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class CachedDfSource implements Engine.Searcher {
 
@@ -92,7 +92,7 @@ public class CachedDfSource implements Engine.Searcher {
     }
 
     @Override
-    public boolean release() throws ElasticSearchException {
+    public boolean release() throws SearchException {
         return false;
     }
 }

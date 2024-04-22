@@ -28,7 +28,7 @@ import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Maps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class RoutingNodes implements Iterable<RoutingNode> {

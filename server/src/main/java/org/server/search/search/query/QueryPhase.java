@@ -31,7 +31,7 @@ import org.server.search.search.internal.SearchContext;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class QueryPhase implements SearchPhase {
 

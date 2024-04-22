@@ -47,7 +47,7 @@ import java.net.URL;
 import static org.server.search.util.MapBuilder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 @ThreadSafe
@@ -99,7 +99,7 @@ public class MapperService extends AbstractIndexComponent implements Iterable<Do
                 dynamicMappingUrl = environment.resolveConfig("dynamic-mapping.json");
             } catch (FailedToResolveConfigException e) {
                 // not there, default to the built in one
-                dynamicMappingUrl = indexClassLoader.getResource("org/elasticsearch/index/mapper/json/dynamic-mapping.json");
+                dynamicMappingUrl = indexClassLoader.getResource("org/Search/index/mapper/json/dynamic-mapping.json");
             }
         } else {
             try {

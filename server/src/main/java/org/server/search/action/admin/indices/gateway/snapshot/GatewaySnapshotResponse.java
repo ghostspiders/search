@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class GatewaySnapshotResponse implements ActionResponse, Streamable {
 
     private Map<String, IndexGatewaySnapshotResponse> indexResponses = new HashMap<String, IndexGatewaySnapshotResponse>();

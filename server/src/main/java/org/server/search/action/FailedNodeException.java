@@ -19,12 +19,12 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class FailedNodeException extends ElasticSearchException {
+public class FailedNodeException extends SearchException {
 
     private final String nodeId;
 

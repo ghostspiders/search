@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface HttpRequest {
     enum Method {

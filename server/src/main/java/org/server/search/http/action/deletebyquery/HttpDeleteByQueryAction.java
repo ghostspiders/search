@@ -39,7 +39,7 @@ import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.http.action.support.HttpActions.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpDeleteByQueryAction extends BaseHttpServerHandler {
 

@@ -33,7 +33,7 @@ import static org.server.search.search.facets.Facets.*;
 import static org.server.search.util.lucene.Lucene.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class QuerySearchResult implements Streamable, QuerySearchResultProvider {
 

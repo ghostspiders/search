@@ -24,7 +24,7 @@ import org.server.search.util.io.Streamable;
 /**
  * A simple based class that always spawns.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BaseTransportResponseHandler<T extends Streamable> implements TransportResponseHandler<T> {
 

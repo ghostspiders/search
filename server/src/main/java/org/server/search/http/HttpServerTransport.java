@@ -23,7 +23,7 @@ import org.server.search.util.component.LifecycleComponent;
 import org.server.search.util.transport.BoundTransportAddress;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface HttpServerTransport extends LifecycleComponent<HttpServerTransport> {
 

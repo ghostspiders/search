@@ -25,7 +25,7 @@ import org.server.search.index.mapper.MapperService;
 import org.server.search.util.Nullable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class QueryParsers {
 

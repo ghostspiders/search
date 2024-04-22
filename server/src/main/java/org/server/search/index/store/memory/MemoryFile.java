@@ -20,7 +20,7 @@
 package org.server.search.index.store.memory;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryFile {
 

@@ -27,7 +27,7 @@ import org.server.search.indices.IndexMissingException;
 import org.server.search.util.Nullable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface OperationRouting {
 

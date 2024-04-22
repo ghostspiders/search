@@ -35,7 +35,7 @@ import java.util.Map;
 import static com.google.common.collect.Maps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public class AnalysisService extends AbstractIndexComponent {

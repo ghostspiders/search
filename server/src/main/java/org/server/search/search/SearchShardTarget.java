@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * The target that the search request was executed on.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchShardTarget implements Streamable {
 

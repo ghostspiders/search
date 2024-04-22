@@ -25,7 +25,7 @@ import org.apache.lucene.util.PriorityQueue;
 /**
  * <p>Same as lucene {@link org.apache.lucene.search.HitQueue}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ScoreDocQueue extends PriorityQueue<ScoreDoc> {
 

@@ -31,7 +31,7 @@ import java.io.*;
  * <p>Mainly for use within the framework,
  * but also useful for application code.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class Streams {
 

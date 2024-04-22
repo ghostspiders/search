@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClusterNameModule extends AbstractModule {
 

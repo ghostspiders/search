@@ -20,7 +20,7 @@
 package org.server.search.action.admin.indices.delete;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.master.TransportMasterNodeOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -29,9 +29,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportDeleteIndexAction extends TransportMasterNodeOperationAction<DeleteIndexRequest, DeleteIndexResponse> {
 
     private final MetaDataService metaDataService;
@@ -54,7 +52,7 @@ public class TransportDeleteIndexAction extends TransportMasterNodeOperationActi
         return new DeleteIndexResponse();
     }
 
-    @Override protected DeleteIndexResponse masterOperation(DeleteIndexRequest request) throws ElasticSearchException {
+    @Override protected DeleteIndexResponse masterOperation(DeleteIndexRequest request) throws SearchException {
         metaDataService.deleteIndex(request.index(), request.timeout());
         return new DeleteIndexResponse();
     }

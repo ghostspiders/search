@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.index.store.Store;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryStoreModule extends AbstractModule {
 

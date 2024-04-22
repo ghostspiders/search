@@ -19,12 +19,12 @@
 
 package org.server.search.jmx;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class JmxException extends ElasticSearchException {
+public class JmxException extends SearchException {
 
     public JmxException(String message) {
         super(message);

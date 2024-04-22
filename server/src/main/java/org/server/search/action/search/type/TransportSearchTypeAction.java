@@ -46,9 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.server.search.action.Actions.*;
 import static org.server.search.action.search.type.TransportSearchHelper.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest, SearchResponse> {
 
     protected final ThreadPool threadPool;

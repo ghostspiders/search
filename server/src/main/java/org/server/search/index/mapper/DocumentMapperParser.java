@@ -20,7 +20,7 @@
 package org.server.search.index.mapper;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface DocumentMapperParser {
 

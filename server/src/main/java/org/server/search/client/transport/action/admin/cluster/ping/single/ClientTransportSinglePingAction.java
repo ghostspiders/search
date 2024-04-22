@@ -28,7 +28,7 @@ import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClientTransportSinglePingAction extends BaseClientTransportAction<SinglePingRequest, SinglePingResponse> {
 

@@ -24,7 +24,7 @@ import org.server.search.discovery.Discovery;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JgroupsDiscoveryModule extends AbstractModule {
 

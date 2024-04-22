@@ -22,7 +22,7 @@ package org.server.search.util;
 /**
  * A set of utlities around numbers.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class Numbers {
 

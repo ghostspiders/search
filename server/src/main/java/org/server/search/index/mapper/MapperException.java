@@ -19,12 +19,12 @@
 
 package org.server.search.index.mapper;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class MapperException extends ElasticSearchException {
+public class MapperException extends SearchException {
 
     public MapperException(String message) {
         super(message);

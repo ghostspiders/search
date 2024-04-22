@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PlainShardsIterator implements ShardsIterator {
 

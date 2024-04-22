@@ -23,7 +23,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.server.search.index.IndexComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TokenFilterFactory extends IndexComponent {
 

@@ -20,7 +20,7 @@
 package org.server.search.cluster.routing;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.*;
 import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.threadpool.ThreadPool;
@@ -36,7 +36,7 @@ import static org.server.search.cluster.ClusterState.*;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RoutingService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<RoutingService> {
 
@@ -66,7 +66,7 @@ public class RoutingService extends AbstractComponent implements ClusterStateLis
         return this.lifecycle.state();
     }
 
-    @Override public RoutingService start() throws ElasticSearchException {
+    @Override public RoutingService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -74,7 +74,7 @@ public class RoutingService extends AbstractComponent implements ClusterStateLis
         return this;
     }
 
-    @Override public RoutingService stop() throws ElasticSearchException {
+    @Override public RoutingService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

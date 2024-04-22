@@ -34,9 +34,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class CreateIndexRequest extends MasterNodeOperationRequest {
 
     private String index;

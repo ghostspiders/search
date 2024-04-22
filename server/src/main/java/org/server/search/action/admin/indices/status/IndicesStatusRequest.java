@@ -23,9 +23,6 @@ import org.server.search.action.support.shards.ShardsOperationRequest;
 import org.server.search.action.support.shards.ShardsOperationThreading;
 import org.server.search.util.Strings;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class IndicesStatusRequest extends ShardsOperationRequest {
 
     public IndicesStatusRequest() {

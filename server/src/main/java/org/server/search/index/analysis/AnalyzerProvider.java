@@ -24,7 +24,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.server.search.index.IndexComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface AnalyzerProvider<T extends Analyzer> extends IndexComponent, Provider<T> {
 

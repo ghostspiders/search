@@ -30,9 +30,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class CountRequest extends BroadcastOperationRequest {
 
     public static final float DEFAULT_MIN_SCORE = -1f;

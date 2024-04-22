@@ -26,7 +26,7 @@ package org.server.search.util;
  * helps organize and use size representations that may be maintained
  * separately across various contexts.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum SizeUnit {
     BYTES {

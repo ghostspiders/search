@@ -20,7 +20,7 @@
 package org.server.search.cluster.metadata;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.ClusterStateUpdateTask;
@@ -52,7 +52,7 @@ import static org.server.search.cluster.metadata.IndexMetaData.*;
 import static org.server.search.cluster.metadata.MetaData.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MetaDataService extends AbstractComponent {
 
@@ -192,7 +192,7 @@ public class MetaDataService extends AbstractComponent {
         }
     }
 
-    public void addMapping(final String[] indices, String mappingType, final String mappingSource) throws ElasticSearchException {
+    public void addMapping(final String[] indices, String mappingType, final String mappingSource) throws SearchException {
         ClusterState clusterState = clusterService.state();
         for (String index : indices) {
             IndexRoutingTable indexTable = clusterState.routingTable().indicesRouting().get(index);

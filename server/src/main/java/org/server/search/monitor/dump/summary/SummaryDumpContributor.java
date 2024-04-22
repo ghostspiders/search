@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SummaryDumpContributor implements DumpContributor {
 

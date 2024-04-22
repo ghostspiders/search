@@ -22,9 +22,6 @@ package org.server.search.action.admin.indices.flush;
 import org.server.search.action.support.replication.IndicesReplicationOperationRequest;
 import org.server.search.util.TimeValue;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class FlushRequest extends IndicesReplicationOperationRequest {
 
     public FlushRequest(String index) {

@@ -28,7 +28,7 @@ import org.server.search.search.fetch.FetchPhase;
 import org.server.search.search.query.QueryPhase;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchModule extends AbstractModule {
 

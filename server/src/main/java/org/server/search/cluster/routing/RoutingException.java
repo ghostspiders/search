@@ -19,12 +19,12 @@
 
 package org.server.search.cluster.routing;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class RoutingException extends ElasticSearchException {
+public class RoutingException extends SearchException {
 
     public RoutingException(String message) {
         super(message);

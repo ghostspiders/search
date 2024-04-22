@@ -24,7 +24,7 @@ import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.ExceptionsHelper;
 import org.server.search.cluster.node.Node;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
@@ -57,7 +57,7 @@ import static java.util.concurrent.TimeUnit.*;
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RecoveryAction extends AbstractIndexShardComponent {
 
@@ -103,7 +103,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
         transportService.removeHandler(snapshotTransportAction);
     }
 
-    public synchronized void startRecovery(Node node, Node targetNode, boolean markAsRelocated) throws ElasticSearchException {
+    public synchronized void startRecovery(Node node, Node targetNode, boolean markAsRelocated) throws SearchException {
         // mark the shard as recovering
         IndexShardState preRecoveringState;
         try {
@@ -207,7 +207,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
             cleanOpenIndex();
             final RecoveryStatus recoveryStatus = new RecoveryStatus();
             indexShard.recover(new Engine.RecoveryHandler() {
-                @Override public void phase1(SnapshotIndexCommit snapshot) throws ElasticSearchException {
+                @Override public void phase1(SnapshotIndexCommit snapshot) throws SearchException {
                     long totalSize = 0;
                     try {
                         StopWatch stopWatch = new StopWatch().start();
@@ -265,7 +265,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                     }
                 }
 
-                @Override public void phase2(Translog.Snapshot snapshot) throws ElasticSearchException {
+                @Override public void phase2(Translog.Snapshot snapshot) throws SearchException {
                     logger.trace("Recovery [phase2] to {}: sending [{}] transaction log operations", node, snapshot.size());
                     StopWatch stopWatch = new StopWatch().start();
                     sendSnapshot(snapshot, false);
@@ -275,7 +275,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                     recoveryStatus.phase2Operations = snapshot.size();
                 }
 
-                @Override public void phase3(Translog.Snapshot snapshot) throws ElasticSearchException {
+                @Override public void phase3(Translog.Snapshot snapshot) throws SearchException {
                     logger.trace("Recovery [phase3] to {}: sending [{}] transaction log operations", node, snapshot.size());
                     StopWatch stopWatch = new StopWatch().start();
                     sendSnapshot(snapshot, true);
@@ -289,7 +289,7 @@ public class RecoveryAction extends AbstractIndexShardComponent {
                     recoveryStatus.phase3Operations = snapshot.size();
                 }
 
-                private void sendSnapshot(Translog.Snapshot snapshot, boolean phase3) throws ElasticSearchException {
+                private void sendSnapshot(Translog.Snapshot snapshot, boolean phase3) throws SearchException {
                     MemorySnapshot memorySnapshot;
                     if (snapshot instanceof MemorySnapshot) {
                         memorySnapshot = (MemorySnapshot) snapshot;

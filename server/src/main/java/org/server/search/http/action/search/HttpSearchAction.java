@@ -20,7 +20,7 @@
 package org.server.search.http.action.search;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.search.SearchOperationThreading;
 import org.server.search.action.search.SearchRequest;
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 import static org.server.search.http.HttpResponse.Status.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpSearchAction extends BaseHttpServerHandler {
 
@@ -125,7 +125,7 @@ public class HttpSearchAction extends BaseHttpServerHandler {
             } else if ("query_and_fetch".equals(searchType)) {
                 searchRequest.searchType(SearchType.QUERY_AND_FETCH);
             } else {
-                throw new ElasticSearchIllegalArgumentException("No search type for [" + searchType + "]");
+                throw new SearchIllegalArgumentException("No search type for [" + searchType + "]");
             }
         } else {
             searchRequest.searchType(SearchType.QUERY_THEN_FETCH);
@@ -170,7 +170,7 @@ public class HttpSearchAction extends BaseHttpServerHandler {
         }
         String queryString = request.param("q");
         if (queryString == null) {
-            throw new ElasticSearchIllegalArgumentException("No query to execute, not in body, and not bounded to 'q' parameter");
+            throw new SearchIllegalArgumentException("No query to execute, not in body, and not bounded to 'q' parameter");
         }
         QueryStringJsonQueryBuilder queryBuilder = JsonQueryBuilders.queryString(queryString);
         queryBuilder.defaultField(request.param("df"));
@@ -182,7 +182,7 @@ public class HttpSearchAction extends BaseHttpServerHandler {
             } else if ("AND".equals(defaultOperator)) {
                 queryBuilder.defualtOperator(QueryStringJsonQueryBuilder.Operator.AND);
             } else {
-                throw new ElasticSearchIllegalArgumentException("Unsupported defaultOperator [" + defaultOperator + "], can either be [OR] or [AND]");
+                throw new SearchIllegalArgumentException("Unsupported defaultOperator [" + defaultOperator + "], can either be [OR] or [AND]");
             }
         }
         // TODO add different parameters to the query

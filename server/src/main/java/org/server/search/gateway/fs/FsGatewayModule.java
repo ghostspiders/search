@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.gateway.Gateway;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FsGatewayModule extends AbstractModule {
 

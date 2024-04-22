@@ -22,7 +22,7 @@ package org.server.search.transport;
 import org.server.search.util.io.VoidStreamable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class VoidTransportResponseHandler implements TransportResponseHandler<VoidStreamable> {
 

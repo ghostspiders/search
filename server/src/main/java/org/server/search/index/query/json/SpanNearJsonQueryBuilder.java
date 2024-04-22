@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SpanNearJsonQueryBuilder extends BaseJsonQueryBuilder implements JsonSpanQueryBuilder {
 

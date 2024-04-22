@@ -27,7 +27,7 @@ import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.util.PriorityQueue;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.lucene.ShardFieldDocSortedHitQueue;
 import org.server.search.search.SearchHit;
 import org.server.search.search.SearchShardTarget;
@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchPhaseController {
     private static final ShardDoc[] EMPTY = new ShardDoc[0];
@@ -167,7 +167,7 @@ public class SearchPhaseController {
                     if (facet.type() == Facet.Type.COUNT) {
                         mergedFacets.add(new CountFacet(facet.name(), 0));
                     } else {
-                        throw new ElasticSearchIllegalStateException("Can't handle type [" + facet.type() + "]");
+                        throw new SearchIllegalStateException("Can't handle type [" + facet.type() + "]");
                     }
                 }
                 for (QuerySearchResultProvider queryResultProvider : queryResults.values()) {

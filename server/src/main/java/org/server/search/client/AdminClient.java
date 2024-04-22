@@ -20,7 +20,7 @@
 package org.server.search.client;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface AdminClient {
 

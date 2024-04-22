@@ -31,7 +31,7 @@ import org.server.search.util.lucene.Lucene;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFieldMapper {
 

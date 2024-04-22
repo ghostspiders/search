@@ -19,7 +19,7 @@
 
 package org.server.search.http;
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class StringHttpResponse extends Utf8HttpResponse {
 

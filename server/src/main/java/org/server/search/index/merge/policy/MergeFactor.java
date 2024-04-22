@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 /**
  * The merge factor that is used for the shard.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER})

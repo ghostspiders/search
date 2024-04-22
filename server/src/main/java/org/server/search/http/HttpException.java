@@ -19,12 +19,12 @@
 
 package org.server.search.http;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class HttpException extends ElasticSearchException {
+public class HttpException extends SearchException {
 
     public HttpException(String message) {
         super(message);

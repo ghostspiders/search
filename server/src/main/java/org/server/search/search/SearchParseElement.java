@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import org.server.search.search.internal.SearchContext;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchParseElement {
 

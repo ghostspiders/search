@@ -30,9 +30,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportShardGatewaySnapshotAction extends TransportShardReplicationOperationAction<ShardGatewaySnapshotRequest, ShardGatewaySnapshotResponse> {
 
     @Inject public TransportShardGatewaySnapshotAction(Settings settings, TransportService transportService,

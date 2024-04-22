@@ -20,7 +20,7 @@
 package org.server.search.jmx.action;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.node.Node;
 import org.server.search.jmx.JmxService;
@@ -34,7 +34,7 @@ import org.server.search.util.io.VoidStreamable;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class GetJmxServiceUrlAction extends AbstractComponent {
 
@@ -54,7 +54,7 @@ public class GetJmxServiceUrlAction extends AbstractComponent {
         transportService.registerHandler(GetJmxServiceUrlTransportHandler.ACTION, new GetJmxServiceUrlTransportHandler());
     }
 
-    public String obtainPublishUrl(final Node node) throws ElasticSearchException {
+    public String obtainPublishUrl(final Node node) throws SearchException {
         if (clusterService.state().nodes().localNodeId().equals(node.id())) {
             return jmxService.publishUrl();
         } else {

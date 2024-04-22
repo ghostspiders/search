@@ -37,7 +37,7 @@ import org.server.search.action.admin.indices.status.IndicesStatusRequest;
 import org.server.search.action.admin.indices.status.IndicesStatusResponse;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface IndicesAdminClient {
 

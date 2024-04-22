@@ -28,7 +28,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BroadcastOperationRequest implements ActionRequest {
 

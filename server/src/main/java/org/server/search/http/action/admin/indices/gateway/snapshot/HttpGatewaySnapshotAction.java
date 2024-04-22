@@ -38,7 +38,7 @@ import static org.server.search.action.support.replication.ShardReplicationOpera
 import static org.server.search.http.HttpResponse.Status.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpGatewaySnapshotAction extends BaseHttpServerHandler {
 

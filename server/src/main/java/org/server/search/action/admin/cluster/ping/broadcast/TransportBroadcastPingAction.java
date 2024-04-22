@@ -20,7 +20,7 @@
 package org.server.search.action.admin.cluster.ping.broadcast;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.broadcast.TransportBroadcastOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -32,9 +32,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportBroadcastPingAction extends TransportBroadcastOperationAction<BroadcastPingRequest, BroadcastPingResponse, BroadcastShardPingRequest, BroadcastShardPingResponse> {
 
     @Inject public TransportBroadcastPingAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, TransportService transportService, IndicesService indicesService) {
@@ -82,7 +80,7 @@ public class TransportBroadcastPingAction extends TransportBroadcastOperationAct
         return new BroadcastShardPingResponse();
     }
 
-    @Override protected BroadcastShardPingResponse shardOperation(BroadcastShardPingRequest broadcastShardPingRequest) throws ElasticSearchException {
+    @Override protected BroadcastShardPingResponse shardOperation(BroadcastShardPingRequest broadcastShardPingRequest) throws SearchException {
         return new BroadcastShardPingResponse();
     }
 }

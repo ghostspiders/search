@@ -20,7 +20,7 @@
 package org.server.search.index;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public interface IndexComponent {

@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.SnapshotDeletionPolicy;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
@@ -57,7 +57,7 @@ import static org.server.search.util.concurrent.resource.AcquirableResourceFacto
 import static org.server.search.util.lucene.Lucene.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public class RobinEngine extends AbstractIndexShardComponent implements Engine, ScheduledRefreshableEngine {
@@ -370,7 +370,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         }
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (closed) {
             return;
         }
@@ -407,7 +407,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             return nrtHolder.resource().searcher();
         }
 
-        @Override public boolean release() throws ElasticSearchException {
+        @Override public boolean release() throws SearchException {
             nrtHolder.release();
             return true;
         }

@@ -22,7 +22,7 @@ package org.server.search.action.support.master;
 import org.server.search.action.ActionRequest;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class MasterNodeOperationRequest implements ActionRequest {
 

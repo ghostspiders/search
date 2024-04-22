@@ -32,7 +32,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ThreadDumpContributor implements DumpContributor {
 

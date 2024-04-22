@@ -22,7 +22,7 @@ package org.server.search.monitor.memory;
 import org.server.search.util.component.LifecycleComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface MemoryMonitor extends LifecycleComponent<MemoryMonitor> {
 

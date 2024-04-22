@@ -36,7 +36,7 @@ import java.io.Reader;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class EdgeNGramTokenizerFactory extends AbstractTokenizerFactory{
 

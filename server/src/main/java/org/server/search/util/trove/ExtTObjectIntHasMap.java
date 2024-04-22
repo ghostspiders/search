@@ -23,7 +23,7 @@ import org.server.search.util.gnu.trove.TObjectHashingStrategy;
 import org.server.search.util.gnu.trove.TObjectIntHashMap;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ExtTObjectIntHasMap<T> extends TObjectIntHashMap<T> {
 

@@ -31,7 +31,7 @@ import java.util.Set;
  * <p> Values for substitution can be supplied using a {@link Properties} instance or using a
  * {@link PlaceholderResolver}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PropertyPlaceholder {
 

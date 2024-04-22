@@ -22,7 +22,7 @@ package org.server.search.util.json;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ToJson {
 

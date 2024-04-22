@@ -29,9 +29,6 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportRefreshAction extends TransportIndicesReplicationOperationAction<RefreshRequest, RefreshResponse, IndexRefreshRequest, IndexRefreshResponse, ShardRefreshRequest, ShardRefreshResponse> {
 
     @Inject public TransportRefreshAction(Settings settings, TransportService transportService, ClusterService clusterService, ThreadPool threadPool, TransportIndexRefreshAction indexAction) {

@@ -20,7 +20,7 @@
 package org.server.search.index.shard;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardClosedException extends IllegalIndexShardStateException {
     public IndexShardClosedException(ShardId shardId) {

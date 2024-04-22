@@ -22,7 +22,7 @@ package org.server.search.jmx;
 import java.lang.annotation.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

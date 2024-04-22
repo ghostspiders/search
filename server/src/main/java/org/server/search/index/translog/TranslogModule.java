@@ -25,7 +25,7 @@ import org.server.search.index.translog.memory.MemoryTranslog;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TranslogModule extends AbstractModule {
 

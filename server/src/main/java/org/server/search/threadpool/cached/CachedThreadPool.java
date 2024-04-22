@@ -34,7 +34,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class CachedThreadPool extends AbstractThreadPool {
 

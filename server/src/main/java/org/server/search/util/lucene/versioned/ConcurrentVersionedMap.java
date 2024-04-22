@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * An implementation of {@link VersionedMap} based on {@link ConcurrentHashMap}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class ConcurrentVersionedMap implements VersionedMap {

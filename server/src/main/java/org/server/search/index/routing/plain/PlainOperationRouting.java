@@ -39,7 +39,7 @@ import org.server.search.util.Nullable;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PlainOperationRouting extends AbstractIndexComponent implements OperationRouting {
 

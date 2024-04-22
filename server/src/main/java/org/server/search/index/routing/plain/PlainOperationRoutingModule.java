@@ -23,7 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.index.routing.OperationRouting;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PlainOperationRoutingModule extends AbstractModule {
 

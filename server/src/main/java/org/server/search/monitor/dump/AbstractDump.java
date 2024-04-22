@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class AbstractDump implements Dump {
 

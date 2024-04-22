@@ -29,9 +29,6 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class IndexStatus implements Iterable<IndexShardStatus> {
 
     public static class Docs {

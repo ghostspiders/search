@@ -49,9 +49,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchDfsQueryThenFetchAction extends TransportSearchTypeAction {
 
     @Inject public TransportSearchDfsQueryThenFetchAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, IndicesService indicesService,

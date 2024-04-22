@@ -26,7 +26,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 /**
  * A mapper that maps the type of the resource into the document.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface TypeFieldMapper extends FieldMapper<String> {

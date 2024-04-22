@@ -36,7 +36,7 @@ import org.server.search.action.search.SearchResponse;
 import org.server.search.action.search.SearchScrollRequest;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Client {
 

@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * An implementation of {@link VersionedMap} based on trove {@link org.server.search.util.gnu.trove.TIntIntHashMap}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class NativeVersionedMap implements VersionedMap {

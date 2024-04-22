@@ -31,7 +31,7 @@ import java.io.IOException;
 import static org.server.search.action.Actions.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ShardDeleteByQueryRequest extends ShardReplicationOperationRequest {
 

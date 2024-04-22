@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import static org.server.search.util.MapBuilder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PathTrie<T> {
     private final TrieNode<T> root;

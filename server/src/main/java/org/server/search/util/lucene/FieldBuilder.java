@@ -23,7 +23,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FieldBuilder {
 

@@ -20,13 +20,13 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class ExceptionsHelper {
 
     public static Throwable unwrapCause(Throwable t) {
         Throwable result = t;
-        while (result instanceof ElasticSearchWrapperException) {
+        while (result instanceof SearchWrapperException) {
             result = t.getCause();
         }
         return result;

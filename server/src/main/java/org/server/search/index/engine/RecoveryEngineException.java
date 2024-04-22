@@ -22,7 +22,7 @@ package org.server.search.index.engine;
 import org.server.search.index.shard.ShardId;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RecoveryEngineException extends EngineException {
 

@@ -25,7 +25,7 @@ import java.io.InterruptedIOException;
 import java.io.RandomAccessFile;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FileSystemUtils {
 

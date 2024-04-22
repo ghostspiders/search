@@ -27,7 +27,7 @@ import org.server.search.util.transport.BoundTransportAddress;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Transport extends LifecycleComponent<Transport> {
 

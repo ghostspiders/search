@@ -26,7 +26,7 @@ import java.util.Map;
  * Provides the ability to load settings (in the form of a simple Map) from
  * the actual source content that represents them.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SettingsLoader {
 

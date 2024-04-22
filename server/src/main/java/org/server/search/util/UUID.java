@@ -26,7 +26,7 @@ import java.security.SecureRandom;
 /**
  * A UUID taken from java UUID that simply holds less data.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class UUID implements Comparable<UUID> {
 

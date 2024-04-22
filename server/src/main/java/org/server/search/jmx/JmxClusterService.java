@@ -37,7 +37,7 @@ import static java.util.concurrent.Executors.*;
 import static org.server.search.util.concurrent.DynamicExecutors.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 // TODO Disabled for now. Can be used to mbean proxy other nodes in the cluster from within the same console. Need the jmxruntime_optional jars though..,
 public class JmxClusterService extends AbstractComponent {

@@ -70,7 +70,7 @@ public class DynamicThreadPoolExecutor extends ThreadPoolExecutor {
      * executed.</li>
      * </ol>
      *
-     * @author kimchy (Shay Banon)
+     * 
      */
     public static class DynamicQueue<E> extends LinkedBlockingQueue<E> {
         private static final long serialVersionUID = 1L;

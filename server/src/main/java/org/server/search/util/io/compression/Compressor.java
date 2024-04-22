@@ -22,7 +22,7 @@ package org.server.search.util.io.compression;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Compressor {
 

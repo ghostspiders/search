@@ -22,7 +22,7 @@ package org.server.search.util.io;
 import java.io.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FastDataOutputStream extends FilterOutputStream implements DataOutput {
     /**

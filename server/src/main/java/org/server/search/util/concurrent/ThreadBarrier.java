@@ -113,7 +113,7 @@ import java.util.concurrent.TimeoutException;
  *    }
  * </pre>
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ThreadBarrier extends CyclicBarrier {
     /**

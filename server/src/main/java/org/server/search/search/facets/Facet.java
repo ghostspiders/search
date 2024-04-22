@@ -19,12 +19,12 @@
 
 package org.server.search.search.facets;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.util.io.Streamable;
 import org.server.search.util.json.ToJson;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface Facet extends Streamable, ToJson {
 
@@ -45,7 +45,7 @@ public interface Facet extends Streamable, ToJson {
             if (id == 0) {
                 return COUNT;
             } else {
-                throw new ElasticSearchIllegalArgumentException("No match for id [" + id + "]");
+                throw new SearchIllegalArgumentException("No match for id [" + id + "]");
             }
         }
     }

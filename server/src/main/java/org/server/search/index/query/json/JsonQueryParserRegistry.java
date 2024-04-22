@@ -31,7 +31,7 @@ import java.util.Map;
 import static com.google.common.collect.Maps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonQueryParserRegistry {
 

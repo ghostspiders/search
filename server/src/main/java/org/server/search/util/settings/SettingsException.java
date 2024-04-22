@@ -19,12 +19,12 @@
 
 package org.server.search.util.settings;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class SettingsException extends ElasticSearchException {
+public class SettingsException extends SearchException {
 
     public SettingsException(String message) {
         super(message);

@@ -25,7 +25,7 @@ import org.server.search.index.IndexComponent;
 import java.io.Reader;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface TokenizerFactory extends IndexComponent {
 

@@ -19,12 +19,12 @@
 
 package org.server.search.monitor.dump;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class DumpException extends ElasticSearchException {
+public class DumpException extends SearchException {
 
     public DumpException(String msg) {
         super(msg);

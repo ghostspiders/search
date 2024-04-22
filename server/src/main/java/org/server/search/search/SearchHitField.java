@@ -24,7 +24,7 @@ import org.server.search.util.io.Streamable;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchHitField extends Streamable {
 

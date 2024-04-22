@@ -30,7 +30,7 @@ import java.io.IOException;
 import static org.server.search.search.internal.InternalSearchHit.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalSearchHits implements SearchHits {
 

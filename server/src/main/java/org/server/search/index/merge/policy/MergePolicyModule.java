@@ -25,7 +25,7 @@ import org.server.search.index.shard.IndexShardLifecycle;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public class MergePolicyModule extends AbstractModule {

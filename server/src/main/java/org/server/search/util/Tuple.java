@@ -20,7 +20,7 @@
 package org.server.search.util;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Tuple<V1, V2> {
 

@@ -20,7 +20,7 @@
 package org.server.search.index.routing.hash;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface HashFunction {
 

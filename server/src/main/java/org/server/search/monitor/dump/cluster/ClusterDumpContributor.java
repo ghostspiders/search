@@ -33,7 +33,7 @@ import org.server.search.util.settings.Settings;
 import java.io.PrintWriter;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClusterDumpContributor implements DumpContributor {
 

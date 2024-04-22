@@ -20,7 +20,7 @@
 package org.server.search.util.settings.loader;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class SettingsLoaderFactory {
 

@@ -22,7 +22,7 @@ package org.server.search.util;
 /**
  * An array that is safe in terms of size.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SafeArray<T> {
 

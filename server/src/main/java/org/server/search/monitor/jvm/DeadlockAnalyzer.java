@@ -28,7 +28,7 @@ import java.lang.management.ThreadMXBean;
 import java.util.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DeadlockAnalyzer {
 

@@ -21,8 +21,8 @@ package org.server.search.discovery.jgroups;
 
 import com.google.inject.Inject;
 import io.netty.channel.ChannelException;
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.cluster.*;
 import org.server.search.cluster.node.Node;
 import org.server.search.cluster.node.Nodes;
@@ -55,7 +55,7 @@ import static com.google.common.collect.Sets.*;
 import static org.server.search.cluster.ClusterState.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JgroupsDiscovery extends AbstractComponent implements Discovery, Receiver {
 
@@ -115,7 +115,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             }
 
             if (System.getProperty("jgroups.bind_addr") == null) {
-                // automatically set the bind address based on ElasticSearch default bindings...
+                // automatically set the bind address based on Search default bindings...
                 try {
                     InetAddress bindAddress = HostResolver.resultBindHostAddress(null, settings, HostResolver.LOCAL_IP);
                     if ((bindAddress instanceof Inet4Address && HostResolver.isIPv4()) || (bindAddress instanceof Inet6Address && !HostResolver.isIPv4())) {
@@ -149,7 +149,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
         return this.lifecycle.state();
     }
 
-    @Override public Discovery start() throws ElasticSearchException {
+    @Override public Discovery start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -199,7 +199,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
         return this;
     }
 
-    @Override public Discovery stop() throws ElasticSearchException {
+    @Override public Discovery stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -232,7 +232,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
 
     @Override public void publish(ClusterState clusterState) {
         if (!isMaster()) {
-            throw new ElasticSearchIllegalStateException("Shouldn't publish state when not master");
+            throw new SearchIllegalStateException("Shouldn't publish state when not master");
         }
         try {
             channel.send(new Message( channel.getAddress(),ClusterState.Builder.toBytes(clusterState)));

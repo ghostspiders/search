@@ -32,7 +32,7 @@ import java.util.Properties;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class LogConfigurator {
 
@@ -89,7 +89,7 @@ public class LogConfigurator {
             // ignore
         }
         ((ImmutableSettings.Builder) settingsBuilder)
-                .putProperties("elasticsearch.", System.getProperties())
+                .putProperties("Search.", System.getProperties())
                 .putProperties("es.", System.getProperties())
                 .replacePropertyPlaceholders();
         Properties props = new Properties();

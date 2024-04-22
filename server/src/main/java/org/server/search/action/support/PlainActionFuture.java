@@ -19,8 +19,8 @@
 
 package org.server.search.action.support;
 
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchInterruptedException;
+import org.server.search.SearchException;
+import org.server.search.SearchInterruptedException;
 import org.server.search.action.ActionFuture;
 import org.server.search.action.ActionListener;
 import org.server.search.transport.TransportException;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PlainActionFuture<T> implements ActionFuture<T>, ActionListener<T> {
 
@@ -103,34 +103,34 @@ public class PlainActionFuture<T> implements ActionFuture<T>, ActionListener<T> 
         return this.result;
     }
 
-    @Override public T actionGet() throws ElasticSearchException {
+    @Override public T actionGet() throws SearchException {
         try {
             return get();
         } catch (InterruptedException e) {
-            throw new ElasticSearchInterruptedException(e.getMessage());
+            throw new SearchInterruptedException(e.getMessage());
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof ElasticSearchException) {
-                throw (ElasticSearchException) e.getCause();
+            if (e.getCause() instanceof SearchException) {
+                throw (SearchException) e.getCause();
             } else {
                 throw new TransportException("Failed execution", e);
             }
         }
     }
 
-    @Override public T actionGet(long timeoutMillis) throws ElasticSearchException, TimeoutException {
+    @Override public T actionGet(long timeoutMillis) throws SearchException, TimeoutException {
         return actionGet(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
-    @Override public T actionGet(long timeout, TimeUnit unit) throws ElasticSearchException, TimeoutException {
+    @Override public T actionGet(long timeout, TimeUnit unit) throws SearchException, TimeoutException {
         try {
             return get(timeout, unit);
         } catch (InterruptedException e) {
-            throw new ElasticSearchInterruptedException(e.getMessage());
+            throw new SearchInterruptedException(e.getMessage());
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof ElasticSearchException) {
-                throw (ElasticSearchException) e.getCause();
+            if (e.getCause() instanceof SearchException) {
+                throw (SearchException) e.getCause();
             } else {
-                throw new ElasticSearchException("Failed execution", e);
+                throw new SearchException("Failed execution", e);
             }
         }
     }

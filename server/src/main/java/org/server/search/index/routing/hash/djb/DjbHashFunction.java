@@ -22,7 +22,7 @@ package org.server.search.index.routing.hash.djb;
 import org.server.search.index.routing.hash.HashFunction;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DjbHashFunction implements HashFunction {
 

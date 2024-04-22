@@ -30,7 +30,7 @@ import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JmxModule extends AbstractModule {
 

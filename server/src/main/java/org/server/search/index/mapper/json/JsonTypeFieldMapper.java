@@ -30,7 +30,7 @@ import org.server.search.util.lucene.Lucene;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonTypeFieldMapper extends JsonFieldMapper<String> implements TypeFieldMapper {
 

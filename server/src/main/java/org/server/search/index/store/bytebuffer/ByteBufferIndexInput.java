@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ByteBufferIndexInput extends IndexInput {
 

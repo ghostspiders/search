@@ -31,7 +31,7 @@ import static org.server.search.util.Strings.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Environment {
 

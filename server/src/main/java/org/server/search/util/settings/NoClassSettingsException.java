@@ -20,7 +20,7 @@
 package org.server.search.util.settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NoClassSettingsException extends SettingsException {
 

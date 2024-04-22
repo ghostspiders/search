@@ -20,7 +20,7 @@
 package org.server.search.action.count;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.broadcast.TransportBroadcastOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -33,9 +33,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportCountAction extends TransportBroadcastOperationAction<CountRequest, CountResponse, ShardCountRequest, ShardCountResponse> {
 
     @Inject public TransportCountAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, TransportService transportService, IndicesService indicesService) {
@@ -86,7 +84,7 @@ public class TransportCountAction extends TransportBroadcastOperationAction<Coun
         return false;
     }
 
-    @Override protected ShardCountResponse shardOperation(ShardCountRequest request) throws ElasticSearchException {
+    @Override protected ShardCountResponse shardOperation(ShardCountRequest request) throws SearchException {
         IndexShard indexShard = indicesService.indexServiceSafe(request.index()).shardSafe(request.shardId());
         long count = indexShard.count(request.minScore(), request.querySource(), request.queryParserName(), request.types());
         return new ShardCountResponse(request.index(), request.shardId(), count);

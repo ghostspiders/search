@@ -30,7 +30,7 @@ import java.util.Map;
  * A simple delegate that delegates all {@link IndexCommit} calls to a delegated
  * {@link IndexCommit}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class IndexCommitDelegate extends IndexCommit {
 

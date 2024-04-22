@@ -25,7 +25,7 @@ import org.server.search.util.concurrent.highscalelib.NonBlockingHashMapLong;
 /**
  * An implementation of {@link VersionedMap} based on {@link NonBlockingHashMapLong}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public class NonBlockingVersionedMap implements VersionedMap {

@@ -19,12 +19,12 @@
 
 package org.server.search.search;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class SearchContextMissingException extends ElasticSearchException {
+public class SearchContextMissingException extends SearchException {
 
     private final long id;
 

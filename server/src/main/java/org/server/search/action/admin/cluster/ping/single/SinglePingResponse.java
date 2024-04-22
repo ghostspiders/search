@@ -25,9 +25,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class SinglePingResponse implements ActionResponse {
 
     @Override public void readFrom(DataInput in) throws IOException, ClassNotFoundException {

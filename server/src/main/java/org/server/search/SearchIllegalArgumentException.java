@@ -20,9 +20,19 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public interface ElasticSearchWrapperException {
+public class SearchIllegalArgumentException extends SearchException {
 
-    Throwable getCause();
+    public SearchIllegalArgumentException() {
+        super(null);
+    }
+
+    public SearchIllegalArgumentException(String msg) {
+        super(msg);
+    }
+
+    public SearchIllegalArgumentException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

@@ -22,7 +22,7 @@ package org.server.search.transport;
 import org.server.search.util.io.Streamable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ActionTransportRequestHandler<T extends Streamable> extends TransportRequestHandler<T> {
 

@@ -24,7 +24,7 @@ import org.server.search.jmx.MBean;
 import org.server.search.jmx.ManagedAttribute;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @MBean(objectName = "service=transport,transportType=netty", description = "Netty Transport")
 public class NettyTransportManagement {

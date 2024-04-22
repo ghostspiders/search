@@ -19,12 +19,12 @@
 
 package org.server.search.env;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class FailedToResolveConfigException extends ElasticSearchException {
+public class FailedToResolveConfigException extends SearchException {
 
     public FailedToResolveConfigException(String msg) {
         super(msg);

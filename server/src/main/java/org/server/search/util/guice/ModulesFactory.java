@@ -20,14 +20,14 @@
 package org.server.search.util.guice;
 
 import com.google.inject.Module;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.util.Nullable;
 import org.server.search.util.settings.Settings;
 
 import java.lang.reflect.Constructor;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ModulesFactory {
 
@@ -42,7 +42,7 @@ public class ModulesFactory {
             try {
                 return constructor.newInstance(settings);
             } catch (Exception e) {
-                throw new ElasticSearchException("Failed to create module [" + moduleClass + "]", e);
+                throw new SearchException("Failed to create module [" + moduleClass + "]", e);
             }
         } catch (NoSuchMethodException e) {
             try {
@@ -50,10 +50,10 @@ public class ModulesFactory {
                 try {
                     return constructor.newInstance();
                 } catch (Exception e1) {
-                    throw new ElasticSearchException("Failed to create module [" + moduleClass + "]", e);
+                    throw new SearchException("Failed to create module [" + moduleClass + "]", e);
                 }
             } catch (NoSuchMethodException e1) {
-                throw new ElasticSearchException("No constructor for [" + moduleClass + "]");
+                throw new SearchException("No constructor for [" + moduleClass + "]");
             }
         }
     }

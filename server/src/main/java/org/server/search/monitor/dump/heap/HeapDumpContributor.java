@@ -29,7 +29,7 @@ import org.server.search.util.settings.Settings;
 import java.lang.reflect.Method;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HeapDumpContributor implements DumpContributor {
 

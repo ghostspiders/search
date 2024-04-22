@@ -35,9 +35,7 @@ import static com.google.common.collect.Maps.*;
 import static org.server.search.action.admin.indices.status.ShardStatus.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class IndicesStatusResponse extends ShardsOperationResponse<ShardStatus> {
 
     private Map<String, Settings> indicesSettings = ImmutableMap.of();

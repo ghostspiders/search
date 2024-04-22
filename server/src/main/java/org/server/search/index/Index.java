@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class Index implements Serializable, Streamable {

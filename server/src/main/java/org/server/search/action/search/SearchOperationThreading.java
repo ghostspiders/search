@@ -19,13 +19,13 @@
 
 package org.server.search.action.search;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 
 /**
  * Controls the operation threading model for search operation that are performed
  * locally on the executing node.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum SearchOperationThreading {
     /**
@@ -62,7 +62,7 @@ public enum SearchOperationThreading {
         if (id == 2) {
             return THREAD_PER_SHARD;
         }
-        throw new ElasticSearchIllegalArgumentException("No type matching id [" + id + "]");
+        throw new SearchIllegalArgumentException("No type matching id [" + id + "]");
     }
 
     public static SearchOperationThreading fromString(String value, SearchOperationThreading defaultValue) {

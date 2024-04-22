@@ -20,7 +20,7 @@
 package org.server.search.transport;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NotSerializableTransportException extends TransportException {
 

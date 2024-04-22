@@ -25,7 +25,7 @@ import org.server.search.util.json.JsonBuilder;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BaseJsonQueryBuilder implements JsonQueryBuilder {
 

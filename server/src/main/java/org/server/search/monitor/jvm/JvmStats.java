@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JvmStats implements Streamable, Serializable {
 

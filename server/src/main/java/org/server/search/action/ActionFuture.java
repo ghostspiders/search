@@ -19,20 +19,20 @@
 
 package org.server.search.action;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ActionFuture<T> extends Future<T> {
 
-    T actionGet() throws ElasticSearchException;
+    T actionGet() throws SearchException;
 
-    T actionGet(long timeoutMillis) throws ElasticSearchException, TimeoutException;
+    T actionGet(long timeoutMillis) throws SearchException, TimeoutException;
 
-    T actionGet(long timeout, TimeUnit unit) throws ElasticSearchException, TimeoutException;
+    T actionGet(long timeout, TimeUnit unit) throws SearchException, TimeoutException;
 }

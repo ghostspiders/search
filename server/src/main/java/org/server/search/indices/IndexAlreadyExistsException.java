@@ -23,7 +23,7 @@ import org.server.search.index.Index;
 import org.server.search.index.IndexException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexAlreadyExistsException extends IndexException {
 

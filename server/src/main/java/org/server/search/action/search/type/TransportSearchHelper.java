@@ -19,7 +19,7 @@
 
 package org.server.search.action.search.type;
 
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.action.search.SearchRequest;
 import org.server.search.action.search.SearchScrollRequest;
 import org.server.search.action.search.SearchType;
@@ -32,7 +32,7 @@ import org.server.search.util.Tuple;
 import java.util.regex.Pattern;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class TransportSearchHelper {
 
@@ -69,7 +69,7 @@ public abstract class TransportSearchHelper {
         } else if (searchType == SearchType.QUERY_AND_FETCH || searchType == SearchType.DFS_QUERY_AND_FETCH) {
             return buildScrollId(ParsedScrollId.QUERY_AND_FETCH_TYPE, fetchResults);
         } else {
-            throw new ElasticSearchIllegalStateException();
+            throw new SearchIllegalStateException();
         }
     }
 

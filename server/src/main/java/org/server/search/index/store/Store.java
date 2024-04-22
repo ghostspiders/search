@@ -27,7 +27,7 @@ import org.server.search.util.SizeValue;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexShardLifecycle
 public interface Store<T extends Directory> extends IndexShardComponent {

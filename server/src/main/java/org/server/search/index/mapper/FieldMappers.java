@@ -27,7 +27,7 @@ import org.server.search.util.concurrent.Immutable;
 /**
  * A holder for several {@link FieldMapper}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class FieldMappers implements Iterable<FieldMapper> {

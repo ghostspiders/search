@@ -19,13 +19,13 @@
 
 package org.server.search.search.query;
 
-import org.server.search.search.SearchException;
+import org.server.search.search.Search1Exception;
 import org.server.search.search.internal.SearchContext;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class QueryPhaseExecutionException extends SearchException {
+public class QueryPhaseExecutionException extends Search1Exception {
 
     public QueryPhaseExecutionException(SearchContext context) {
         super("Failed to execute query [" + context.query() + "], sort [" + context.sort() + "], from [" + context.from() + "], size [" + context.size() + "]");

@@ -26,7 +26,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 /**
  * A mapper that maps the actual source of a generated document.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface SourceFieldMapper extends FieldMapper<String> {

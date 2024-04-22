@@ -31,7 +31,7 @@ import static org.server.search.action.Actions.*;
 import static org.server.search.search.Scroll.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchScrollRequest implements ActionRequest {
 

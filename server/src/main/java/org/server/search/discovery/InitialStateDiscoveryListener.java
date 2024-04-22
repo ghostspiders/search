@@ -25,7 +25,7 @@ package org.server.search.discovery;
  *
  * <p>Note, this listener should be registered with the discovery service before it has started.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface InitialStateDiscoveryListener {
 

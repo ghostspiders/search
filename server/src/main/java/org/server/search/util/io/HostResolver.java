@@ -29,7 +29,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class HostResolver {
 

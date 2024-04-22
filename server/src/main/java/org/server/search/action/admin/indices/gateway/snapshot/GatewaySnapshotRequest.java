@@ -22,9 +22,7 @@ package org.server.search.action.admin.indices.gateway.snapshot;
 import org.server.search.action.support.replication.IndicesReplicationOperationRequest;
 import org.server.search.util.TimeValue;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class GatewaySnapshotRequest extends IndicesReplicationOperationRequest {
 
     public GatewaySnapshotRequest(String index) {

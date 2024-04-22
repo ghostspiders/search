@@ -33,7 +33,7 @@ import java.io.IOException;
 import static org.server.search.search.internal.InternalSearchResponse.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchResponse implements ActionResponse, ToJson {
 

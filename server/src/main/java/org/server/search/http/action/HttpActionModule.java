@@ -41,7 +41,7 @@ import org.server.search.http.action.main.HttpMainAction;
 import org.server.search.http.action.search.HttpSearchAction;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpActionModule extends AbstractModule {
 

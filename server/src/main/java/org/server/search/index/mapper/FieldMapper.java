@@ -27,7 +27,7 @@ import org.apache.lucene.search.SortField;
 import org.server.search.util.concurrent.ThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface FieldMapper<T> {

@@ -26,7 +26,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @ThreadSafe
 public interface Settings {

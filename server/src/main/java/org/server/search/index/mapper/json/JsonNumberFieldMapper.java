@@ -31,7 +31,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldMapper<T> {
 

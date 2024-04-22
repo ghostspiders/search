@@ -22,7 +22,7 @@ package org.server.search.search.controller;
 import org.server.search.search.SearchShardTarget;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ShardDoc {
 

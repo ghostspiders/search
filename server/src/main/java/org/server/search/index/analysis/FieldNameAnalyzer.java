@@ -28,7 +28,7 @@ import java.io.Reader;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FieldNameAnalyzer extends Analyzer {
 

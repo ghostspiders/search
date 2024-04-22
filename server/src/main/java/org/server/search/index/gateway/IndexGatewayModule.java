@@ -25,7 +25,7 @@ import org.server.search.util.guice.ModulesFactory;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexGatewayModule extends AbstractModule {
 

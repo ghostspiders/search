@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ThreadPool extends ScheduledExecutorService {
 

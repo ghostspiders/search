@@ -20,7 +20,7 @@
 package org.server.search.monitor.dump;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface DumpContributor {
 

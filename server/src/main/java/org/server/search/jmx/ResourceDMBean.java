@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import static org.server.search.util.MapBuilder.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ResourceDMBean implements DynamicMBean {
     private static final Class<?>[] primitives = {int.class, byte.class, short.class, long.class,

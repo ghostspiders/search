@@ -28,32 +28,29 @@ import org.server.search.env.Profile;
 import org.server.search.jmx.JmxService;
 import org.server.search.server.Server;
 import org.server.search.server.ServerBuilder;
-import org.server.search.server.internal.InternalSettingsPerparer;
+import org.server.search.server.internal.InternalSettingsPrepare;
 import org.server.search.util.Classes;
 import org.server.search.util.Tuple;
 import org.server.search.util.logging.Loggers;
 import org.server.search.util.logging.log4j.LogConfigurator;
 import org.server.search.util.settings.Settings;
 import org.slf4j.Logger;
-
-import java.io.File;
 import java.util.Set;
-
 import static com.google.common.collect.Sets.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Bootstrap {
 
     private Server server;
 
     private void setup(boolean addShutdownHook) throws Exception {
-        Tuple<Settings, Environment> tuple = InternalSettingsPerparer.prepareSettings(EMPTY_SETTINGS, true);
+        Tuple<Settings, Environment> tuple = InternalSettingsPrepare.prepareSettings(EMPTY_SETTINGS, true);
         try {
-            Classes.getDefaultClassLoader().loadClass("org.apache.log4j.Logger");
+            Classes.getDefaultClassLoader().loadClass("org.slf4j.Logger");
             LogConfigurator.configure(tuple.v1());
         } catch (ClassNotFoundException e) {
             // no log4j
@@ -147,7 +144,7 @@ public class Bootstrap {
                     if (message.getCause() == null) {
                         detailedMessage = message.getMessage();
                     } else {
-                        detailedMessage = ExceptionsHelper.detailedMessage(message.getCause(), true, 0);
+                        detailedMessage = ExceptionsHelper.detailedMessage(message.getCause(), true,  0);
                     }
                     if (detailedMessage == null) {
                         detailedMessage = message.getMessage();
@@ -156,12 +153,13 @@ public class Bootstrap {
                         continue;
                     }
                     seenMessages.add(detailedMessage);
-                    errorMessage.append("").append(counter++).append(") ").append(detailedMessage);
+                    errorMessage.append(counter++).append(") ").append(detailedMessage);
                 }
             } else {
                 errorMessage.append("- ").append(ExceptionsHelper.detailedMessage(e, true, 0));
             }
             logger.error(errorMessage.toString());
+            logger.error("fffffffffffffffffffffff");
             Loggers.disableConsoleLogging();
             if (logger.isDebugEnabled()) {
                 logger.debug("Exception", e);

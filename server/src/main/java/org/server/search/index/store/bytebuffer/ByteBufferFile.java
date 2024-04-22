@@ -24,7 +24,7 @@ import org.apache.lucene.store.ByteBuffersDirectory;
 import java.nio.ByteBuffer;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ByteBufferFile {
 

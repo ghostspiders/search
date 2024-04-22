@@ -44,9 +44,6 @@ import org.server.search.util.trove.ExtTIntArrayList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @author kimchy (Shay Banon)
- */
 public class TransportSearchScrollQueryThenFetchAction extends AbstractComponent {
 
     private final ClusterService clusterService;

@@ -27,7 +27,7 @@ import java.io.Reader;
 /**
  * A character stream whose source is a string that is <b>not thread safe</b>
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class FastStringReader extends Reader {

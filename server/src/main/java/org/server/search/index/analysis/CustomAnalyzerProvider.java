@@ -35,7 +35,7 @@ import static com.google.common.collect.Lists.*;
  * A custom analyzer that is built out of a single {@link org.apache.lucene.analysis.Tokenizer} and a list
  * of {@link org.apache.lucene.analysis.TokenFilter}s.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class CustomAnalyzerProvider extends AbstractAnalyzerProvider<CustomAnalyzer> {
 

@@ -19,10 +19,10 @@
 
 package org.server.search.util.component;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface LifecycleComponent<T> {
 
@@ -30,7 +30,7 @@ public interface LifecycleComponent<T> {
 
     T start() throws Exception;
 
-    T stop() throws ElasticSearchException, InterruptedException;
+    T stop() throws SearchException, InterruptedException;
 
-    void close() throws ElasticSearchException, InterruptedException;
+    void close() throws SearchException, InterruptedException;
 }

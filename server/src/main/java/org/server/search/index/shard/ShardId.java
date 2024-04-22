@@ -31,7 +31,7 @@ import java.io.Serializable;
 /**
  * Allows for shard level components to be injected with the shard id.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class ShardId implements Serializable, Streamable {

@@ -24,7 +24,7 @@ import org.server.search.index.shard.ShardId;
 /**
  * An exception indicating that an {@link org.server.search.index.engine.Engine} close failed.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class CloseEngineException extends EngineException {
 

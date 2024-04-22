@@ -20,14 +20,14 @@
 package org.server.search.monitor.memory;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.component.Lifecycle;
 import org.server.search.util.component.LifecycleComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryMonitorService extends AbstractComponent implements LifecycleComponent<MemoryMonitorService> {
 
@@ -52,7 +52,7 @@ public class MemoryMonitorService extends AbstractComponent implements Lifecycle
         return this;
     }
 
-    @Override public MemoryMonitorService stop() throws ElasticSearchException, InterruptedException {
+    @Override public MemoryMonitorService stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -60,7 +60,7 @@ public class MemoryMonitorService extends AbstractComponent implements Lifecycle
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException, InterruptedException {
+    @Override public void close() throws SearchException, InterruptedException {
         if (lifecycle.started()) {
             stop();
         }

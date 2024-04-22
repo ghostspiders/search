@@ -35,7 +35,7 @@ import org.server.search.util.settings.Settings;
 import java.io.File;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FsIndexGateway extends AbstractIndexComponent implements IndexGateway {
 

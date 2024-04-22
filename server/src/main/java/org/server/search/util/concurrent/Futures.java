@@ -19,28 +19,28 @@
 
 package org.server.search.util.concurrent;
 
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchInterruptedException;
+import org.server.search.SearchException;
+import org.server.search.SearchInterruptedException;
 
 import java.util.concurrent.ExecutionException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Futures {
 
-    public static ElasticSearchException convert(Exception e) {
+    public static SearchException convert(Exception e) {
         if (e instanceof ExecutionException) {
-            if (e.getCause() instanceof ElasticSearchException) {
-                return (ElasticSearchException) e.getCause();
+            if (e.getCause() instanceof SearchException) {
+                return (SearchException) e.getCause();
             }
             return new UncategorizedExecutionException(e.getCause().getMessage(), e.getCause());
         }
         if (e instanceof InterruptedException) {
-            return new ElasticSearchInterruptedException(e.getMessage(), e.getCause());
+            return new SearchInterruptedException(e.getMessage(), e.getCause());
         }
-        if (e instanceof ElasticSearchException) {
-            return (ElasticSearchException) e;
+        if (e instanceof SearchException) {
+            return (SearchException) e;
         }
         return new UncategorizedExecutionException(e.getMessage(), e);
     }

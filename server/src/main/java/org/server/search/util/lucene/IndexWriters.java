@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class IndexWriters {
 

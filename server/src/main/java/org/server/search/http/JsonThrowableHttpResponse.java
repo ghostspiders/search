@@ -29,7 +29,7 @@ import java.io.PrintWriter;
 import static org.server.search.util.json.JsonBuilder.Cached.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonThrowableHttpResponse extends JsonHttpResponse {
 

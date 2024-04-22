@@ -24,7 +24,7 @@ import org.server.search.cluster.routing.RoutingTable;
 import org.server.search.cluster.routing.ShardRouting;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ShardsRoutingStrategy {
 

@@ -20,7 +20,7 @@
 package org.server.search.action.admin.indices.status;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.shards.ShardOperationRequest;
 import org.server.search.action.support.shards.TransportShardsOperationActions;
@@ -40,9 +40,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * @author kimchy (Shay Banon)
- */
+
 public class TransportIndicesStatusAction extends TransportShardsOperationActions<IndicesStatusRequest, IndicesStatusResponse, TransportIndicesStatusAction.IndexShardStatusRequest, ShardStatus> {
 
     @Inject public TransportIndicesStatusAction(Settings settings, ClusterService clusterService, TransportService transportService, IndicesService indicesService, ThreadPool threadPool) {
@@ -88,7 +86,7 @@ public class TransportIndicesStatusAction extends TransportShardsOperationAction
         return new IndicesStatusResponse(shards.toArray(new ShardStatus[shards.size()]), clusterState);
     }
 
-    @Override protected ShardStatus shardOperation(IndexShardStatusRequest request) throws ElasticSearchException {
+    @Override protected ShardStatus shardOperation(IndexShardStatusRequest request) throws SearchException {
         InternalIndexShard indexShard = (InternalIndexShard) indicesService.indexServiceSafe(request.index()).shard(request.shardId());
         ShardStatus shardStatus = new ShardStatus(indexShard.routingEntry());
         shardStatus.state = indexShard.state();

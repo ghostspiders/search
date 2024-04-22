@@ -38,7 +38,7 @@ import java.io.IOException;
 import static org.server.search.http.HttpResponse.Status.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpFlushAction extends BaseHttpServerHandler {
 

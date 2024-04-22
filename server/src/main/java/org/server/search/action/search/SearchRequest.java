@@ -38,7 +38,7 @@ import static org.server.search.search.Scroll.*;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SearchRequest implements ActionRequest {
 

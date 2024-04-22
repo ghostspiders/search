@@ -36,7 +36,7 @@ import java.io.NotSerializableException;
 import static org.server.search.transport.Transport.Helper.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyTransportChannel implements TransportChannel {
 

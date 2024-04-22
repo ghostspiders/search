@@ -32,7 +32,7 @@ import org.server.search.util.Strings;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
 

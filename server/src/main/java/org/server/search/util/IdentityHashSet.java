@@ -22,7 +22,7 @@ package org.server.search.util;
 import java.util.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IdentityHashSet<E>
         extends AbstractSet<E>

@@ -21,7 +21,7 @@ package org.server.search.index.gateway;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexCommit;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.engine.Engine;
 import org.server.search.index.engine.EngineException;
@@ -40,7 +40,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardGatewayService extends AbstractIndexShardComponent {
 
@@ -93,7 +93,7 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
     public synchronized void recover() throws IndexShardGatewayRecoveryException, IgnoreGatewayRecoveryException {
         if (recovered.compareAndSet(false, true)) {
             if (!indexShard.routingEntry().primary()) {
-                throw new ElasticSearchIllegalStateException("Trying to recover when the shard is in backup state");
+                throw new SearchIllegalStateException("Trying to recover when the shard is in backup state");
             }
             // clear the store, we are going to recover into it
             try {

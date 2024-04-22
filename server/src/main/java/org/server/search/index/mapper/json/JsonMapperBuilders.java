@@ -20,7 +20,7 @@
 package org.server.search.index.mapper.json;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class JsonMapperBuilders {
 

@@ -22,7 +22,7 @@ package org.server.search.index.query.json;
 import org.server.search.util.json.ToJson;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface JsonFilterBuilder extends ToJson {
 

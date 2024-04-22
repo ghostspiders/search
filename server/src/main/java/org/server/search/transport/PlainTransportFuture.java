@@ -19,8 +19,8 @@
 
 package org.server.search.transport;
 
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchInterruptedException;
+import org.server.search.SearchException;
+import org.server.search.SearchInterruptedException;
 import org.server.search.util.io.Streamable;
 
 import java.util.concurrent.CountDownLatch;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class PlainTransportFuture<V extends Streamable> implements TransportFuture<V>, TransportResponseHandler<V> {
 
@@ -90,28 +90,28 @@ public class PlainTransportFuture<V extends Streamable> implements TransportFutu
         return this.result;
     }
 
-    @Override public V txGet() throws ElasticSearchException {
+    @Override public V txGet() throws SearchException {
         try {
             return get();
         } catch (InterruptedException e) {
-            throw new ElasticSearchInterruptedException(e.getMessage());
+            throw new SearchInterruptedException(e.getMessage());
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof ElasticSearchException) {
-                throw (ElasticSearchException) e.getCause();
+            if (e.getCause() instanceof SearchException) {
+                throw (SearchException) e.getCause();
             } else {
                 throw new TransportException("Failed execution", e);
             }
         }
     }
 
-    @Override public V txGet(long timeout, TimeUnit unit) throws ElasticSearchException, TimeoutException {
+    @Override public V txGet(long timeout, TimeUnit unit) throws SearchException, TimeoutException {
         try {
             return get(timeout, unit);
         } catch (InterruptedException e) {
-            throw new ElasticSearchInterruptedException(e.getMessage());
+            throw new SearchInterruptedException(e.getMessage());
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof ElasticSearchException) {
-                throw (ElasticSearchException) e.getCause();
+            if (e.getCause() instanceof SearchException) {
+                throw (SearchException) e.getCause();
             } else {
                 throw new TransportException("Failed execution", e);
             }

@@ -22,7 +22,7 @@ package org.server.search.util.concurrent.resource;
 import org.server.search.util.lease.Releasable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class AcquirableResourceFactory {
 

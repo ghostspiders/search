@@ -19,7 +19,7 @@
 
 package org.server.search.client.transport.action;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.ActionFuture;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionRequest;
@@ -28,11 +28,11 @@ import org.server.search.cluster.node.Node;
 import org.server.search.util.Nullable;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ClientTransportAction<Request extends ActionRequest, Response extends ActionResponse> {
 
-    ActionFuture<Response> submit(Node node, Request request) throws ElasticSearchException;
+    ActionFuture<Response> submit(Node node, Request request) throws SearchException;
 
     ActionFuture<Response> submit(Node node, Request request, @Nullable ActionListener<Response> listener);
 

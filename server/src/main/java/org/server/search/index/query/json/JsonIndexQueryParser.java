@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.google.inject.Inject;
 import org.apache.lucene.search.Query;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.analysis.AnalysisService;
@@ -44,7 +44,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonIndexQueryParser extends AbstractIndexComponent implements IndexQueryParser {
 
@@ -100,7 +100,7 @@ public class JsonIndexQueryParser extends AbstractIndexComponent implements Inde
         return this.queryParserRegistry;
     }
 
-    @Override public Query parse(QueryBuilder queryBuilder) throws ElasticSearchException {
+    @Override public Query parse(QueryBuilder queryBuilder) throws SearchException {
         return parse(queryBuilder.build());
     }
 

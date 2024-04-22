@@ -23,7 +23,7 @@ package org.server.search.cluster;
  * An extension interface to {@link ClusterStateUpdateTask} that allows to be notified when
  * the cluster state update has been processed.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface ProcessedClusterStateUpdateTask extends ClusterStateUpdateTask {
 

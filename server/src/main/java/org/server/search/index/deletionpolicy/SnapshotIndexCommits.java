@@ -28,7 +28,7 @@ import java.util.List;
  * Represents a snapshot view of several commits. Provides a way to iterate over
  * them as well as a simple method to release all of them.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SnapshotIndexCommits implements Iterable<SnapshotIndexCommit>, Releasable {
 

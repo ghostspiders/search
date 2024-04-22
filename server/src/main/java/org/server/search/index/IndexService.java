@@ -20,7 +20,7 @@
 package org.server.search.index;
 
 import com.google.inject.Injector;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.index.query.IndexQueryParserService;
 import org.server.search.index.routing.OperationRouting;
@@ -30,7 +30,7 @@ import org.server.search.index.similarity.SimilarityService;
 import java.util.Set;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @IndexLifecycle
 public interface IndexService extends IndexComponent, Iterable<IndexShard> {
@@ -47,9 +47,9 @@ public interface IndexService extends IndexComponent, Iterable<IndexShard> {
 
     SimilarityService similarityService();
 
-    IndexShard createShard(int sShardId) throws ElasticSearchException;
+    IndexShard createShard(int sShardId) throws SearchException;
 
-    void deleteShard(int shardId) throws ElasticSearchException;
+    void deleteShard(int shardId) throws SearchException;
 
     int numberOfShards();
 

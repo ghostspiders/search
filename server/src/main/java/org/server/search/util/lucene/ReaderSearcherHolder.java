@@ -21,13 +21,13 @@ package org.server.search.util.lucene;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.util.lease.Releasable;
 
 /**
  * A very simple holder for a tuple of reader and searcher.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ReaderSearcherHolder implements Releasable {
 
@@ -52,7 +52,7 @@ public class ReaderSearcherHolder implements Releasable {
         return indexSearcher;
     }
 
-    @Override public boolean release() throws ElasticSearchException {
+    @Override public boolean release() throws SearchException {
         try {
             indexReader.close();
         } catch (Exception e) {

@@ -22,7 +22,7 @@ package org.server.search.action;
 import org.server.search.cluster.ClusterState;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Actions {
 

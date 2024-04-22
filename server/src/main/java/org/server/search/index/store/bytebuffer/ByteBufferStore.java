@@ -29,7 +29,7 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ByteBufferStore extends AbstractStore<ByteBuffersDirectory> {
 

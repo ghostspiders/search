@@ -20,15 +20,15 @@
 package org.server.search;
 
 /**
- * @author kimchy (Shay Banon) (Shay Banon)
+ *  (Shay Banon)
  */
-public class ElasticSearchInterruptedException extends ElasticSearchException {
+public class SearchInterruptedException extends SearchException {
 
-    public ElasticSearchInterruptedException(String message) {
+    public SearchInterruptedException(String message) {
         super(message);
     }
 
-    public ElasticSearchInterruptedException(String message, Throwable cause) {
+    public SearchInterruptedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

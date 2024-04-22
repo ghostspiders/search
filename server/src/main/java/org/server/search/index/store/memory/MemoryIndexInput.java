@@ -24,7 +24,7 @@ import org.apache.lucene.store.IndexInput;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryIndexInput extends IndexInput {
 

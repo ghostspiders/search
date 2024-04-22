@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportClientNodesService extends AbstractComponent implements ClusterStateListener {
 

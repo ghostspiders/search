@@ -22,7 +22,7 @@ package org.server.search.index.analysis;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface AnalyzerProviderFactory {
 

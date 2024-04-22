@@ -22,7 +22,7 @@ package org.server.search.index.mapper.json;
 import org.server.search.util.concurrent.NotThreadSafe;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @NotThreadSafe
 public class JsonPath {

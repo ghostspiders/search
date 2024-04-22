@@ -22,7 +22,7 @@ package org.server.search.action;
 import org.server.search.index.shard.ShardId;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ShardNotActiveException extends ShardOperationFailedException {
 

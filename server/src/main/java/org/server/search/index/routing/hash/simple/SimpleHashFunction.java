@@ -22,7 +22,7 @@ package org.server.search.index.routing.hash.simple;
 import org.server.search.index.routing.hash.HashFunction;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SimpleHashFunction implements HashFunction {
 

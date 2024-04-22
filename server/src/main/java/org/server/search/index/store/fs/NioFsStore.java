@@ -33,7 +33,7 @@ import java.io.IOException;
 import static org.server.search.index.store.fs.FsStores.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NioFsStore extends AbstractFsStore<NIOFSDirectory> {
 

@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.http.*;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.BindTransportException;
@@ -56,7 +56,7 @@ import static org.server.search.util.concurrent.DynamicExecutors.*;
 import static org.server.search.util.io.HostResolver.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NettyHttpServerTransport extends AbstractComponent implements HttpServerTransport {
 
@@ -206,7 +206,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         return this;
     }
 
-    @Override public HttpServerTransport stop() throws ElasticSearchException, InterruptedException {
+    @Override public HttpServerTransport stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

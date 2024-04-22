@@ -20,7 +20,7 @@
 package org.server.search.cluster.action.index;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.threadpool.ThreadPool;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NodeIndexDeletedAction extends AbstractComponent {
 
@@ -68,7 +68,7 @@ public class NodeIndexDeletedAction extends AbstractComponent {
         listeners.remove(listener);
     }
 
-    public void nodeIndexDeleted(final String index, final String nodeId) throws ElasticSearchException {
+    public void nodeIndexDeleted(final String index, final String nodeId) throws SearchException {
         Nodes nodes = clusterService.state().nodes();
         if (nodes.localNodeMaster()) {
             threadPool.execute(new Runnable() {

@@ -34,7 +34,7 @@ import static com.google.common.collect.Maps.*;
 /**
  * Loads settings from json source. Basically, flats them into a Map.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonSettingsLoader implements SettingsLoader {
 

@@ -19,10 +19,10 @@
 
 package org.server.search.action.search;
 
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public enum SearchType {
     DFS_QUERY_THEN_FETCH((byte) 0),
@@ -50,7 +50,7 @@ public enum SearchType {
         } else if (id == 3) {
             return QUERY_AND_FETCH;
         } else {
-            throw new ElasticSearchIllegalArgumentException("No search type for [" + id + "]");
+            throw new SearchIllegalArgumentException("No search type for [" + id + "]");
         }
     }
 }

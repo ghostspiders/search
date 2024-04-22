@@ -22,7 +22,7 @@ package org.server.search.util.trove;
 import org.server.search.util.gnu.trove.TIntArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ExtTIntArrayList extends TIntArrayList {
 

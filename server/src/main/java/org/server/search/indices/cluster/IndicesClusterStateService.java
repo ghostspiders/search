@@ -21,7 +21,7 @@ package org.server.search.indices.cluster;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.ClusterChangedEvent;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.ClusterStateListener;
@@ -60,7 +60,7 @@ import java.util.Set;
 import static com.google.common.collect.Sets.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndicesClusterStateService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<IndicesClusterStateService> {
 
@@ -94,7 +94,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         return lifecycle.state();
     }
 
-    @Override public IndicesClusterStateService start() throws ElasticSearchException {
+    @Override public IndicesClusterStateService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -102,7 +102,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         return this;
     }
 
-    @Override public IndicesClusterStateService stop() throws ElasticSearchException {
+    @Override public IndicesClusterStateService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -110,7 +110,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (lifecycle.started()) {
             stop();
         }
@@ -219,7 +219,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         }
     }
 
-    private void applyShards(final RoutingNode routingNodes, final RoutingTable routingTable, final Nodes nodes) throws ElasticSearchException {
+    private void applyShards(final RoutingNode routingNodes, final RoutingTable routingTable, final Nodes nodes) throws SearchException {
         if (!indicesService.changesAllowed())
             return;
 
@@ -249,7 +249,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         }
     }
 
-    private void applyInitializingShard(final RoutingTable routingTable, final Nodes nodes, final ShardRouting shardRouting) throws ElasticSearchException {
+    private void applyInitializingShard(final RoutingTable routingTable, final Nodes nodes, final ShardRouting shardRouting) throws SearchException {
         final IndexService indexService = indicesService.indexServiceSafe(shardRouting.index());
         final int shardId = shardRouting.id();
 

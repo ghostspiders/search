@@ -34,7 +34,7 @@ import java.util.Collection;
 /**
  * A set of utilities for Lucene {@link Directory}.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Directories {
 

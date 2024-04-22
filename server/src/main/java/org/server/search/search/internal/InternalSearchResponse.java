@@ -33,7 +33,7 @@ import static org.server.search.search.facets.Facets.*;
 import static org.server.search.search.internal.InternalSearchHits.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalSearchResponse implements Streamable, ToJson {
 

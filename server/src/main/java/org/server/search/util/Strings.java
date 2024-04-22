@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Strings {
 

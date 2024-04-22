@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface DumpGenerator {
 

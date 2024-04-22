@@ -24,7 +24,7 @@ import org.server.search.search.SearchParseElement;
 import org.server.search.search.internal.SearchContext;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class SizeParseElement implements SearchParseElement {
 

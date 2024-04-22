@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MapBackedSet<E> extends AbstractSet<E> implements Serializable {
 

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class IndexRoutingTable implements Iterable<IndexShardRoutingTable> {

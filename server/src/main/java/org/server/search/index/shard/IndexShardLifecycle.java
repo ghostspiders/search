@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p/>
  * <p>Note, currently only acts as a marker interface for readability.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 @Target({TYPE, ANNOTATION_TYPE})
 @Retention(RUNTIME)

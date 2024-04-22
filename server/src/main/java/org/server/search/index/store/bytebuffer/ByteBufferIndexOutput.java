@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ByteBufferIndexOutput extends IndexOutput {
 

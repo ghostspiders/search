@@ -29,7 +29,7 @@ import java.io.IOException;
 import static org.server.search.search.Scroll.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class InternalScrollSearchRequest implements Streamable {
 

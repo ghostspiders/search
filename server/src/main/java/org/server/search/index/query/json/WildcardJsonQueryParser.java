@@ -39,7 +39,7 @@ import java.io.IOException;
 import static org.server.search.index.query.support.QueryParsers.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class WildcardJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 

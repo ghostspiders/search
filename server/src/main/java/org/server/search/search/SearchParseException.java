@@ -20,9 +20,9 @@
 package org.server.search.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class SearchParseException extends SearchException {
+public class SearchParseException extends Search1Exception {
 
     public SearchParseException(String msg) {
         super(msg);

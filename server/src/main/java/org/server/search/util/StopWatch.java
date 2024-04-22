@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * <p>This class is normally used to verify performance during proof-of-concepts
  * and in development, rather than as part of production applications.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public class StopWatch {
 

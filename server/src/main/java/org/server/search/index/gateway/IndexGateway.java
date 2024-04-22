@@ -22,7 +22,7 @@ package org.server.search.index.gateway;
 import org.server.search.index.IndexComponent;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface IndexGateway extends IndexComponent {
 

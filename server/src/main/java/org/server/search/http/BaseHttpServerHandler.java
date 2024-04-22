@@ -24,7 +24,7 @@ import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BaseHttpServerHandler extends AbstractComponent implements HttpServerHandler {
 

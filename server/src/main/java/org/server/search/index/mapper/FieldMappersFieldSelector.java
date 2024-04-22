@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.HashSet;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FieldMappersFieldSelector extends StoredFieldVisitor {
 

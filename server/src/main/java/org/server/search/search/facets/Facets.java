@@ -33,7 +33,7 @@ import static com.google.common.collect.Lists.*;
 import static org.server.search.search.facets.CountFacet.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class Facets implements Streamable, ToJson {
 

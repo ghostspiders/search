@@ -26,7 +26,7 @@ import org.apache.lucene.search.DocIdSetIterator;
 import java.io.IOException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DocIdSets {
 

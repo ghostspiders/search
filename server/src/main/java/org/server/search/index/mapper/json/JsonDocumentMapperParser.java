@@ -48,7 +48,7 @@ import static com.google.common.collect.Lists.*;
 import static org.server.search.index.mapper.json.JsonMapperBuilders.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JsonDocumentMapperParser implements DocumentMapperParser {
 

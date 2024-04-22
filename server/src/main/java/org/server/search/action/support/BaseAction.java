@@ -19,7 +19,7 @@
 
 package org.server.search.action.support;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.*;
 import org.server.search.util.Nullable;
 import org.server.search.util.component.AbstractComponent;
@@ -28,7 +28,7 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.action.support.PlainActionFuture.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BaseAction<Request extends ActionRequest, Response extends ActionResponse> extends AbstractComponent implements Action<Request, Response> {
 
@@ -36,7 +36,7 @@ public abstract class BaseAction<Request extends ActionRequest, Response extends
         super(settings);
     }
 
-    @Override public ActionFuture<Response> submit(Request request) throws ElasticSearchException {
+    @Override public ActionFuture<Response> submit(Request request) throws SearchException {
         return submit(request, null);
     }
 

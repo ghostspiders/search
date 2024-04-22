@@ -28,7 +28,7 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MemoryStore extends AbstractStore<MemoryDirectory> {
 

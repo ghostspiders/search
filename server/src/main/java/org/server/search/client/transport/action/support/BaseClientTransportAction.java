@@ -19,9 +19,9 @@
 
 package org.server.search.client.transport.action.support;
 
-import org.server.search.ElasticSearchException;
-import org.server.search.ElasticSearchIllegalArgumentException;
-import org.server.search.ElasticSearchIllegalStateException;
+import org.server.search.SearchException;
+import org.server.search.SearchIllegalArgumentException;
+import org.server.search.SearchIllegalStateException;
 import org.server.search.action.ActionFuture;
 import org.server.search.action.ActionListener;
 import org.server.search.action.ActionRequest;
@@ -41,7 +41,7 @@ import java.lang.reflect.Constructor;
 import static org.server.search.action.support.PlainActionFuture.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class BaseClientTransportAction<Request extends ActionRequest, Response extends ActionResponse> extends AbstractComponent implements ClientTransportAction<Request, Response> {
 
@@ -55,12 +55,12 @@ public abstract class BaseClientTransportAction<Request extends ActionRequest, R
         try {
             this.responseConstructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            throw new ElasticSearchIllegalArgumentException("No default constructor is declared for [" + type.getName() + "]");
+            throw new SearchIllegalArgumentException("No default constructor is declared for [" + type.getName() + "]");
         }
         responseConstructor.setAccessible(true);
     }
 
-    @Override public ActionFuture<Response> submit(Node node, Request request) throws ElasticSearchException {
+    @Override public ActionFuture<Response> submit(Node node, Request request) throws SearchException {
         return submit(node, request, null);
     }
 
@@ -101,7 +101,7 @@ public abstract class BaseClientTransportAction<Request extends ActionRequest, R
         try {
             return responseConstructor.newInstance();
         } catch (Exception e) {
-            throw new ElasticSearchIllegalStateException("Failed to create a new instance");
+            throw new SearchIllegalStateException("Failed to create a new instance");
         }
     }
 }

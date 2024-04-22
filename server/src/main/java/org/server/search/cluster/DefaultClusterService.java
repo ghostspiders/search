@@ -20,7 +20,7 @@
 package org.server.search.cluster;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.discovery.DiscoveryService;
 import org.server.search.threadpool.ThreadPool;
@@ -42,7 +42,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.DynamicExecutors.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class DefaultClusterService extends AbstractComponent implements ClusterService {
 
@@ -79,7 +79,7 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
         return this.lifecycle.state();
     }
 
-    @Override public ClusterService start() throws ElasticSearchException {
+    @Override public ClusterService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -102,7 +102,7 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
         return this;
     }
 
-    @Override public ClusterService stop() throws ElasticSearchException {
+    @Override public ClusterService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }
@@ -119,7 +119,7 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
         return this;
     }
 
-    @Override public void close() throws ElasticSearchException {
+    @Override public void close() throws SearchException {
         if (lifecycle.started()) {
             stop();
         }

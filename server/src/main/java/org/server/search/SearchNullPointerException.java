@@ -17,20 +17,22 @@
  * under the License.
  */
 
-package org.server.search.search;
-
-import org.server.search.ElasticSearchException;
+package org.server.search;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
-public class SearchException extends ElasticSearchException {
+public class SearchNullPointerException extends SearchException {
 
-    public SearchException(String msg) {
+    public SearchNullPointerException() {
+        super(null);
+    }
+
+    public SearchNullPointerException(String msg) {
         super(msg);
     }
 
-    public SearchException(String msg, Throwable cause) {
+    public SearchNullPointerException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

@@ -30,7 +30,7 @@ import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ClusterModule extends AbstractModule {
 

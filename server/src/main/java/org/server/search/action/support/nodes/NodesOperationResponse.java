@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public abstract class NodesOperationResponse<NodeResponse extends NodeOperationResponse> implements ActionResponse, Iterable<NodeResponse> {
 

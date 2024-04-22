@@ -20,7 +20,7 @@
 package org.server.search.action.search;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchIllegalArgumentException;
+import org.server.search.SearchIllegalArgumentException;
 import org.server.search.action.ActionListener;
 import org.server.search.action.TransportActions;
 import org.server.search.action.search.type.ParsedScrollId;
@@ -35,7 +35,7 @@ import static org.server.search.action.search.type.ParsedScrollId.*;
 import static org.server.search.action.search.type.TransportSearchHelper.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportSearchScrollAction extends BaseAction<SearchScrollRequest, SearchResponse> {
 
@@ -55,7 +55,7 @@ public class TransportSearchScrollAction extends BaseAction<SearchScrollRequest,
             if (scrollId.type().equals(QUERY_THEN_FETCH_TYPE)) {
                 queryThenFetchAction.execute(request, scrollId, listener);
             } else {
-                throw new ElasticSearchIllegalArgumentException("Scroll id type [" + scrollId.type() + "] unrecongnized");
+                throw new SearchIllegalArgumentException("Scroll id type [" + scrollId.type() + "] unrecongnized");
             }
         } catch (Exception e) {
             listener.onFailure(e);

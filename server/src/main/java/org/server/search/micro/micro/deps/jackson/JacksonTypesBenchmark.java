@@ -33,12 +33,6 @@ import java.util.Map;
 
 import static org.server.search.util.json.Jackson.*;
 
-/**
- * A simple Jackson type benchmark to check how well it converts to different types it supports
- * such as Map and JsonNode.
- *
- * @author kimchy (Shay Banon)
- */
 @SuppressWarnings({"unchecked"})
 public class JacksonTypesBenchmark {
 
@@ -143,7 +137,7 @@ public class JacksonTypesBenchmark {
 
     public static void main(String[] args) throws Exception {
         JacksonTypesBenchmark benchmark = new JacksonTypesBenchmark(
-                Streams.copyToString(new InputStreamReader(JacksonTypesBenchmark.class.getResourceAsStream("/org/elasticsearch/benchmark/micro/deps/jackson/test1.json"))));
+                Streams.copyToString(new InputStreamReader(JacksonTypesBenchmark.class.getResourceAsStream("/org/Search/benchmark/micro/deps/jackson/test1.json"))));
         benchmark.run();
     }
 }

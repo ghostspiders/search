@@ -21,7 +21,7 @@ package org.server.search.monitor.jvm;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.monitor.dump.DumpGenerator;
 import org.server.search.monitor.dump.DumpMonitorService;
 import org.server.search.threadpool.ThreadPool;
@@ -42,7 +42,7 @@ import static org.server.search.monitor.jvm.JvmStats.*;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class JvmMonitorService extends AbstractComponent implements LifecycleComponent<JvmMonitorService> {
 
@@ -74,7 +74,7 @@ public class JvmMonitorService extends AbstractComponent implements LifecycleCom
         return lifecycle.state();
     }
 
-    @Override public JvmMonitorService start() throws ElasticSearchException {
+    @Override public JvmMonitorService start() throws SearchException {
         if (!lifecycle.moveToStarted()) {
             return this;
         }
@@ -85,7 +85,7 @@ public class JvmMonitorService extends AbstractComponent implements LifecycleCom
         return this;
     }
 
-    @Override public JvmMonitorService stop() throws ElasticSearchException {
+    @Override public JvmMonitorService stop() throws SearchException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

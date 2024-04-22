@@ -36,7 +36,7 @@ import java.util.Map;
 import static com.google.common.collect.Maps.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class RoutingTable implements Iterable<IndexRoutingTable> {

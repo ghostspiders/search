@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class FastByteArrayInputStream extends InputStream {
 

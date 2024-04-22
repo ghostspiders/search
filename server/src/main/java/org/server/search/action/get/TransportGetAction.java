@@ -20,7 +20,7 @@
 package org.server.search.action.get;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.action.TransportActions;
 import org.server.search.action.support.single.TransportSingleOperationAction;
 import org.server.search.cluster.ClusterService;
@@ -31,7 +31,7 @@ import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class TransportGetAction extends TransportSingleOperationAction<GetRequest, GetResponse> {
 
@@ -48,7 +48,7 @@ public class TransportGetAction extends TransportSingleOperationAction<GetReques
         return "indices/get/shard";
     }
 
-    @Override protected GetResponse shardOperation(GetRequest request, int shardId) throws ElasticSearchException {
+    @Override protected GetResponse shardOperation(GetRequest request, int shardId) throws SearchException {
         IndexShard indexShard = indicesService.indexServiceSafe(request.index()).shardSafe(shardId);
         return new GetResponse(request.index(), request.type(), request.id(), indexShard.get(request.type(), request.id()));
     }

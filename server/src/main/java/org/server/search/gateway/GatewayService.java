@@ -20,7 +20,7 @@
 package org.server.search.gateway;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.cluster.*;
 import org.server.search.cluster.metadata.IndexMetaData;
 import org.server.search.cluster.metadata.MetaData;
@@ -42,7 +42,7 @@ import static org.server.search.cluster.metadata.MetaData.*;
 import static org.server.search.util.TimeValue.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class GatewayService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<GatewayService> {
 
@@ -83,7 +83,7 @@ public class GatewayService extends AbstractComponent implements ClusterStateLis
         return this;
     }
 
-    @Override public GatewayService stop() throws ElasticSearchException, InterruptedException {
+    @Override public GatewayService stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

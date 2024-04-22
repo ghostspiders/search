@@ -20,7 +20,7 @@
 package org.server.search.monitor;
 
 import com.google.inject.Inject;
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.monitor.jvm.JvmMonitorService;
 import org.server.search.monitor.memory.MemoryMonitorService;
 import org.server.search.util.component.AbstractComponent;
@@ -29,7 +29,7 @@ import org.server.search.util.component.LifecycleComponent;
 import org.server.search.util.settings.Settings;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class MonitorService extends AbstractComponent implements LifecycleComponent<MonitorService> {
 
@@ -58,7 +58,7 @@ public class MonitorService extends AbstractComponent implements LifecycleCompon
         return this;
     }
 
-    @Override public MonitorService stop() throws ElasticSearchException, InterruptedException {
+    @Override public MonitorService stop() throws SearchException, InterruptedException {
         if (!lifecycle.moveToStopped()) {
             return this;
         }

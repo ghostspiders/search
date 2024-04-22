@@ -34,7 +34,7 @@ import java.util.Map;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 @Immutable
 public class IndexMetaData {

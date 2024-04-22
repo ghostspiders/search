@@ -23,7 +23,7 @@ import org.server.search.util.gnu.trove.TIntHashingStrategy;
 import org.server.search.util.gnu.trove.TIntIntHashMap;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class ExtTIntIntHashMap extends TIntIntHashMap {
 

@@ -22,7 +22,7 @@ package org.server.search.index.shard;
 import org.server.search.index.IndexException;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class IndexShardException extends IndexException {
 

@@ -19,17 +19,17 @@
 
 package org.server.search.search;
 
-import org.server.search.ElasticSearchException;
+import org.server.search.SearchException;
 import org.server.search.search.internal.SearchContext;
 
 import java.util.Map;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public interface SearchPhase {
 
     Map<String, ? extends SearchParseElement> parseElements();
 
-    void execute(SearchContext context) throws ElasticSearchException;
+    void execute(SearchContext context) throws SearchException;
 }

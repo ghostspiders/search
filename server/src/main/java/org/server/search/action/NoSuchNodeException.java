@@ -20,7 +20,7 @@
 package org.server.search.action;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class NoSuchNodeException extends FailedNodeException {
 

@@ -38,7 +38,7 @@ import static org.server.search.ExceptionsHelper.*;
 import static org.server.search.http.HttpResponse.Status.*;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class HttpCreateMappingAction extends BaseHttpServerHandler {
 

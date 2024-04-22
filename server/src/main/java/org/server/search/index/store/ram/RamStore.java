@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @author kimchy (Shay Banon)
+ * 
  */
 public class RamStore extends AbstractStore<ByteBuffersDirectory> {
 

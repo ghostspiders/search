@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * A set of helper methods for Jackson.
  *
- * @author kimchy (Shay Banon)
+ * 
  */
 public final class Jackson {
 
