@@ -20,6 +20,9 @@
 package org.server.search.util.logging;
 
 import com.google.common.collect.Lists;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.spi.LoggerContext;
+import org.server.search.bootstrap.Bootstrap;
 import org.server.search.index.Index;
 import org.server.search.index.shard.ShardId;
 import org.server.search.util.Classes;
@@ -44,20 +47,6 @@ import static java.util.Arrays.asList;
  * 
  */
 public class Loggers {
-
-    private static boolean consoleLoggingEnabled = true;
-
-    public static void disableConsoleLogging() {
-        consoleLoggingEnabled = false;
-    }
-
-    public static void enableConsoleLogging() {
-        consoleLoggingEnabled = true;
-    }
-
-    public static boolean consoleLoggingEnabled() {
-        return consoleLoggingEnabled;
-    }
 
     public static Logger getLogger(Class clazz, Settings settings, ShardId shardId, String... prefixes) {
         return getLogger(clazz, settings, shardId.index(), Lists.asList(Integer.toString(shardId.id()), prefixes).toArray(new String[0]));

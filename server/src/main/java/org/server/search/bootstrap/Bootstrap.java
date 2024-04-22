@@ -24,7 +24,6 @@ import com.google.inject.spi.Message;
 import org.server.search.ExceptionsHelper;
 import org.server.search.Version;
 import org.server.search.env.Environment;
-import org.server.search.env.Profile;
 import org.server.search.jmx.JmxService;
 import org.server.search.server.Server;
 import org.server.search.server.ServerBuilder;
@@ -32,9 +31,9 @@ import org.server.search.server.internal.InternalSettingsPrepare;
 import org.server.search.util.Classes;
 import org.server.search.util.Tuple;
 import org.server.search.util.logging.Loggers;
-import org.server.search.util.logging.log4j.LogConfigurator;
 import org.server.search.util.settings.Settings;
 import org.slf4j.Logger;
+
 import java.util.Set;
 import static com.google.common.collect.Sets.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
@@ -44,18 +43,11 @@ import static org.server.search.util.settings.ImmutableSettings.*;
  * 
  */
 public class Bootstrap {
-
     private Server server;
-
-    private void setup(boolean addShutdownHook) throws Exception {
+    private void setup(boolean addShutdownHook){
         Tuple<Settings, Environment> tuple = InternalSettingsPrepare.prepareSettings(EMPTY_SETTINGS, true);
         try {
             Classes.getDefaultClassLoader().loadClass("org.slf4j.Logger");
-            LogConfigurator.configure(tuple.v1());
-        } catch (ClassNotFoundException e) {
-            // no log4j
-        } catch (NoClassDefFoundError e) {
-            // no log4j
         } catch (Exception e) {
             System.err.println("Failed to configure logging...");
             e.printStackTrace();
@@ -73,8 +65,8 @@ public class Bootstrap {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override public void run() {
                     try {
-                        server.close();
-                    } catch (InterruptedException e) {
+                        destroy();
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -85,8 +77,8 @@ public class Bootstrap {
     /**
      * hook for JSVC
      */
-    public void init(String[] args) throws Exception {
-        setup(true);
+    public void init(boolean addShutdownHook) throws Exception {
+        setup(addShutdownHook);
     }
 
     /**
@@ -107,27 +99,17 @@ public class Bootstrap {
     /**
      * hook for JSVC
      */
-    public void destroy() throws InterruptedException {
+    public void destroy() throws Exception {
         server.close();
     }
 
     public static void main(String[] args) {
         Bootstrap bootstrap = new Bootstrap();
-        String active = System.getProperty("profile");
-
         String stage = "Initialization";
         try {
-            if (!Profile.Type.DEV.equals(Profile.readVale(active))){
-                Loggers.disableConsoleLogging();
-                System.out.close();
-            }
-            bootstrap.setup(true);
+            bootstrap.init(true);
             stage = "Startup";
             bootstrap.start();
-
-            if (!Profile.value(Profile.Type.DEV).equalsIgnoreCase(active)){
-                System.err.close();
-            }
         } catch (Throwable e) {
             Logger logger = Loggers.getLogger(Bootstrap.class);
             if (bootstrap.server != null) {
@@ -159,8 +141,6 @@ public class Bootstrap {
                 errorMessage.append("- ").append(ExceptionsHelper.detailedMessage(e, true, 0));
             }
             logger.error(errorMessage.toString());
-            logger.error("fffffffffffffffffffffff");
-            Loggers.disableConsoleLogging();
             if (logger.isDebugEnabled()) {
                 logger.debug("Exception", e);
             }
