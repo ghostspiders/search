@@ -33,10 +33,9 @@ import static org.server.search.util.settings.ImmutableSettings.*;
 public class InternalSettingsPrepare {
 
     public static Tuple<Settings, Environment> prepareSettings(Settings pSettings, boolean loadConfigSettings) {
-        // just create enough settings to build the environment
         ImmutableSettings.Builder settingsBuilder = settingsBuilder()
                 .putAll(pSettings)
-                .putProperties("Search.", System.getProperties())
+                .putProperties("search.", System.getProperties())
                 .putProperties("se.", System.getProperties())
                 .replacePropertyPlaceholders();
 
@@ -51,32 +50,32 @@ public class InternalSettingsPrepare {
 
         if (loadConfigSettings) {
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.yml"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("search.yml"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             } catch (NoClassDefFoundError e) {
                 // ignore, no yaml
             }
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.json"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("search.json"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             }
             try {
-                settingsBuilder.loadFromUrl(environment.resolveConfig("Search.properties"));
+                settingsBuilder.loadFromUrl(environment.resolveConfig("search.properties"));
             } catch (FailedToResolveConfigException e) {
                 // ignore
             }
-            if (System.getProperty("es.config") != null) {
+            if (System.getProperty("se.config") != null) {
                 settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("se.config")));
             }
-            if (System.getProperty("Search.config") != null) {
-                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("Search.config")));
+            if (System.getProperty("search.config") != null) {
+                settingsBuilder.loadFromUrl(environment.resolveConfig(System.getProperty("search.config")));
             }
         }
 
         settingsBuilder.putAll(pSettings)
-                .putProperties("Search.", System.getProperties())
+                .putProperties("search.", System.getProperties())
                 .putProperties("se.", System.getProperties())
                 .replacePropertyPlaceholders();
 
