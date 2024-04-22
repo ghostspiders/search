@@ -20,6 +20,8 @@
 package org.server.search.util.logging.log4j;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.server.search.env.Environment;
 import org.server.search.env.FailedToResolveConfigException;
 import org.server.search.util.MapBuilder;
@@ -35,6 +37,7 @@ import static org.server.search.util.settings.ImmutableSettings.*;
  * 
  */
 public class LogConfigurator {
+    private static final Logger logger = LogManager.getLogger("HelloWorld");
 
     private static boolean loaded;
 
@@ -108,5 +111,14 @@ public class LogConfigurator {
             }
         }
 //        PropertyConfigurator.configure(props);
+    }
+
+    public static void main(String[] args) {
+//        Logger logger = LogManager.getLogger(LogConfigurator.class);
+        logger.error("Error level message.");
+        logger.warn("Warn level message.");
+        logger.info("Info level message.");
+        logger.debug("Debug level message.");
+        logger.trace("Trace level message.");
     }
 }
