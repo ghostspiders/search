@@ -19,6 +19,7 @@
 
 package org.server.search.server.internal;
 
+import cn.hutool.core.util.StrUtil;
 import org.server.search.cluster.ClusterName;
 import org.server.search.env.Environment;
 import org.server.search.env.FailedToResolveConfigException;
@@ -82,19 +83,20 @@ public class InternalSettingsPrepare {
         // generate the name
         if (settingsBuilder.get("name") == null) {
             String name = System.getProperty("name");
-            if (name == null || name.isEmpty())
-                name = Names.randomNodeName(environment.resolveConfig("names.txt"));
-
-            if (name != null) {
+            if (StrUtil.isBlank(name) && System.getProperty("search.names") != null){
+                name = Names.randomNodeName(environment.resolveConfig(System.getProperty("search.names")));
+            }
+            if (StrUtil.isNotBlank(name) ) {
                 settingsBuilder.put("name", name);
+            }else {
+                settingsBuilder.put("name", "ghostspiders");
             }
         }
 
-        // put the cluster name
         if (settingsBuilder.get(ClusterName.SETTING) == null) {
             settingsBuilder.put(ClusterName.SETTING, ClusterName.DEFAULT.value());
         }
 
-        return new Tuple<Settings, Environment>(settingsBuilder.build(), environment);
+        return new Tuple(settingsBuilder.build(), environment);
     }
 }
