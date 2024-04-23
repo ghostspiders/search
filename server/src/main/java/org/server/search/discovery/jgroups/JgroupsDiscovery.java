@@ -53,9 +53,6 @@ import static com.google.common.collect.Maps.*;
 import static com.google.common.collect.Sets.*;
 import static org.server.search.cluster.ClusterState.*;
 
-/**
- * 
- */
 public class JgroupsDiscovery extends AbstractComponent implements Discovery, Receiver {
 
     static {

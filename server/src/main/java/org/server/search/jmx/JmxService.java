@@ -77,7 +77,7 @@ public class JmxService {
         this.logger = logger;
         this.settings = settings;
 
-        this.jmxDomain = settings.get("jmx.domain", "{Search}");
+        this.jmxDomain = settings.get("jmx.domain", "{search}");
 
         this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
     }
