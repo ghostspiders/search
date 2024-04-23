@@ -38,9 +38,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.server.search.util.io.HostResolver.*;
 
-/**
- * 
- */
 public class JmxService {
 
     public static class SettingsConstants {
@@ -201,7 +198,7 @@ public class JmxService {
         }
     }
 
-    private void register(ResourceDMBean resourceDMBean) throws JmxRegistrationException {
+    private void register(ResourceDMBean resourceDMBean){
         try {
             String resourceName = resourceDMBean.getFullObjectName();
             ObjectName objectName = new ObjectName(getObjectName(resourceName));

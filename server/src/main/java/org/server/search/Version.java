@@ -38,18 +38,18 @@ public class Version {
     static {
         Properties props = new Properties();
         try {
-            InputStream stream = Version.class.getClassLoader().getResourceAsStream("org/Search/version.properties");
+            InputStream stream = Version.class.getClassLoader().getResourceAsStream("version.properties");
             props.load(stream);
             stream.close();
         } catch (Exception e) {
             // ignore
         }
 
-        number = props.getProperty("number", "0.0.0");
+        number = props.getProperty("number", "1.0");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         date = props.getProperty("date", sdf.format(new Date()));
-        devBuild = Boolean.parseBoolean(props.getProperty("devBuild", "false"));
+        devBuild = Boolean.parseBoolean(props.getProperty("devBuild", "true"));
     }
 
     public static String number() {
@@ -65,7 +65,7 @@ public class Version {
     }
 
     public static String full() {
-        StringBuilder sb = new StringBuilder("Search/");
+        StringBuilder sb = new StringBuilder("search/");
         sb.append(number);
         if (devBuild) {
             sb.append("/").append(date);
