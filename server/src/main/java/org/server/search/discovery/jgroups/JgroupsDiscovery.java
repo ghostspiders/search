@@ -182,7 +182,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
                     }
                 });
                 try {
-                    channel.send(new Message( channel.getAddress(), nodeMessagePayload()));
+                    channel.send(new Message(channel.getView().getCreator(), channel.getAddress(), nodeMessagePayload()));
                     addressSet = true;
                     logger.debug("Sent address [{}] to master [{}]", transportService.boundAddress().publishAddress(), channel.getView().getCreator());
                 } catch (Exception e) {
@@ -231,7 +231,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             throw new SearchIllegalStateException("Shouldn't publish state when not master");
         }
         try {
-            channel.send(new Message( channel.getAddress(),ClusterState.Builder.toBytes(clusterState)));
+            channel.send(new Message(null, null, ClusterState.Builder.toBytes(clusterState)));
         } catch (Exception e) {
             logger.error("Failed to send cluster state to nodes", e);
         }
@@ -306,7 +306,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
     @Override public void viewAccepted(final View newView) {
         if (!addressSet) {
             try {
-                channel.send(new Message( channel.getAddress(), nodeMessagePayload()));
+                channel.send(new Message(newView.getCreator(), channel.getAddress(), nodeMessagePayload()));
                 logger.debug("Sent address [{}] to master [{}]", localNode.address(), newView.getCreator());
                 addressSet = true;
             } catch (Exception e) {
@@ -344,7 +344,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             if (!foundMe) {
                 logger.warn("Disconnected from cluster, resending address [{}] to master [{}]", localNode.address(), newView.getCreator());
                 try {
-                    channel.send(new Message(channel.getAddress(), nodeMessagePayload()));
+                    channel.send(new Message(newView.getCreator(), channel.getAddress(), nodeMessagePayload()));
                     addressSet = true;
                 } catch (Exception e) {
                     addressSet = false;

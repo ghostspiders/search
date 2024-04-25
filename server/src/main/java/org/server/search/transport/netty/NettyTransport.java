@@ -21,7 +21,6 @@ package org.server.search.transport.netty;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.sun.jdi.event.ExceptionEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -30,9 +29,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
@@ -175,6 +172,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
         EventLoopGroup transportClientIoWorker = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportClientIoWorker")));
         clientBootstrap = new Bootstrap();
         clientBootstrap.group(transportClientIoWorker);
+        clientBootstrap.channel(NioSocketChannel.class);
         clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) {
