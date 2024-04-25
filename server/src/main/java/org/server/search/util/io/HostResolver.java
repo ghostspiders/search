@@ -36,9 +36,9 @@ public abstract class HostResolver {
     public static final String GLOBAL_NETWORK_BINDHOST_SETTING = "network.bindHost";
     public static final String GLOBAL_NETWORK_PUBLISHHOST_SETTING = "network.publishHost";
 
-    public static final String LOCAL_IP = "#local:ip#";
-    public static final String LOCAL_HOST = "#local:host#";
-    public static final String LOCAL_CANONICALHOST = "#local:canonicalhost#";
+    public static final String LOCAL_IP = "#local:127.0.0.1#";
+    public static final String LOCAL_HOST = "#local:127.0.0.1#";
+    public static final String LOCAL_CANONICALHOST = "#local:127.0.0.1#";
 
     public static boolean isIPv4() {
         return System.getProperty("java.net.preferIPv4Stack") != null && System.getProperty("java.net.preferIPv4Stack").equals("true");

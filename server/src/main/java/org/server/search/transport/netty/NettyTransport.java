@@ -29,6 +29,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -135,7 +136,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
 
         this.workerCount = componentSettings.getAsInt("workerCount", Runtime.getRuntime().availableProcessors());
         this.port = componentSettings.get("port", "9300-9400");
-        this.bindHost = componentSettings.get("bindHost");
+        this.bindHost = componentSettings.get("bindHost","127.0.0.1");
         this.connectionsPerNode = componentSettings.getAsInt("connectionsPerNode", 5);
         this.publishHost = componentSettings.get("publishHost");
         this.connectTimeout = componentSettings.getAsTime("connectTimeout", timeValueSeconds(1));
@@ -206,6 +207,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
         EventLoopGroup workerGroup = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "transportServerIoWorker")));
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup,workerGroup);
+        serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
@@ -244,7 +246,7 @@ public class NettyTransport extends AbstractComponent implements Transport {
         boolean success = portsRange.iterate(new PortsRange.PortCallback() {
             @Override public boolean onPortNumber(int portNumber) {
                 try {
-                    serverChannel = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber));
+                    serverChannel = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber)).sync();
                 } catch (Exception e) {
                     lastException.set(e);
                     return false;

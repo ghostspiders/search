@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.server.search.SearchException;
 import org.server.search.http.*;
 import org.server.search.threadpool.ThreadPool;
@@ -130,6 +131,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         EventLoopGroup workerGroup = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpIoWorker")));
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup,workerGroup);
+        serverBootstrap.channel(NioServerSocketChannel.class);
         final HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
         final HttpRequestHandler requestHandler = new HttpRequestHandler(this);
 
@@ -173,7 +175,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         boolean success = portsRange.iterate(new PortsRange.PortCallback() {
             @Override public boolean onPortNumber(int portNumber) {
                 try {
-                    serverChannelFuture = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber));
+                    serverChannelFuture = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber)).sync();
                 } catch (Exception e) {
                     lastException.set(e);
                     return false;
