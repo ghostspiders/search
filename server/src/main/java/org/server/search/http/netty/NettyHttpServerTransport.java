@@ -245,7 +245,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
     }
 
     void exceptionCaught(ChannelHandlerContext ctx, Throwable e){
-        if (e.getCause() instanceof ReadTimeoutException) {
+        if (e instanceof ReadTimeoutException) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Connection timeout [{}]", ctx.channel().remoteAddress());
             }

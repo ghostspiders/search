@@ -19,9 +19,11 @@
 
 package org.server.search.http;
 
+import cn.hutool.core.collection.CollUtil;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -148,7 +150,7 @@ public class PathTrie<T> {
                     return null;
                 } else {
                     usedWildcard = true;
-                    if (params != null && node.isNamedWildcard()) {
+                    if (CollUtil.isNotEmpty(params) && node.isNamedWildcard()) {
                         put(params, node.namedWildcard(), token);
                     }
                 }
@@ -162,7 +164,7 @@ public class PathTrie<T> {
             if (res == null && !usedWildcard) {
                 node = children.get(wildcard);
                 if (node != null) {
-                    if (params != null && node.isNamedWildcard()) {
+                    if (CollUtil.isNotEmpty(params) && node.isNamedWildcard()) {
                         put(params, node.namedWildcard(), token);
                     }
                     res = node.retrieve(path, index + 1, params);
