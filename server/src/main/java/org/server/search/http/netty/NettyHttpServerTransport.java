@@ -132,13 +132,13 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup,workerGroup);
         serverBootstrap.channel(NioServerSocketChannel.class);
-        final HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
-        final HttpRequestHandler requestHandler = new HttpRequestHandler(this);
+        HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
+        HttpRequestHandler requestHandler = new HttpRequestHandler(this);
 
         serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast("keepAliveTimeout", new ReadTimeoutHandler(httpKeepAlive.millis(), TimeUnit.MILLISECONDS));
+//                ch.pipeline().addLast("keepAliveTimeout", new ReadTimeoutHandler(httpKeepAlive.millis(), TimeUnit.MILLISECONDS));
                 ch.pipeline().addLast("decoder", new HttpRequestDecoder());
                 ch.pipeline().addLast("encoder", new HttpResponseEncoder());
                 ch.pipeline().addLast("handler", requestHandler);
@@ -240,7 +240,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         httpServerAdapter.dispatchRequest(request, channel);
     }
 
-    void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
+    void exceptionCaught(ChannelHandlerContext ctx, Throwable e){
         if (e.getCause() instanceof ReadTimeoutException) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Connection timeout [{}]", ctx.channel().remoteAddress());

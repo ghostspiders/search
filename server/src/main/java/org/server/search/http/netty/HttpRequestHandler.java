@@ -32,22 +32,34 @@ import org.server.search.http.HttpRequest;
  * 
  */
 @ChannelHandler.Sharable
-public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest>  {
+public class HttpRequestHandler extends SimpleChannelInboundHandler {
 
     private final NettyHttpServerTransport serverTransport;
 
     public HttpRequestHandler(NettyHttpServerTransport serverTransport) {
         this.serverTransport = serverTransport;
     }
+//    @Override
+//    protected void channelRead(ChannelHandlerContext ctx, FullHttpRequest request){
+//        System.out.println("012316546845646546545968456435876984165469874");
+//        serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(ctx.channel(), request));
+//    }
+//    @Override
+//    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request){
+//        System.out.println("012316546845646546545968456435876984165469874");
+//        serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(ctx.channel(), request));
+//    }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request){
-        System.out.println("fffffffffffffffffffffffffffffffff");
-        serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(ctx.channel(), request));
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
         serverTransport.exceptionCaught(ctx, cause);
+    }
+    @Override
+    public void channelRead(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        System.out.println("012316546845646546545968456435876984165469874");
+    }
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        System.out.println("012316546845646546545968456435876984165469874");
     }
 }
