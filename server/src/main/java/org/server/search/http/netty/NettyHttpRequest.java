@@ -21,7 +21,6 @@ package org.server.search.http.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
-import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.http.HttpRequest;
 
 import java.util.List;
@@ -33,12 +32,12 @@ import java.util.Set;
  */
 public class NettyHttpRequest implements HttpRequest {
 
-    private final DefaultFullHttpRequest  request;
+    private final FullHttpRequest  request;
 
     private QueryStringDecoder queryStringDecoder;
 
     public NettyHttpRequest(FullHttpRequest request) {
-        this.request = (DefaultFullHttpRequest)request;
+        this.request = request;
         this.queryStringDecoder = new QueryStringDecoder(request.getUri());
     }
 
