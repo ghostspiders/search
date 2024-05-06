@@ -20,10 +20,7 @@
 package org.server.search.http.netty;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.*;
 import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.http.HttpRequest;
 
@@ -40,8 +37,8 @@ public class NettyHttpRequest implements HttpRequest {
 
     private QueryStringDecoder queryStringDecoder;
 
-    public NettyHttpRequest(DefaultFullHttpRequest request) {
-        this.request = request;
+    public NettyHttpRequest(FullHttpRequest request) {
+        this.request = (DefaultFullHttpRequest)request;
         this.queryStringDecoder = new QueryStringDecoder(request.getUri());
     }
 

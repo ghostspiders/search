@@ -22,14 +22,17 @@ package org.server.search.http.netty;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
+import org.server.search.http.HttpRequest;
 
 /**
  * 
  */
 @ChannelHandler.Sharable
-public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
+public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest>  {
 
     private final NettyHttpServerTransport serverTransport;
 
@@ -38,11 +41,11 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        DefaultFullHttpRequest request = (DefaultFullHttpRequest) msg;
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request){
+        System.out.println("fffffffffffffffffffffffffffffffff");
         serverTransport.dispatchRequest(new NettyHttpRequest(request), new NettyHttpChannel(ctx.channel(), request));
-        super.channelRead(ctx, msg);
     }
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         serverTransport.exceptionCaught(ctx, cause);
