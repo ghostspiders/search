@@ -81,7 +81,7 @@ public class NettyHttpChannel implements HttpChannel {
         resp.headers().add(HttpHeaders.Names.CONTENT_TYPE, response.contentType());
 
         resp.headers().add(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(buf.readableBytes()));
-        ChannelFuture future = channel.write(resp);
+        ChannelFuture future = channel.writeAndFlush(resp);
         if (close) {
             future.addListener(ChannelFutureListener.CLOSE);
         }
