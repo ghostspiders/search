@@ -138,7 +138,7 @@ public class HttpServer extends AbstractComponent implements LifecycleComponent<
                 }
             }
         } else {
-            channel.sendResponse(new StringHttpResponse(BAD_REQUEST, "No handler found for uri [" + request.uri() + "] and method [" + request.method() + "]"));
+            channel.sendResponse(new StringHttpResponse(OK, "No handler found for uri [" + request.uri() + "] and method [" + request.method() + "]"));
         }
     }
 

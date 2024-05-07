@@ -49,7 +49,7 @@ public class HttpMainAction extends BaseHttpServerHandler {
         JsonNode rootNode;
         int quotesSize;
         try {
-            rootNode = Jackson.newObjectMapper().readValue(Classes.getDefaultClassLoader().getResourceAsStream("org/Search/http/action/main/quotes.json"), JsonNode.class);
+            rootNode = Jackson.newObjectMapper().readValue(Classes.getDefaultClassLoader().getResourceAsStream("org/server/search/http/action/main/quotes.json"), JsonNode.class);
             ArrayNode arrayNode = (ArrayNode) rootNode.get("quotes");
             quotesSize = Iterators.size(arrayNode.elements());
         } catch (Exception e) {
