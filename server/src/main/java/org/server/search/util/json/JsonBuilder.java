@@ -21,7 +21,6 @@ package org.server.search.util.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.apache.lucene.util.UnicodeUtil;
 import org.server.search.SearchException;
 import org.server.search.util.concurrent.NotThreadSafe;
 import org.server.search.util.io.FastCharArrayWriter;
@@ -345,7 +344,7 @@ public class JsonBuilder {
         while ((st < len) && (val[len - 1] <= ' ')) {
             len--;
         }
-        return utf8Result;
+        return String.valueOf(val);
     }
 
     /**

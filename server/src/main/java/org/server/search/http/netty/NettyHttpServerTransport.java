@@ -140,7 +140,6 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast("keepAliveTimeout", new ReadTimeoutHandler(httpKeepAlive.millis(), TimeUnit.MILLISECONDS));
                 ch.pipeline().addLast("decoder", new HttpRequestDecoder());
                 ch.pipeline().addLast("aggregator", new HttpObjectAggregator(65535));
                 ch.pipeline().addLast("encoder", new HttpResponseEncoder());
