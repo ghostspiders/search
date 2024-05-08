@@ -19,8 +19,10 @@
 
 package org.server.search.http.netty;
 
+import cn.hutool.core.util.StrUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.server.search.http.HttpRequest;
 
 import java.util.List;
@@ -33,12 +35,14 @@ import java.util.Set;
 public class NettyHttpRequest implements HttpRequest {
 
     private final FullHttpRequest  request;
+    private final String content;
 
     private QueryStringDecoder queryStringDecoder;
 
     public NettyHttpRequest(FullHttpRequest request) {
         this.request = request;
-        this.queryStringDecoder = new QueryStringDecoder(request.getUri());
+        this.queryStringDecoder = new QueryStringDecoder(request.uri());
+        this.content = getContentFromRequest(request);
     }
 
     @Override public Method method() {
@@ -59,16 +63,15 @@ public class NettyHttpRequest implements HttpRequest {
     }
 
     @Override public String uri() {
-        return request.getUri();
+        return request.uri();
     }
 
     @Override public boolean hasContent() {
-        return request.content().readableBytes() > 0;
+        return StrUtil.isNotBlank(content);
     }
 
     @Override public String contentAsString() {
-        ByteBuf content = request.content();
-        return new String(content.array(), 0, content.arrayOffset());
+        return content;
     }
 
     @Override public Set<String> headerNames() {
@@ -101,5 +104,17 @@ public class NettyHttpRequest implements HttpRequest {
 
     @Override public Map<String, List<String>> params() {
         return queryStringDecoder.parameters();
+    }
+    private String getContentFromRequest(FullHttpRequest request) {
+        ByteBuf buffer = request.content();
+        try {
+            byte[] bytes = new byte[buffer.readableBytes()];
+            buffer.readBytes(bytes);
+            return new String(bytes, CharsetUtil.UTF_8);
+        } finally {
+            if (buffer != null) {
+                buffer.release();
+            }
+        }
     }
 }
