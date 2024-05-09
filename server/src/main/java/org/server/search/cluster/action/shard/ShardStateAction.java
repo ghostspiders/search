@@ -42,9 +42,7 @@ import org.server.search.util.settings.Settings;
 import static com.google.common.collect.Lists.*;
 import static org.server.search.cluster.ClusterState.*;
 
-/**
- * 
- */
+
 public class ShardStateAction extends AbstractComponent {
 
     private final TransportService transportService;

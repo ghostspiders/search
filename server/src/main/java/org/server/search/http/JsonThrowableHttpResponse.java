@@ -28,9 +28,7 @@ import java.io.PrintWriter;
 
 import static org.server.search.util.json.JsonBuilder.Cached.*;
 
-/**
- * 
- */
+
 public class JsonThrowableHttpResponse extends JsonHttpResponse {
 
     private static class Holder {

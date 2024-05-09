@@ -46,9 +46,7 @@ import java.net.URL;
 
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+
 @IndexLifecycle
 @ThreadSafe
 public class MapperService extends AbstractIndexComponent implements Iterable<DocumentMapper> {
@@ -99,7 +97,7 @@ public class MapperService extends AbstractIndexComponent implements Iterable<Do
                 dynamicMappingUrl = environment.resolveConfig("dynamic-mapping.json");
             } catch (FailedToResolveConfigException e) {
                 // not there, default to the built in one
-                dynamicMappingUrl = indexClassLoader.getResource("org/Search/index/mapper/json/dynamic-mapping.json");
+                dynamicMappingUrl = indexClassLoader.getResource("org/server/search/index/mapper/json/dynamic-mapping.json");
             }
         } else {
             try {

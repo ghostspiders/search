@@ -50,7 +50,7 @@ public class StopTokenFilterFactory extends AbstractTokenFilterFactory {
         if (stopWords.length > 0) {
             this.stopWords = ImmutableSet.copyOf(Iterators.forArray(stopWords));
         } else {
-            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.GLOBAL_REUSE_STRATEGY);
+            this.stopWords = ImmutableSet.copyOf(new String[]{});
         }
         this.enablePositionIncrements = settings.getAsBoolean("enablePositionIncrements", true);
         this.ignoreCase = settings.getAsBoolean("ignoreCase", false);

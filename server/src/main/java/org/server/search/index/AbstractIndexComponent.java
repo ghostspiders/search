@@ -27,9 +27,7 @@ import org.slf4j.Logger;
 
 import static org.server.search.index.IndexServiceManagement.*;
 
-/**
- * 
- */
+
 @IndexLifecycle
 public abstract class AbstractIndexComponent implements IndexComponent {
 

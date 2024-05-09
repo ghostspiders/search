@@ -30,9 +30,7 @@ import java.util.Set;
 import static com.google.common.collect.Sets.*;
 import static org.server.search.cluster.routing.ShardRoutingState.*;
 
-/**
- * 
- */
+
 public class DefaultShardsRoutingStrategy implements ShardsRoutingStrategy {
 
     @Override public RoutingTable applyStartedShards(ClusterState clusterState, Iterable<? extends ShardRouting> startedShardEntries) {

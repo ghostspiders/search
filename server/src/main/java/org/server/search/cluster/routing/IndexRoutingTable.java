@@ -31,9 +31,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 
- */
+
 @Immutable
 public class IndexRoutingTable implements Iterable<IndexShardRoutingTable> {
 

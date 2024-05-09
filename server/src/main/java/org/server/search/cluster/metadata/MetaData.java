@@ -32,9 +32,7 @@ import java.io.IOException;
 
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+
 @Immutable
 public class MetaData implements Iterable<IndexMetaData> {
 

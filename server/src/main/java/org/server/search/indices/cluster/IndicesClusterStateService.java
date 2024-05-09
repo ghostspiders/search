@@ -59,9 +59,7 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.*;
 
-/**
- * 
- */
+
 public class IndicesClusterStateService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<IndicesClusterStateService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

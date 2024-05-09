@@ -56,9 +56,7 @@ import static com.google.common.collect.Maps.*;
 import static com.google.common.collect.Sets.*;
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+
 @IndexLifecycle
 public class InternalIndexService extends AbstractIndexComponent implements IndexService {
 

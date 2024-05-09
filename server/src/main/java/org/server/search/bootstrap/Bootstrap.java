@@ -39,9 +39,7 @@ import static com.google.common.collect.Sets.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * 
- */
+
 public class Bootstrap {
     private Server server;
     private void setup(boolean addShutdownHook){

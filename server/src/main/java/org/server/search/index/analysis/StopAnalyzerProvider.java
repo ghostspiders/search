@@ -31,9 +31,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.Set;
 
-/**
- * 
- */
+
 public class StopAnalyzerProvider extends AbstractAnalyzerProvider<StopAnalyzer> {
 
     private final Set<String> stopWords;
@@ -46,7 +44,7 @@ public class StopAnalyzerProvider extends AbstractAnalyzerProvider<StopAnalyzer>
         if (stopWords.length > 0) {
             this.stopWords = ImmutableSet.copyOf(Iterators.forArray(stopWords));
         } else {
-            this.stopWords = ImmutableSet.copyOf((Iterable<? extends String>) StopAnalyzer.PER_FIELD_REUSE_STRATEGY);
+            this.stopWords = ImmutableSet.copyOf(new String[]{});
         }
         this.stopAnalyzer = new StopAnalyzer(new CharArraySet(this.stopWords,true));
     }

@@ -23,9 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.server.search.util.Nullable;
 import org.server.search.util.concurrent.ThreadSafe;
 
-/**
- * 
- */
+
 @ThreadSafe
 public interface DocumentMapper {
 

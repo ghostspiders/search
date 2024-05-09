@@ -4,7 +4,7 @@ package org.client.search;
  * Hello world!
  *
  */
-public class App 
+public class App11
 {
     public static void main( String[] args )
     {

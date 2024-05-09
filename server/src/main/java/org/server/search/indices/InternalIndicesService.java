@@ -54,9 +54,7 @@ import static org.server.search.cluster.metadata.IndexMetaData.*;
 import static org.server.search.util.MapBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * 
- */
+
 @ThreadSafe
 public class InternalIndicesService extends AbstractComponent implements IndicesService {
 
