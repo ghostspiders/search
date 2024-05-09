@@ -330,21 +330,7 @@ public class JsonBuilder {
      * or use {@link #utf8copied()}.
      */
     public String utf8() throws IOException {
-        flush();
-
-        // ignore whitepsaces
-        int st = 0;
-        int len = writer.size();
-        char[] val = writer.unsafeCharArray();
-
-        while ((st < len) && (val[st] <= ' ')) {
-            st++;
-            len--;
-        }
-        while ((st < len) && (val[len - 1] <= ' ')) {
-            len--;
-        }
-        return String.valueOf(val);
+        return string();
     }
 
     /**

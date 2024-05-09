@@ -19,9 +19,20 @@
 
 package org.server.search.http;
 
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpVersion;
+import org.server.search.http.action.support.HttpJsonBuilder;
+import org.server.search.http.netty.NettyHttpRequest;
 import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.server.search.http.HttpResponse.Status.OK;
 
 /**
  * 
@@ -79,5 +90,4 @@ public class JsonHttpResponse extends Utf8HttpResponse {
         }
         return END_JSONP;
     }
-
 }
