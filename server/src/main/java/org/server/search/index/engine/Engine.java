@@ -35,9 +35,7 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 import org.server.search.util.lease.Releasable;
 
-/**
- * 
- */
+
 @ThreadSafe
 @IndexShardLifecycle
 public interface Engine extends IndexShardComponent {

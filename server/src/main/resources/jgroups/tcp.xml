@@ -12,6 +12,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/JGroups-2.8.xsd">
     <TCP bind_port="7800"
+         bind_addr="localhost"
          loopback="true"
          recv_buf_size="${tcp.recv_buf_size:20000000}"
          send_buf_size="${tcp.send_buf_size:640000}"
@@ -58,6 +59,7 @@
     <pbcast.GMS print_local_addr="false" join_timeout="3000"
 
                 view_bundling="true"/>
+
     <FC max_credits="2000000"
         min_threshold="0.10"/>
     <FRAG2 frag_size="60000"/>

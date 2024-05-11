@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 
- */
+
 public class TimeValue implements Serializable, Streamable {
 
     public static final TimeValue UNKNOWN = new TimeValue(-1);

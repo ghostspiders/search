@@ -23,9 +23,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MergePolicy;
 import org.server.search.index.shard.IndexShardComponent;
 
-/**
- * 
- */
+
 public interface MergePolicyProvider<T extends MergePolicy> extends IndexShardComponent {
 
     T newMergePolicy(IndexWriter indexWriter);

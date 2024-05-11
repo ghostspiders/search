@@ -33,9 +33,7 @@ import java.util.List;
 
 import static org.server.search.index.shard.IndexShardManagement.*;
 
-/**
- * 
- */
+
 public abstract class AbstractIndexShardComponent extends IndexDeletionPolicy implements IndexShardComponent {
 
     protected final Logger logger;

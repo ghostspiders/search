@@ -27,9 +27,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 
- */
+
 public class SizeValue implements Serializable, Streamable {
 
     public static final SizeValue UNKNOWN = new SizeValue(-1);

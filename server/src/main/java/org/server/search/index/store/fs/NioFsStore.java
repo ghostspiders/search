@@ -32,9 +32,7 @@ import java.io.IOException;
 
 import static org.server.search.index.store.fs.FsStores.*;
 
-/**
- * 
- */
+
 public class NioFsStore extends AbstractFsStore<NIOFSDirectory> {
 
     private final boolean syncToDisk;

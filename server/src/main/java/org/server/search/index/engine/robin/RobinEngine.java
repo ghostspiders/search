@@ -56,9 +56,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.resource.AcquirableResourceFactory.*;
 import static org.server.search.util.lucene.Lucene.*;
 
-/**
- * 
- */
+
 @IndexShardLifecycle
 public class RobinEngine extends AbstractIndexShardComponent implements Engine, ScheduledRefreshableEngine {
 
@@ -126,19 +124,19 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             logger.debug("Starting engine with ramBufferSize [" + ramBufferSize + "], refreshInterval [" + refreshInterval + "]");
         }
         IndexWriter indexWriter = null;
-        try {
-            IndexWriterConfig config = new IndexWriterConfig();
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            config.setMergeScheduler(mergeScheduler.newMergeScheduler());
-            config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
-            config.setSimilarity(similarityService.defaultIndexSimilarity());
-            config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
-
-            indexWriter = new IndexWriter(store.directory(),config);
-        } catch (IOException e) {
-            safeClose(indexWriter);
-            throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
-        }
+//        try {
+//            IndexWriterConfig config = new IndexWriterConfig();
+//            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//            config.setMergeScheduler(mergeScheduler.newMergeScheduler());
+//            config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
+//            config.setSimilarity(similarityService.defaultIndexSimilarity());
+//            config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
+//
+//            indexWriter = new IndexWriter(store.directory(),config);
+//        } catch (IOException e) {
+//            safeClose(indexWriter);
+//            throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
+//        }
         this.indexWriter = indexWriter;
 
         try {
@@ -147,6 +145,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             indexSearcher.setSimilarity(similarityService.defaultSearchSimilarity());
             this.nrtResource = newAcquirableResource(new ReaderSearcherHolder(indexReader, indexSearcher));
         } catch (IOException e) {
+            logger.error(e.getMessage(),e);
             try {
                 indexWriter.rollback();
             } catch (IOException e1) {

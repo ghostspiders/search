@@ -26,9 +26,7 @@ import org.server.search.util.SizeValue;
 
 import java.io.IOException;
 
-/**
- * 
- */
+
 @IndexShardLifecycle
 public interface Store<T extends Directory> extends IndexShardComponent {
 

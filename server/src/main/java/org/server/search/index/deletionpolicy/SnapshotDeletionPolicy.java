@@ -38,8 +38,6 @@ import java.util.concurrent.ConcurrentMap;
  * Snapshot deletion policy allows to get snapshots of an index state (last commit or all commits)
  * and if the deletion policy is used with all open index writers (JVM level) then the snapshot
  * state will not be deleted until it will be released.
- *
- * 
  */
 @IndexShardLifecycle
 public class SnapshotDeletionPolicy extends AbstractIndexShardComponent{

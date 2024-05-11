@@ -36,9 +36,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+
 @ThreadSafe
 public interface Translog extends IndexShardComponent {
 

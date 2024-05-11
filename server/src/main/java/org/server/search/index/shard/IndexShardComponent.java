@@ -21,9 +21,7 @@ package org.server.search.index.shard;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+
 @IndexShardLifecycle
 public interface IndexShardComponent {
 

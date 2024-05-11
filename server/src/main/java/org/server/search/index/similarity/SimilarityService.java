@@ -33,9 +33,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+
 public class SimilarityService extends AbstractIndexComponent {
 
     private final ImmutableMap<String, SimilarityProvider> similarityProviders;

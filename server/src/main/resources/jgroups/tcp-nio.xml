@@ -13,6 +13,7 @@
         xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/JGroups-2.8.xsd">
     <TCP_NIO
             bind_port="7800"
+            bind_addr="localhost"
             loopback="true"
             recv_buf_size="20000000"
             send_buf_size="640000"

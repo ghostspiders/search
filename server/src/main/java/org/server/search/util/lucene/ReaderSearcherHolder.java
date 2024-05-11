@@ -26,8 +26,6 @@ import org.server.search.util.lease.Releasable;
 
 /**
  * A very simple holder for a tuple of reader and searcher.
- *
- * 
  */
 public class ReaderSearcherHolder implements Releasable {
 

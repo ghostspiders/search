@@ -32,9 +32,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
+
 @IndexShardLifecycle
 public class ConcurrentMergeSchedulerProvider extends AbstractIndexShardComponent implements MergeSchedulerProvider {
 
