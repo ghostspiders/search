@@ -31,6 +31,8 @@ import static org.jgroups.util.Util.assertEquals;
  * \
  *
  * /Users/gaoyvfeng/develop/code/IdeaProjects/search/work/search/indices/test
+ *
+ * SimpleEngineBenchmark
  */
 public class LuceneCreateIndexTest {
     public static void main(String[] args) throws IOException, ParseException {

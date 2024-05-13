@@ -22,6 +22,7 @@ package org.server.search.util.lucene;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
 
 
 public class DocumentBuilder {
@@ -30,7 +31,8 @@ public class DocumentBuilder {
     }
 
     public static FieldBuilder field(String name, String value) {
-        return field(name, value, new FieldType());
+        FieldType ft = new FieldType(TextField.TYPE_STORED);
+        return field(name, value, ft);
     }
 
     public static FieldBuilder field(String name, String value, FieldType type) {
