@@ -27,34 +27,29 @@ public class FieldBuilder {
 
     private final Field field;
 
-    FieldBuilder(String name, String value, Field.Store store, FieldType index) {
-        field = new Field(name, value, index);
+    FieldBuilder(String name, String value,FieldType type) {
+        field = new Field(name, value, type);
     }
 
-    FieldBuilder(String name, String value, Field.Store store, FieldType index, FieldType termVector) {
-        field = new Field(name, value,index);
+    FieldBuilder(String name, byte[] value, FieldType type) {
+        field = new Field(name, value, type);
     }
 
-    FieldBuilder(String name, byte[] value, FieldType store) {
-        field = new Field(name, value, store);
-    }
-
-    FieldBuilder(String name, byte[] value, int offset, int length, FieldType store) {
-        field = new Field(name, value, offset, length, store);
+    FieldBuilder(String name, byte[] value, int offset, int length,FieldType type) {
+        field = new Field(name, value, offset, length, type);
     }
 
     public FieldBuilder boost(float boost) {
-//        field.setBoost(boost);
         return this;
     }
 
     public FieldBuilder omitNorms(boolean omitNorms) {
-//        field.setOmitNorms(omitNorms);
+        FieldType fieldType = (FieldType) field.fieldType();
+        fieldType.setOmitNorms(omitNorms);
         return this;
     }
 
     public FieldBuilder omitTermFreqAndPositions(boolean omitTermFreqAndPositions) {
-//        field.setOmitTermFreqAndPositions(omitTermFreqAndPositions);
         return this;
     }
 

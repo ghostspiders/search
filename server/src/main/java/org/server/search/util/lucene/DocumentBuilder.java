@@ -23,33 +23,28 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 
-/**
- * 
- */
-public class DocumentBuilder {
 
+public class DocumentBuilder {
     public static DocumentBuilder doc() {
         return new DocumentBuilder();
     }
 
     public static FieldBuilder field(String name, String value) {
-        return field(name, value, Field.Store.YES, new FieldType());
+        return field(name, value, new FieldType());
     }
 
-    public static FieldBuilder field(String name, String value, Field.Store store, FieldType index) {
-        return new FieldBuilder(name, value, store, index);
+    public static FieldBuilder field(String name, String value, FieldType type) {
+        return new FieldBuilder(name, value, type);
     }
 
-    public static FieldBuilder field(String name, String value, Field.Store store, FieldType index, FieldType termVector) {
-        return new FieldBuilder(name, value, store, index, termVector);
+
+
+    public static FieldBuilder field(String name, byte[] value, FieldType type) {
+        return new FieldBuilder(name, value, type);
     }
 
-    public static FieldBuilder field(String name, byte[] value, FieldType store) {
-        return new FieldBuilder(name, value, store);
-    }
-
-    public static FieldBuilder field(String name, byte[] value, int offset, int length, FieldType store) {
-        return new FieldBuilder(name, value, offset, length, store);
+    public static FieldBuilder field(String name, byte[] value, int offset, int length, FieldType type) {
+        return new FieldBuilder(name, value, offset, length, type);
     }
 
     private final Document document;
@@ -59,7 +54,6 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder boost(float boost) {
-//        document.setBoost(boost);
         return this;
     }
 
