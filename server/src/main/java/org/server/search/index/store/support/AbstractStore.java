@@ -30,9 +30,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+
 public abstract class AbstractStore<T extends Directory> extends AbstractIndexShardComponent implements Store<T> {
 
     protected AbstractStore(ShardId shardId, @IndexSettings Settings indexSettings) {

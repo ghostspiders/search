@@ -33,8 +33,6 @@ import java.util.Collection;
 
 /**
  * A set of utilities for Lucene {@link Directory}.
- *
- * 
  */
 public class Directories {
 
