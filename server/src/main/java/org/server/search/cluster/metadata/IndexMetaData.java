@@ -33,9 +33,7 @@ import java.util.Map;
 
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * 
- */
+
 @Immutable
 public class IndexMetaData {
 

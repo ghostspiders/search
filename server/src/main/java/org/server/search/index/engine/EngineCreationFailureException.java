@@ -23,8 +23,6 @@ import org.server.search.index.shard.ShardId;
 
 /**
  * An exception indicating that an {@link Engine} creation failed.
- *
- * 
  */
 public class EngineCreationFailureException extends EngineException {
 

@@ -27,9 +27,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 
- */
+
 @Immutable
 public class Index implements Serializable, Streamable {
 

@@ -22,7 +22,6 @@ package org.server.search.index.engine.robin;
 import com.google.inject.Inject;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
 import org.server.search.SearchException;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.SnapshotDeletionPolicy;
@@ -124,20 +123,19 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             logger.debug("Starting engine with ramBufferSize [" + ramBufferSize + "], refreshInterval [" + refreshInterval + "]");
         }
         IndexWriter indexWriter = null;
-//        try {
-//            IndexWriterConfig config = new IndexWriterConfig();
-//            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-//            config.setMergeScheduler(mergeScheduler.newMergeScheduler());
-//            config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
-//            config.setSimilarity(similarityService.defaultIndexSimilarity());
-//            config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
-//
-//            indexWriter = new IndexWriter(store.directory(),config);
-//        } catch (IOException e) {
-//            safeClose(indexWriter);
-//            throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
-//        }
-        this.indexWriter = indexWriter;
+        try {
+            IndexWriterConfig config = new IndexWriterConfig();
+            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+            config.setMergeScheduler(mergeScheduler.newMergeScheduler());
+            config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
+            config.setSimilarity(similarityService.defaultIndexSimilarity());
+            config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
+            indexWriter = new IndexWriter(store.directory(),config);
+            indexWriter.close();
+        } catch (IOException e) {
+            safeClose(indexWriter);
+            throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
+        }
 
         try {
             IndexReader indexReader = DirectoryReader.open(store.directory());
@@ -147,12 +145,16 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         } catch (IOException e) {
             logger.error(e.getMessage(),e);
             try {
-                indexWriter.rollback();
+                if (indexWriter != null) {
+                    indexWriter.rollback();
+                }
             } catch (IOException e1) {
                 // ignore
             } finally {
                 try {
-                    indexWriter.close();
+                    if (indexWriter != null) {
+                        indexWriter.close();
+                    }
                 } catch (IOException e1) {
                     // ignore
                 }

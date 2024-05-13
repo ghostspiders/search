@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+
 public class SnapshotFailedEngineException extends EngineException {
 
     public SnapshotFailedEngineException(ShardId shardId, Throwable cause) {

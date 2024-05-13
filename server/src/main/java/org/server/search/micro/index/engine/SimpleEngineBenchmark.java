@@ -36,6 +36,7 @@ import org.server.search.index.shard.ShardId;
 import org.server.search.index.similarity.SimilarityService;
 import org.server.search.index.store.Store;
 import org.server.search.index.store.memory.MemoryStore;
+import org.server.search.index.store.ram.RamStore;
 import org.server.search.index.translog.memory.MemoryTranslog;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.threadpool.dynamic.DynamicThreadPool;
@@ -273,8 +274,8 @@ public class SimpleEngineBenchmark {
         ShardId shardId = new ShardId(new Index("index"), 1);
         Settings settings = EMPTY_SETTINGS;
 
-//        Store store = new RamStore(shardId, settings);
-        Store store = new MemoryStore(shardId, settings);
+        Store store = new RamStore(shardId, settings);
+//        Store store = new MemoryStore(shardId, settings);
 //        Store store = new NioFsStore(shardId, settings);
 
         store.deleteContent();

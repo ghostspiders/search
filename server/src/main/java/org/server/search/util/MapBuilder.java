@@ -25,9 +25,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+
 public class MapBuilder<K, V> {
 
     public static <K, V> MapBuilder<K, V> newMapBuilder() {

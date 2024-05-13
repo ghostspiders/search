@@ -22,9 +22,7 @@ package org.server.search.util.lucene;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 
-/**
- * 
- */
+
 public class FieldBuilder {
 
     private final Field field;

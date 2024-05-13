@@ -21,9 +21,7 @@ package org.server.search.index;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+
 public class IndexNameModule extends AbstractModule {
 
     private final Index index;

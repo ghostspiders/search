@@ -26,17 +26,12 @@ import org.server.search.util.SizeValue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
 
-/**
- * 
- */
+
 public class MemoryDirectory extends Directory {
 
     private final Map<String, MemoryFile> files = newConcurrentMap();
@@ -50,6 +45,8 @@ public class MemoryDirectory extends Directory {
     private final SizeValue cacheSize;
 
     private final boolean disableCache;
+
+    private Set<String> pendingDeletions = Collections.emptySet();
 
     public MemoryDirectory() {
         this(new SizeValue(1, SizeUnit.KB), new SizeValue(20, SizeUnit.MB), false);
@@ -90,8 +87,10 @@ public class MemoryDirectory extends Directory {
 
     @Override public void deleteFile(String name) throws IOException {
         MemoryFile file = files.remove(name);
-        if (file == null)
+        if (file == null){
             throw new FileNotFoundException(name);
+        }
+        pendingDeletions.add(name);
         file.clean();
     }
 
@@ -154,8 +153,8 @@ public class MemoryDirectory extends Directory {
     }
 
     @Override
-    public Set<String> getPendingDeletions() throws IOException {
-        return null;
+    public Set<String> getPendingDeletions(){
+        return pendingDeletions;
     }
 
     void releaseBuffer(byte[] buffer) {

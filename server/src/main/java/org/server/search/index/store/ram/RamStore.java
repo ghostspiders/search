@@ -32,9 +32,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
+
 public class RamStore extends AbstractStore<ByteBuffersDirectory> {
 
     private ByteBuffersDirectory directory;
