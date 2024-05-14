@@ -3,10 +3,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.StoredFields;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -45,7 +42,7 @@ public class LuceneCreateIndexTest {
         Document doc = new Document();
         String text = "This is the text to be indexed.";
         doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
-        iwriter.addDocument(doc);
+        iwriter.updateDocument(new Term("_id", "1"),doc);
         iwriter.close();
 
         // Now search the index:

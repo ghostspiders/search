@@ -20,8 +20,17 @@
 package org.server.search.index.engine.robin;
 
 import com.google.inject.Inject;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.server.search.SearchException;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.SnapshotDeletionPolicy;
@@ -46,11 +55,11 @@ import org.server.search.util.lucene.ReaderSearcherHolder;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static org.jgroups.util.Util.assertEquals;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.resource.AcquirableResourceFactory.*;
 import static org.server.search.util.lucene.Lucene.*;
@@ -131,11 +140,13 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             config.setSimilarity(similarityService.defaultIndexSimilarity());
             config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
             indexWriter = new IndexWriter(store.directory(),config);
-            indexWriter.close();
+            indexWriter.commit();
         } catch (IOException e) {
             safeClose(indexWriter);
             throw new EngineCreationFailureException(shardId, "Failed to create engine", e);
         }
+
+        this.indexWriter = indexWriter;
 
         try {
             IndexReader indexReader = DirectoryReader.open(store.directory());
@@ -183,10 +194,35 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
     @Override public void index(Index index) throws EngineException {
         rwl.readLock().lock();
         try {
-            indexWriter.updateDocument(index.uid(), index.doc());
+//            indexWriter.updateDocument(index.uid(), index.doc());
+            Analyzer analyzer = new StandardAnalyzer();
+            Document doc = new Document();
+            String text = "This is the text to be indexed.";
+            doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
+            long id = indexWriter.updateDocument(new Term("_id", "1"), doc);
+
+
+            QueryParser parser = new QueryParser("fieldname", analyzer);
+            Query query = parser.parse("text");
+
+            Searcher searcher = searcher();
+            IndexSearcher searcher1 = searcher.searcher();
+            ScoreDoc[] hits = searcher1.search(query, 10).scoreDocs;
+            assertEquals(1, hits.length);
+            System.out.println(hits.length);
+            System.out.println(hits.toString());
+            // Iterate through the results:
+            StoredFields storedFields = searcher1.storedFields();
+            Document hitDoc = storedFields.document(hits[1].doc);
+//            for (int i = 0; i < hits.length; i++) {
+//                Document hitDoc = storedFields.document(hits[i].doc);
+//                assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
+//            }
+
+
             translog.add(new Translog.Index(index));
             dirty = true;
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new IndexFailedEngineException(shardId, index, e);
         } finally {
             rwl.readLock().unlock();
