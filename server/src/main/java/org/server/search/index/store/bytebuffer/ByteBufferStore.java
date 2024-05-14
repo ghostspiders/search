@@ -28,9 +28,6 @@ import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
 public class ByteBufferStore extends AbstractStore<ByteBuffersDirectory> {
 
     private final SizeValue bufferSize;
