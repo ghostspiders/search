@@ -34,9 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- */
+
 public class Lucene {
 
     public static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer();

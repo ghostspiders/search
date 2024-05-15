@@ -19,11 +19,17 @@
 
 package org.server.search.micro.index.engine;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.server.search.index.Index;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.KeepOnlyLastDeletionPolicy;
@@ -45,9 +51,12 @@ import org.server.search.util.TimeValue;
 import org.server.search.util.lucene.Lucene;
 import org.server.search.util.settings.Settings;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.jgroups.util.Util.assertEquals;
 import static org.server.search.util.lucene.DocumentBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
@@ -233,11 +242,20 @@ public class SimpleEngineBenchmark {
             try {
                 barrier1.await();
                 barrier2.await();
+                Analyzer analyzer = new StandardAnalyzer();
                 for (int i = 0; i < searcherIterations; i++) {
                     Engine.Searcher searcher = engine.searcher();
-                    TopDocs topDocs = searcher.searcher().search(new TermQuery(new Term("content", content(i))), 10);
-                    // read one
-                    searcher.searcher().doc(topDocs.scoreDocs[0].doc);
+                    QueryParser parser = new QueryParser("fieldname", analyzer);
+                    Query query = parser.parse("text");
+                    ScoreDoc[] hits = searcher.searcher().search(query, 10).scoreDocs;
+                    assertEquals(1, hits.length);
+                    // Iterate through the results:
+                    StoredFields storedFields = searcher.searcher().storedFields();
+                    for (int j = 0; j < hits.length; j++) {
+                        Document hitDoc = storedFields.document(hits[j].doc);
+                        System.out.println(hitDoc.get("fieldname"));
+                        assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
+                    }
                     searcher.release();
                 }
             } catch (Exception e) {
@@ -274,7 +292,12 @@ public class SimpleEngineBenchmark {
         ShardId shardId = new ShardId(new Index("index"), 1);
         Settings settings = EMPTY_SETTINGS;
 
+        Path indexPath = Paths.get("/Users/gaoyvfeng/develop/code/IdeaProjects/search/work/search/indices/test");
+        Directory directory = FSDirectory.open(indexPath);
+
         Store store = new RamStore(shardId, settings);
+        Directory directory1 = store.directory();
+
 //        Store store = new MemoryStore(shardId, settings);
 //        Store store = new NioFsStore(shardId, settings);
 
@@ -288,8 +311,8 @@ public class SimpleEngineBenchmark {
 
         SimpleEngineBenchmark benchmark = new SimpleEngineBenchmark(store, engine)
                 .numberOfContentItems(1000)
-                .searcherThreads(50).searcherIterations(10000)
-                .writerThreads(10).writerIterations(10000)
+                .searcherThreads(1).searcherIterations(100)
+                .writerThreads(1).writerIterations(100)
                 .refreshSchedule(new TimeValue(1, TimeUnit.SECONDS))
                 .flushSchedule(new TimeValue(1, TimeUnit.MINUTES))
                 .build();

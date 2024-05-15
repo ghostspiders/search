@@ -12,6 +12,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.IOUtils;
@@ -36,8 +37,9 @@ public class LuceneCreateIndexTest {
     public static void main(String[] args) throws IOException, ParseException {
         Analyzer analyzer = new StandardAnalyzer();
 
-        Path indexPath = Paths.get("/Users/gaoyvfeng/develop/code/IdeaProjects/search/work/search/indices/test");
-        Directory directory = FSDirectory.open(indexPath);
+//        Path indexPath = Paths.get("/Users/gaoyvfeng/develop/code/IdeaProjects/search/work/search/indices/test");
+//        Directory directory = FSDirectory.open(indexPath);
+        ByteBuffersDirectory directory = new ByteBuffersDirectory();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter iwriter = new IndexWriter(directory, config);
         Document doc = new Document();
@@ -58,10 +60,11 @@ public class LuceneCreateIndexTest {
         StoredFields storedFields = isearcher.storedFields();
         for (int i = 0; i < hits.length; i++) {
             Document hitDoc = storedFields.document(hits[i].doc);
+            System.out.println(hitDoc.get("fieldname"));
             assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
         }
         ireader.close();
         directory.close();
-        IOUtils.rm(indexPath);
+//        IOUtils.rm(indexPath);
     }
 }
