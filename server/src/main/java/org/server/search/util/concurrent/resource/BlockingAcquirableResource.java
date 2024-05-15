@@ -27,8 +27,6 @@ import org.server.search.util.lease.Releasable;
  * <p/>
  * <p>Yea, I now, the fact that the resouce itself is releasable basically means that
  * users of this class should take care... .
- *
- * 
  */
 public class BlockingAcquirableResource<T extends Releasable> implements AcquirableResource<T> {
 

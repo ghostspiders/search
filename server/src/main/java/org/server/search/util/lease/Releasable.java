@@ -21,9 +21,7 @@ package org.server.search.util.lease;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+
 public interface Releasable {
 
     boolean release() throws SearchException;

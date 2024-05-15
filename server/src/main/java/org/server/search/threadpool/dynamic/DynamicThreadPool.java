@@ -30,9 +30,6 @@ import java.util.concurrent.Executors;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * 
- */
 public class DynamicThreadPool extends AbstractThreadPool {
 
     private final int min;

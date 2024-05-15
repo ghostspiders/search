@@ -21,9 +21,7 @@ package org.server.search.util.concurrent.resource;
 
 import org.server.search.util.lease.Releasable;
 
-/**
- * 
- */
+
 public final class AcquirableResourceFactory {
 
     public static <T extends Releasable> AcquirableResource<T> newAcquirableResource(T resource) {

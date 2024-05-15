@@ -41,9 +41,7 @@ import static org.server.search.cluster.ClusterState.*;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.DynamicExecutors.*;
 
-/**
- * 
- */
+
 public class DefaultClusterService extends AbstractComponent implements ClusterService {
 
     private final Lifecycle lifecycle = new Lifecycle();

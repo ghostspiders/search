@@ -292,12 +292,7 @@ public class SimpleEngineBenchmark {
         ShardId shardId = new ShardId(new Index("index"), 1);
         Settings settings = EMPTY_SETTINGS;
 
-        Path indexPath = Paths.get("/Users/gaoyvfeng/develop/code/IdeaProjects/search/work/search/indices/test");
-        Directory directory = FSDirectory.open(indexPath);
-
         Store store = new RamStore(shardId, settings);
-        Directory directory1 = store.directory();
-
 //        Store store = new MemoryStore(shardId, settings);
 //        Store store = new NioFsStore(shardId, settings);
 
@@ -310,7 +305,7 @@ public class SimpleEngineBenchmark {
         engine.start();
 
         SimpleEngineBenchmark benchmark = new SimpleEngineBenchmark(store, engine)
-                .numberOfContentItems(1000)
+                .numberOfContentItems(100)
                 .searcherThreads(1).searcherIterations(100)
                 .writerThreads(1).writerIterations(100)
                 .refreshSchedule(new TimeValue(1, TimeUnit.SECONDS))

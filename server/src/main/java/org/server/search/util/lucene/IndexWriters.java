@@ -26,9 +26,7 @@ import org.slf4j.Logger;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-/**
- * 
- */
+
 public abstract class IndexWriters {
 
     private static Logger logger = Loggers.getLogger(IndexWriters.class);

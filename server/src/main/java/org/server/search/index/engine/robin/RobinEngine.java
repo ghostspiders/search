@@ -194,35 +194,10 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
     @Override public void index(Index index) throws EngineException {
         rwl.readLock().lock();
         try {
-//            indexWriter.updateDocument(index.uid(), index.doc());
-            Analyzer analyzer = new StandardAnalyzer();
-            Document doc = new Document();
-            String text = "This is the text to be indexed.";
-            doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
-            long id = indexWriter.updateDocument(new Term("_id", "1"), doc);
-
-
-            QueryParser parser = new QueryParser("fieldname", analyzer);
-            Query query = parser.parse("text");
-
-            Searcher searcher = searcher();
-            IndexSearcher searcher1 = searcher.searcher();
-            ScoreDoc[] hits = searcher1.search(query, 10).scoreDocs;
-            assertEquals(1, hits.length);
-            System.out.println(hits.length);
-            System.out.println(hits.toString());
-            // Iterate through the results:
-            StoredFields storedFields = searcher1.storedFields();
-            Document hitDoc = storedFields.document(hits[1].doc);
-//            for (int i = 0; i < hits.length; i++) {
-//                Document hitDoc = storedFields.document(hits[i].doc);
-//                assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
-//            }
-
-
+            indexWriter.updateDocument(index.uid(), index.doc());
             translog.add(new Translog.Index(index));
             dirty = true;
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new IndexFailedEngineException(shardId, index, e);
         } finally {
             rwl.readLock().unlock();
