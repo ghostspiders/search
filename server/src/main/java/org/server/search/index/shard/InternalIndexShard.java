@@ -55,9 +55,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-/**
- * 
- */
+
 @IndexShardLifecycle
 @ThreadSafe
 public class InternalIndexShard extends AbstractIndexShardComponent implements IndexShard {

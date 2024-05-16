@@ -22,9 +22,7 @@ package org.server.search.index;
 import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+
 public class IndexShardMissingException extends IndexShardException {
 
     public IndexShardMissingException(ShardId shardId) {
