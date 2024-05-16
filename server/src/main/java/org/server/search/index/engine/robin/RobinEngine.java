@@ -255,12 +255,17 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         }
     }
 
-    @Override public void refresh(boolean waitForOperations) throws EngineException {
+    @Override public void refresh(boolean waitForOperations) throws EngineException, IOException {
         if (refreshMutex.compareAndSet(false, true)) {
             if (dirty) {
                 dirty = false;
+                try {
+                    indexWriter.commit();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 AcquirableResource<ReaderSearcherHolder> current = nrtResource;
-                IndexReader newReader = current.resource().reader();
+                IndexReader newReader =  DirectoryReader.open(store.directory());;
                 if (newReader != current.resource().reader()) {
                     nrtResource = newAcquirableResource(new ReaderSearcherHolder(newReader));
                     current.markForClose();

@@ -329,7 +329,7 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         }
     }
 
-    public void refresh(boolean waitForOperations) throws SearchException {
+    public void refresh(boolean waitForOperations) throws SearchException, IOException {
         writeAllowed();
         if (logger.isTraceEnabled()) {
             logger.trace("Refresh, waitForOperations[{}]", waitForOperations);

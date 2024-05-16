@@ -35,6 +35,8 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 import org.server.search.util.lease.Releasable;
 
+import java.io.IOException;
+
 
 @ThreadSafe
 @IndexShardLifecycle
@@ -63,7 +65,7 @@ public interface Engine extends IndexShardComponent {
      * changes. Pass <tt>true</tt> if the refresh operation should include
      * all the operations performed up to this call.
      */
-    void refresh(boolean waitForOperations) throws EngineException;
+    void refresh(boolean waitForOperations) throws EngineException, IOException;
 
     /**
      * Flushes the state of the engine, clearing memory.

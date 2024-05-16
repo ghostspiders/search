@@ -28,6 +28,8 @@ import org.server.search.util.Nullable;
 import org.server.search.util.SizeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 
+import java.io.IOException;
+
 /**
  * 
  */
@@ -58,7 +60,7 @@ public interface IndexShard extends IndexShardComponent {
 
     long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws SearchException;
 
-    void refresh(boolean waitForOperations) throws SearchException;
+    void refresh(boolean waitForOperations) throws SearchException, IOException;
 
     void flush() throws SearchException;
 

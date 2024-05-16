@@ -29,6 +29,8 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
+import java.io.IOException;
+
 public class TransportShardRefreshAction extends TransportShardReplicationOperationAction<ShardRefreshRequest, ShardRefreshResponse> {
 
     @Inject public TransportShardRefreshAction(Settings settings, TransportService transportService,
@@ -49,13 +51,13 @@ public class TransportShardRefreshAction extends TransportShardReplicationOperat
         return "indices/index/shard/refresh";
     }
 
-    @Override protected ShardRefreshResponse shardOperationOnPrimary(ShardOperationRequest shardRequest) {
+    @Override protected ShardRefreshResponse shardOperationOnPrimary(ShardOperationRequest shardRequest) throws IOException {
         ShardRefreshRequest request = shardRequest.request;
         indexShard(shardRequest).refresh(request.waitForOperations());
         return new ShardRefreshResponse();
     }
 
-    @Override protected void shardOperationOnBackup(ShardOperationRequest shardRequest) {
+    @Override protected void shardOperationOnBackup(ShardOperationRequest shardRequest) throws IOException {
         ShardRefreshRequest request = shardRequest.request;
         indexShard(shardRequest).refresh(request.waitForOperations());
     }

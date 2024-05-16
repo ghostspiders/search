@@ -90,7 +90,7 @@ public class IndexShardGatewayService extends AbstractIndexShardComponent {
     /**
      * Recovers the state of the shard from the gateway.
      */
-    public synchronized void recover() throws IndexShardGatewayRecoveryException, IgnoreGatewayRecoveryException {
+    public synchronized void recover() throws IndexShardGatewayRecoveryException, IgnoreGatewayRecoveryException, IOException {
         if (recovered.compareAndSet(false, true)) {
             if (!indexShard.routingEntry().primary()) {
                 throw new SearchIllegalStateException("Trying to recover when the shard is in backup state");

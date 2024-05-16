@@ -92,9 +92,9 @@ public abstract class TransportShardReplicationOperationAction<Request extends S
 
     protected abstract String transportAction();
 
-    protected abstract Response shardOperationOnPrimary(ShardOperationRequest shardRequest);
+    protected abstract Response shardOperationOnPrimary(ShardOperationRequest shardRequest) throws IOException;
 
-    protected abstract void shardOperationOnBackup(ShardOperationRequest shardRequest);
+    protected abstract void shardOperationOnBackup(ShardOperationRequest shardRequest) throws IOException;
 
     protected abstract ShardsIterator shards(Request request) throws SearchException;
 

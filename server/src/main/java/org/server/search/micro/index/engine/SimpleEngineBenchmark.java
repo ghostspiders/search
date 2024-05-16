@@ -19,6 +19,7 @@
 
 package org.server.search.micro.index.engine;
 
+import lombok.SneakyThrows;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -51,6 +52,7 @@ import org.server.search.util.TimeValue;
 import org.server.search.util.lucene.Lucene;
 import org.server.search.util.settings.Settings;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.*;
@@ -139,7 +141,7 @@ public class SimpleEngineBenchmark {
         return this;
     }
 
-    public SimpleEngineBenchmark build() {
+    public SimpleEngineBenchmark build() throws IOException {
         for (int i = 0; i < searcherThreads.length; i++) {
             searcherThreads[i] = new Thread(new SearcherThread(), "Searcher[" + i + "]");
         }
@@ -164,7 +166,6 @@ public class SimpleEngineBenchmark {
         engine.refresh(true);
         stopWatch.stop();
         System.out.println("Warmup of [" + contentItems.length + "] content items, took " + stopWatch.totalTime());
-
         return this;
     }
 
@@ -228,6 +229,7 @@ public class SimpleEngineBenchmark {
         StopWatch stopWatch = new StopWatch();
         private int id;
 
+        @SneakyThrows
         @Override public synchronized void run() {
             stopWatch.start("" + ++id);
             int lastId = idGenerator.get();
@@ -245,16 +247,11 @@ public class SimpleEngineBenchmark {
                 Analyzer analyzer = new StandardAnalyzer();
                 for (int i = 0; i < searcherIterations; i++) {
                     Engine.Searcher searcher = engine.searcher();
-                    QueryParser parser = new QueryParser("fieldname", analyzer);
-                    Query query = parser.parse("text");
-                    ScoreDoc[] hits = searcher.searcher().search(query, 10).scoreDocs;
-                    assertEquals(1, hits.length);
-                    // Iterate through the results:
+                    ScoreDoc[] hits = searcher.searcher().search(new TermQuery(new Term("content", content(i))), 10).scoreDocs;
                     StoredFields storedFields = searcher.searcher().storedFields();
                     for (int j = 0; j < hits.length; j++) {
                         Document hitDoc = storedFields.document(hits[j].doc);
-                        System.out.println(hitDoc.get("fieldname"));
-                        assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
+                        System.out.println(hitDoc.get("content"));
                     }
                     searcher.release();
                 }
@@ -305,9 +302,9 @@ public class SimpleEngineBenchmark {
         engine.start();
 
         SimpleEngineBenchmark benchmark = new SimpleEngineBenchmark(store, engine)
-                .numberOfContentItems(100)
-                .searcherThreads(1).searcherIterations(100)
-                .writerThreads(1).writerIterations(100)
+                .numberOfContentItems(1000)
+                .searcherThreads(50).searcherIterations(10000)
+                .writerThreads(10).writerIterations(10000)
                 .refreshSchedule(new TimeValue(1, TimeUnit.SECONDS))
                 .flushSchedule(new TimeValue(1, TimeUnit.MINUTES))
                 .build();
