@@ -43,9 +43,7 @@ import org.server.search.client.Client;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+
 public class ServerClient extends AbstractComponent implements Client {
 
     private final ServerAdminClient admin;

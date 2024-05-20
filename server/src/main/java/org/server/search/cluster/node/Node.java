@@ -29,9 +29,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 
- */
+
 public class Node implements Streamable, Serializable {
 
     public static final ImmutableList<Node> EMPTY_LIST = ImmutableList.of();

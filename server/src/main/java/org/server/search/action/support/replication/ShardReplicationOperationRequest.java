@@ -30,9 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+
 public abstract class ShardReplicationOperationRequest implements ActionRequest {
 
     public static final TimeValue DEFAULT_TIMEOUT = new TimeValue(1, TimeUnit.MINUTES);

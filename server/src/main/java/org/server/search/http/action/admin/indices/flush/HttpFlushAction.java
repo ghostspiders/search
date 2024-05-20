@@ -37,9 +37,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+
 public class HttpFlushAction extends BaseHttpServerHandler {
 
     @Inject public HttpFlushAction(Settings settings, HttpServer httpService, Client client) {

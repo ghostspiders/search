@@ -23,9 +23,6 @@ import org.server.search.client.Client;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
 public abstract class BaseHttpServerHandler extends AbstractComponent implements HttpServerHandler {
 
     protected final Client client;

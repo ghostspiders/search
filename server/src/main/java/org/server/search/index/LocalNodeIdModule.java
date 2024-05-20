@@ -21,9 +21,7 @@ package org.server.search.index;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+
 public class LocalNodeIdModule extends AbstractModule {
 
     private final String localNodeId;

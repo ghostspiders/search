@@ -224,7 +224,11 @@ public class SimpleEngineBenchmark {
         @Override public synchronized void run() {
             stopWatch.start("" + ++id);
             int lastId = idGenerator.get();
-            engine.refresh(true);
+            try {
+                engine.refresh(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             lastRefreshedId = lastId;
             stopWatch.stop();
         }
@@ -235,7 +239,6 @@ public class SimpleEngineBenchmark {
             try {
                 barrier1.await();
                 barrier2.await();
-                Analyzer analyzer = new StandardAnalyzer();
                 for (int i = 0; i < searcherIterations; i++) {
                     Engine.Searcher searcher = engine.searcher();
                     ScoreDoc[] hits = searcher.searcher().search(new TermQuery(new Term("content", content(i))), 10).scoreDocs;

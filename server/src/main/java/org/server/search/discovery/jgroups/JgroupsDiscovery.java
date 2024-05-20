@@ -153,7 +153,7 @@ public class JgroupsDiscovery extends AbstractComponent implements Discovery, Re
             channel.connect(clusterName.value());
             channel.setReceiver(this);
             logger.debug("Connected to cluster [{}], address [{}]", channel.getClusterName(), channel.getAddress());
-            this.localNode = new Node(settings.get("name"), settings.getAsBoolean("node.data", true), channel.getAddress().toString(), transportService.boundAddress().publishAddress());
+            this.localNode = new Node(settings.get("name"), settings.getAsBoolean("node.data", true), InetAddress.getLocalHost().getHostName(), transportService.boundAddress().publishAddress());
 
             if (isMaster()) {
                 clusterService.submitStateUpdateTask("jgroups-disco-initialconnect(master)", new ProcessedClusterStateUpdateTask() {

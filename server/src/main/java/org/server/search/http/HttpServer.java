@@ -31,9 +31,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+
 public class HttpServer extends AbstractComponent implements LifecycleComponent<HttpServer> {
 
     private final Lifecycle lifecycle = new Lifecycle();

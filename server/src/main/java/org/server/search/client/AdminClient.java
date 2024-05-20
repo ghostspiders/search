@@ -19,9 +19,6 @@
 
 package org.server.search.client;
 
-/**
- * 
- */
 public interface AdminClient {
 
     ClusterAdminClient cluster();
