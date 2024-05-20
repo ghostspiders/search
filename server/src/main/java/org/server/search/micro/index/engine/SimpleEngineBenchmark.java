@@ -23,14 +23,9 @@ import lombok.SneakyThrows;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.server.search.index.Index;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.KeepOnlyLastDeletionPolicy;
@@ -42,7 +37,6 @@ import org.server.search.index.merge.scheduler.ConcurrentMergeSchedulerProvider;
 import org.server.search.index.shard.ShardId;
 import org.server.search.index.similarity.SimilarityService;
 import org.server.search.index.store.Store;
-import org.server.search.index.store.memory.MemoryStore;
 import org.server.search.index.store.ram.RamStore;
 import org.server.search.index.translog.memory.MemoryTranslog;
 import org.server.search.threadpool.ThreadPool;
@@ -53,12 +47,9 @@ import org.server.search.util.lucene.Lucene;
 import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.jgroups.util.Util.assertEquals;
 import static org.server.search.util.lucene.DocumentBuilder.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 

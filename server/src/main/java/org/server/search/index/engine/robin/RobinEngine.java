@@ -20,17 +20,8 @@
 package org.server.search.index.engine.robin;
 
 import com.google.inject.Inject;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.server.search.SearchException;
 import org.server.search.index.analysis.AnalysisService;
 import org.server.search.index.deletionpolicy.SnapshotDeletionPolicy;
@@ -58,8 +49,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static org.jgroups.util.Util.assertEquals;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.resource.AcquirableResourceFactory.*;
 import static org.server.search.util.lucene.Lucene.*;
@@ -139,6 +128,7 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
             config.setMergePolicy(mergePolicyProvider.newMergePolicy(indexWriter));
             config.setSimilarity(similarityService.defaultIndexSimilarity());
             config.setRAMBufferSizeMB(ramBufferSize.mbFrac());
+            config.setIndexDeletionPolicy(deletionPolicy);
             indexWriter = new IndexWriter(store.directory(),config);
             indexWriter.commit();
         } catch (IOException e) {

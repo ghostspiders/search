@@ -27,9 +27,7 @@ import org.server.search.util.SizeUnit;
 import org.server.search.util.SizeValue;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+
 public class MemoryStore extends AbstractStore<MemoryDirectory> {
 
     private final SizeValue bufferSize;

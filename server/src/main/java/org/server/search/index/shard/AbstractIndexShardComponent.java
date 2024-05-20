@@ -68,15 +68,16 @@ public abstract class AbstractIndexShardComponent extends IndexDeletionPolicy im
     public String managementGroupName() {
         return buildShardGroupName(shardId);
     }
+    @Override
     public  void onInit(List<? extends IndexCommit> commits) throws IOException{
         onCommit(commits);
-    };
+    }
 
-
+    @Override
     public  void onCommit(List<? extends IndexCommit> commits) throws IOException{
         int size = commits.size();
         for (int i = 0; i < size - 1; i++) {
             commits.get(i).delete();
         }
-    };
+    }
 }

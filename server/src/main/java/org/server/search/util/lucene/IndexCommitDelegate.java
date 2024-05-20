@@ -29,8 +29,6 @@ import java.util.Map;
 /**
  * A simple delegate that delegates all {@link IndexCommit} calls to a delegated
  * {@link IndexCommit}.
- *
- * 
  */
 public abstract class IndexCommitDelegate extends IndexCommit {
 

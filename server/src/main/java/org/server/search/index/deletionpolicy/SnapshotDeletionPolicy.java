@@ -91,8 +91,9 @@ public class SnapshotDeletionPolicy extends AbstractIndexShardComponent{
                 }
             }
             this.commits = newCommits;
-            // the last commit that is not deleted
-            this.lastCommit = newCommits.get(newCommits.size() - 1);
+            if (!newCommits.isEmpty()) {
+                this.lastCommit = newCommits.get(newCommits.size() - 1);
+            }
         }
     }
 
