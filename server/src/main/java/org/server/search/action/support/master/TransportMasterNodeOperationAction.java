@@ -31,8 +31,6 @@ import org.server.search.util.settings.Settings;
 
 /**
  * A base class for operations that needs to be performed on the master node.
- *
- * 
  */
 public abstract class TransportMasterNodeOperationAction<Request extends MasterNodeOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 

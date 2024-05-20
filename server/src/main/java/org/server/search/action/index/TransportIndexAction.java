@@ -37,9 +37,6 @@ import org.server.search.transport.TransportService;
 import org.server.search.util.UUID;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
 public class TransportIndexAction extends TransportShardReplicationOperationAction<IndexRequest, IndexResponse> {
 
     private final boolean autoCreateIndex;

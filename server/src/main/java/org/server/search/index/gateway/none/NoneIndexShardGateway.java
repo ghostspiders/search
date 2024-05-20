@@ -38,9 +38,6 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
 public class NoneIndexShardGateway extends AbstractIndexShardComponent implements IndexShardGateway {
 
     private final InternalIndexShard indexShard;

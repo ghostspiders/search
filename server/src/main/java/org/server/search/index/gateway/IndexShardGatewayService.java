@@ -39,9 +39,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * 
- */
 public class IndexShardGatewayService extends AbstractIndexShardComponent {
 
     private final boolean snapshotOnClose;

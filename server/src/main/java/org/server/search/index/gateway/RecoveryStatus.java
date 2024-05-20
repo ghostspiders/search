@@ -21,9 +21,7 @@ package org.server.search.index.gateway;
 
 import org.server.search.util.SizeValue;
 
-/**
- * 
- */
+
 public class RecoveryStatus {
 
     private Index index;

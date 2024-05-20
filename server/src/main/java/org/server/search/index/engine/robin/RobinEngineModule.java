@@ -22,9 +22,7 @@ package org.server.search.index.engine.robin;
 import com.google.inject.AbstractModule;
 import org.server.search.index.engine.Engine;
 
-/**
- * 
- */
+
 public class RobinEngineModule extends AbstractModule {
 
     @Override protected void configure() {

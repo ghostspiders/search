@@ -34,9 +34,7 @@ import java.util.Map;
 import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.http.action.support.HttpActions.*;
 
-/**
- * 
- */
+
 public class HttpIndicesStatusAction extends BaseHttpServerHandler {
 
     @Inject public HttpIndicesStatusAction(Settings settings, HttpServer httpService, Client client) {
