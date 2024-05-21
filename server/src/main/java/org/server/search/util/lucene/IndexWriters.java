@@ -43,7 +43,7 @@ public abstract class IndexWriters {
             docWriterField = IndexWriter.class.getDeclaredField("docWriter");
             docWriterField.setAccessible(true);
             Class docWriter = IndexWriters.class.getClassLoader().loadClass("org.apache.lucene.index.DocumentsWriter");
-            docWriterGetRAMUsed = docWriter.getDeclaredMethod("getRAMUsed");
+            docWriterGetRAMUsed = docWriter.getDeclaredMethod("getNumDocs");
             docWriterGetRAMUsed.setAccessible(true);
             docWriterReflectionX = true;
         } catch (Exception e) {
@@ -57,7 +57,8 @@ public abstract class IndexWriters {
             return -1;
         }
         Object docWriter = docWriterField.get(indexWriter);
-        return (Long) docWriterGetRAMUsed.invoke(docWriter);
+        Integer value = (Integer) docWriterGetRAMUsed.invoke(docWriter);
+        return Long.valueOf(value);
     }
 
     private IndexWriters() {
