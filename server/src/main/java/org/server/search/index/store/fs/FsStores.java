@@ -24,9 +24,7 @@ import org.server.search.index.shard.ShardId;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class FsStores {
 
     public static final String DEFAULT_INDICES_LOCATION = "indices";

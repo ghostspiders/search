@@ -27,9 +27,7 @@ import org.server.search.search.facets.FacetsPhase;
 import org.server.search.search.fetch.FetchPhase;
 import org.server.search.search.query.QueryPhase;
 
-/**
- * 
- */
+ 
 public class SearchModule extends AbstractModule {
 
     @Override protected void configure() {

@@ -21,9 +21,7 @@ package org.server.search.index.mapper;
 
 import org.apache.lucene.document.Document;
 
-/**
- * 
- */
+ 
 public interface IdFieldMapper extends FieldMapper<String> {
 
     String value(Document document);

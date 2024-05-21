@@ -37,9 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * 
- */
+ 
 public class TransportService extends AbstractComponent implements LifecycleComponent<TransportService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

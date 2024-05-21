@@ -22,9 +22,7 @@ package org.server.search.action;
 import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class PrimaryNotStartedActionException extends IndexShardException {
 
     public PrimaryNotStartedActionException(ShardId shardId, String message) {

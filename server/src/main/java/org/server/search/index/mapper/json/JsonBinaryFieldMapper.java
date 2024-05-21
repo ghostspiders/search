@@ -25,9 +25,7 @@ import org.apache.lucene.document.FieldType;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonBinaryFieldMapper extends JsonFieldMapper<byte[]> {
 
     public static class Builder extends JsonFieldMapper.Builder<Builder, JsonBinaryFieldMapper> {

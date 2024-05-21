@@ -27,9 +27,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class WhitespaceTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject public WhitespaceTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {

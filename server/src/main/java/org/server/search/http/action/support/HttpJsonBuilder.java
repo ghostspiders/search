@@ -24,9 +24,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class HttpJsonBuilder {
 
     public static JsonBuilder cached(HttpRequest request) throws IOException {

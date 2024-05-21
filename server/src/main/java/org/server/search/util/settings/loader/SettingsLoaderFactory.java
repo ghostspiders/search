@@ -19,9 +19,7 @@
 
 package org.server.search.util.settings.loader;
 
-/**
- * 
- */
+ 
 public final class SettingsLoaderFactory {
 
     private SettingsLoaderFactory() {

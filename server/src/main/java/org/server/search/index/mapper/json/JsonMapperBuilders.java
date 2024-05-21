@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper.json;
 
-/**
- * 
- */
+ 
 public final class JsonMapperBuilders {
 
     private JsonMapperBuilders() {

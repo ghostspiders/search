@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public interface TransportServiceAdapter {
 
     TransportRequestHandler handler(String action);

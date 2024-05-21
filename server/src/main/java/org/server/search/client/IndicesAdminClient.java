@@ -36,9 +36,7 @@ import org.server.search.action.admin.indices.refresh.RefreshResponse;
 import org.server.search.action.admin.indices.status.IndicesStatusRequest;
 import org.server.search.action.admin.indices.status.IndicesStatusResponse;
 
-/**
- * 
- */
+ 
 public interface IndicesAdminClient {
 
     ActionFuture<IndicesStatusResponse> status(IndicesStatusRequest request);

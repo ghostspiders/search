@@ -21,9 +21,7 @@ package org.server.search.index.mapper;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class MapperException extends SearchException {
 
     public MapperException(String message) {

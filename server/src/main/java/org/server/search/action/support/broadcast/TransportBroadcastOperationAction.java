@@ -41,9 +41,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public abstract class TransportBroadcastOperationAction<Request extends BroadcastOperationRequest, Response extends BroadcastOperationResponse, ShardRequest extends BroadcastShardOperationRequest, ShardResponse extends BroadcastShardOperationResponse>
         extends BaseAction<Request, Response> {
 

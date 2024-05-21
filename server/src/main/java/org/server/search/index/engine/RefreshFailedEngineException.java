@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class RefreshFailedEngineException extends EngineException {
 
     public RefreshFailedEngineException(ShardId shardId, Throwable t) {

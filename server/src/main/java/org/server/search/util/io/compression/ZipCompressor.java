@@ -28,9 +28,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-/**
- * 
- */
+ 
 public class ZipCompressor implements Compressor {
 
     private static class Cached {

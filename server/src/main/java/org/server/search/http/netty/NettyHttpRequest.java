@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 
- */
+ 
 public class NettyHttpRequest implements HttpRequest {
 
     private final FullHttpRequest  request;

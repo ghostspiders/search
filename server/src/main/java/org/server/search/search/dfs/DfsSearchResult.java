@@ -29,9 +29,7 @@ import java.io.IOException;
 
 import static org.server.search.search.SearchShardTarget.*;
 
-/**
- * 
- */
+ 
 public class DfsSearchResult implements Streamable {
 
     private static Term[] EMPTY_TERMS = new Term[0];

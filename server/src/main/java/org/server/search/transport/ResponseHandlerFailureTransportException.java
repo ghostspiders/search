@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class ResponseHandlerFailureTransportException extends TransportException {
 
     public ResponseHandlerFailureTransportException(String msg) {

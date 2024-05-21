@@ -22,9 +22,7 @@ package org.server.search.search.dfs;
 import org.server.search.search.Search1Exception;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public class DfsPhaseExecutionException extends Search1Exception {
 
     public DfsPhaseExecutionException(SearchContext context) {

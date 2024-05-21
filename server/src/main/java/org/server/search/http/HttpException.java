@@ -21,9 +21,7 @@ package org.server.search.http;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class HttpException extends SearchException {
 
     public HttpException(String message) {

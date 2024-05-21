@@ -21,9 +21,7 @@ package org.server.search.index.similarity;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface SimilarityProviderFactory {
 
     SimilarityProvider create(String name, Settings settings);

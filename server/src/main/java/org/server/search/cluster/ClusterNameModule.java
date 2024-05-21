@@ -22,9 +22,7 @@ package org.server.search.cluster;
 import com.google.inject.AbstractModule;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClusterNameModule extends AbstractModule {
 
     private final Settings settings;

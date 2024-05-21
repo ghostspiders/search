@@ -28,9 +28,7 @@ import org.server.search.util.component.Lifecycle;
 import org.server.search.util.component.LifecycleComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class MonitorService extends AbstractComponent implements LifecycleComponent<MonitorService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

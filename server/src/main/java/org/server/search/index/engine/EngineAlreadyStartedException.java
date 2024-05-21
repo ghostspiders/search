@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class EngineAlreadyStartedException extends EngineException {
 
     public EngineAlreadyStartedException(ShardId shardId) {

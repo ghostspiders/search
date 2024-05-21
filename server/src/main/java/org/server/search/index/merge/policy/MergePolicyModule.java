@@ -24,9 +24,7 @@ import org.apache.lucene.index.LogMergePolicy;
 import org.server.search.index.shard.IndexShardLifecycle;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class MergePolicyModule extends AbstractModule {
 

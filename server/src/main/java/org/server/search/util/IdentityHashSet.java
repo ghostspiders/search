@@ -21,9 +21,7 @@ package org.server.search.util;
 
 import java.util.*;
 
-/**
- * 
- */
+ 
 public class IdentityHashSet<E>
         extends AbstractSet<E>
         implements Set<E>, Cloneable, java.io.Serializable {

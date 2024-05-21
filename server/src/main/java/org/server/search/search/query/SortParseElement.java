@@ -35,9 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class SortParseElement implements SearchParseElement {
 
     private final Map<String,SortField.Type> sortFieldTypesMapper = new HashMap<>();

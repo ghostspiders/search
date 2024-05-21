@@ -24,9 +24,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class SpanNotJsonQueryBuilder extends BaseJsonQueryBuilder implements JsonSpanQueryBuilder {
 
     private JsonSpanQueryBuilder include;

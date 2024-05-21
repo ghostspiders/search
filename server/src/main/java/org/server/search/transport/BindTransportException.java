@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class BindTransportException extends TransportException {
 
     public BindTransportException(String message) {

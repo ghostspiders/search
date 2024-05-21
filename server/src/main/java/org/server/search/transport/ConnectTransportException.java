@@ -21,9 +21,7 @@ package org.server.search.transport;
 
 import org.server.search.cluster.node.Node;
 
-/**
- * 
- */
+ 
 public class ConnectTransportException extends TransportException {
 
     private final Node node;

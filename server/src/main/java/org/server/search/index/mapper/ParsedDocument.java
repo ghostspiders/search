@@ -21,9 +21,7 @@ package org.server.search.index.mapper;
 
 import org.apache.lucene.document.Document;
 
-/**
- * 
- */
+ 
 public class ParsedDocument {
 
     private final String uid;

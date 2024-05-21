@@ -22,9 +22,7 @@ package org.server.search.index.translog;
 import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class TranslogException extends IndexShardException {
 
     public TranslogException(ShardId shardId, String msg) {

@@ -23,9 +23,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class MatchAllJsonQueryBuilder extends BaseJsonQueryBuilder {
 
     private String normsField;

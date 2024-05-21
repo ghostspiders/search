@@ -29,9 +29,7 @@ import java.io.IOException;
 
 import static org.server.search.search.internal.InternalSearchHit.*;
 
-/**
- * 
- */
+ 
 public class InternalSearchHits implements SearchHits {
 
     private static final SearchHit[] EMPTY = new SearchHit[0];

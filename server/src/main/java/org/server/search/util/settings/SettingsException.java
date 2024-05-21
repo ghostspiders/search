@@ -21,9 +21,7 @@ package org.server.search.util.settings;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class SettingsException extends SearchException {
 
     public SettingsException(String message) {

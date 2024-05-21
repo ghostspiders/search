@@ -23,9 +23,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class SpanFirstJsonQueryBuilder extends BaseJsonQueryBuilder implements JsonSpanQueryBuilder {
 
     private final JsonSpanQueryBuilder matchBuilder;

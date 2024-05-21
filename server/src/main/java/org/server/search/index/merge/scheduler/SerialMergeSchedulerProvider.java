@@ -28,9 +28,7 @@ import org.server.search.index.shard.IndexShardLifecycle;
 import org.server.search.index.shard.ShardId;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class SerialMergeSchedulerProvider extends AbstractIndexShardComponent implements MergeSchedulerProvider {
 

@@ -23,9 +23,7 @@ import org.server.search.SearchException;
 import org.server.search.cluster.node.Node;
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class RecoveryFailedException extends SearchException {
 
     public RecoveryFailedException(ShardId shardId, Node node, Node targetNode, Throwable cause) {

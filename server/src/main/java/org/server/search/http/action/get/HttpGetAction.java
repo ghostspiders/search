@@ -33,9 +33,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpGetAction extends BaseHttpServerHandler {
 
     @Inject public HttpGetAction(Settings settings, HttpServer httpService, Client client) {

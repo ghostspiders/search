@@ -26,9 +26,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class LowerCaseTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject public LowerCaseTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, String name,Settings settings) {

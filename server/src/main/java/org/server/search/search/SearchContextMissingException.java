@@ -21,9 +21,7 @@ package org.server.search.search;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class SearchContextMissingException extends SearchException {
 
     private final long id;

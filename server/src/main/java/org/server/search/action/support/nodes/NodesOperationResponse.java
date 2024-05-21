@@ -29,9 +29,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public abstract class NodesOperationResponse<NodeResponse extends NodeOperationResponse> implements ActionResponse, Iterable<NodeResponse> {
 
     private ClusterName clusterName;

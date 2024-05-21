@@ -22,9 +22,7 @@ package org.server.search.index.gateway;
 import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class IndexShardGatewayException extends IndexShardException {
 
     public IndexShardGatewayException(ShardId shardId, String msg) {

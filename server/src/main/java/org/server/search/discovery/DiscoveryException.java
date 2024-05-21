@@ -21,9 +21,7 @@ package org.server.search.discovery;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class DiscoveryException extends SearchException {
 
     public DiscoveryException(String message) {

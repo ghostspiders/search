@@ -36,9 +36,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class JsonDocumentMapper implements DocumentMapper {
 
     public static class Builder {

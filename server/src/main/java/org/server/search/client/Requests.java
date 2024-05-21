@@ -39,9 +39,7 @@ import org.server.search.action.index.IndexRequest;
 import org.server.search.action.search.SearchRequest;
 import org.server.search.action.search.SearchScrollRequest;
 
-/**
- * 
- */
+ 
 public class Requests {
 
     public static IndexRequest indexRequest(String index) {

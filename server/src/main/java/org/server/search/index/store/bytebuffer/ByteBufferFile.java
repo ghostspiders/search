@@ -23,9 +23,7 @@ import org.apache.lucene.store.ByteBuffersDirectory;
 
 import java.nio.ByteBuffer;
 
-/**
- * 
- */
+ 
 public class ByteBufferFile {
 
     private final ByteBuffersDirectory dir;

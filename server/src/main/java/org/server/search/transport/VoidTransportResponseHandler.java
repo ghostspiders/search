@@ -21,9 +21,7 @@ package org.server.search.transport;
 
 import org.server.search.util.io.VoidStreamable;
 
-/**
- * 
- */
+ 
 public class VoidTransportResponseHandler implements TransportResponseHandler<VoidStreamable> {
 
     public static final VoidTransportResponseHandler INSTANCE = new VoidTransportResponseHandler(true);

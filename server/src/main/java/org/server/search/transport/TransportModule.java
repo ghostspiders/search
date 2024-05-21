@@ -26,9 +26,7 @@ import org.server.search.util.settings.Settings;
 
 import static org.server.search.util.guice.ModulesFactory.*;
 
-/**
- * 
- */
+ 
 public class TransportModule extends AbstractModule {
 
     private final Settings settings;

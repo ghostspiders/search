@@ -21,9 +21,7 @@ package org.server.search.monitor.dump;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface DumpContributorFactory {
 
     DumpContributor create(String name, Settings settings);

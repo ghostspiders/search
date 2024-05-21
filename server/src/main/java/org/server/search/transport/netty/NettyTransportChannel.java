@@ -35,9 +35,7 @@ import java.io.NotSerializableException;
 
 import static org.server.search.transport.Transport.Helper.*;
 
-/**
- * 
- */
+ 
 public class NettyTransportChannel implements TransportChannel {
 
     private static final byte[] LENGTH_PLACEHOLDER = new byte[4];

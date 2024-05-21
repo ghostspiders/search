@@ -27,9 +27,7 @@ import org.server.search.util.io.FastCharArrayWriter;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 @NotThreadSafe
 public class JsonBuilder {
 

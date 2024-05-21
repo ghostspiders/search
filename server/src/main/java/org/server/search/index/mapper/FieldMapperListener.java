@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper;
 
-/**
- * 
- */
+ 
 public interface FieldMapperListener {
 
     void fieldMapper(FieldMapper fieldMapper);

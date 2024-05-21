@@ -29,9 +29,7 @@ import org.server.search.util.Numbers;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonLongFieldMapper extends JsonNumberFieldMapper<Long> {
 
     public static class Defaults extends JsonNumberFieldMapper.Defaults {

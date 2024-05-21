@@ -19,9 +19,7 @@
 
 package org.server.search.monitor.dump;
 
-/**
- * 
- */
+ 
 public class DumpGenerationFailedException extends DumpException {
 
     public DumpGenerationFailedException(String msg) {

@@ -19,9 +19,7 @@
 
 package org.server.search;
 
-/**
- * 
- */
+ 
 public class SearchIllegalStateException extends SearchException {
 
     public SearchIllegalStateException() {

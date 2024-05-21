@@ -24,9 +24,7 @@ import com.google.inject.Scopes;
 import org.server.search.index.translog.memory.MemoryTranslog;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class TranslogModule extends AbstractModule {
 
     public static class TranslogSettings {

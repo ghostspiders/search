@@ -29,9 +29,7 @@ import org.server.search.cluster.routing.strategy.DefaultShardsRoutingStrategy;
 import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClusterModule extends AbstractModule {
 
     private final Settings settings;

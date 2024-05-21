@@ -21,9 +21,7 @@ package org.server.search.index.gateway;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+ 
 public class IndexShardGatewayModule extends AbstractModule {
 
     private final IndexGateway indexGateway;

@@ -28,9 +28,7 @@ import java.io.IOException;
 
 import static org.server.search.search.dfs.AggregatedDfs.*;
 
-/**
- * 
- */
+ 
 public class QuerySearchRequest implements Streamable {
 
     private long id;

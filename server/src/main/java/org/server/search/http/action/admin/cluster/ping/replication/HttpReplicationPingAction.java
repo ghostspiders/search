@@ -37,9 +37,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpReplicationPingAction extends BaseHttpServerHandler {
 
     @Inject public HttpReplicationPingAction(Settings settings, HttpServer httpService, Client client) {

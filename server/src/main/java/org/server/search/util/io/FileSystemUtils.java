@@ -24,9 +24,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.RandomAccessFile;
 
-/**
- * 
- */
+ 
 public class FileSystemUtils {
 
     public static boolean deleteRecursively(File root) {

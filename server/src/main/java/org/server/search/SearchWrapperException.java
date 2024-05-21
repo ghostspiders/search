@@ -19,9 +19,7 @@
 
 package org.server.search;
 
-/**
- * 
- */
+ 
 public interface SearchWrapperException {
 
     Throwable getCause();

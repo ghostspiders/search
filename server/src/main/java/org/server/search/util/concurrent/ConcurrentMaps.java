@@ -24,9 +24,7 @@ import org.server.search.util.concurrent.highscalelib.NonBlockingHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * 
- */
+ 
 public abstract class ConcurrentMaps {
 
     private final static boolean useNonBlockingMap = Boolean.parseBoolean(System.getProperty("Search.useNonBlockingMap", "true"));

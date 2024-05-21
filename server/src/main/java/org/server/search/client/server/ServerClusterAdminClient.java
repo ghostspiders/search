@@ -41,9 +41,7 @@ import org.server.search.client.ClusterAdminClient;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ServerClusterAdminClient extends AbstractComponent implements ClusterAdminClient {
 
     private final TransportClusterStateAction clusterStateAction;

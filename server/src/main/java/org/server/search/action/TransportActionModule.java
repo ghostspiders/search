@@ -51,9 +51,7 @@ import org.server.search.action.search.TransportSearchAction;
 import org.server.search.action.search.TransportSearchScrollAction;
 import org.server.search.action.search.type.*;
 
-/**
- * 
- */
+ 
 public class TransportActionModule extends AbstractModule {
 
     @Override protected void configure() {

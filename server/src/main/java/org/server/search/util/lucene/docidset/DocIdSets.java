@@ -25,9 +25,7 @@ import org.apache.lucene.search.DocIdSetIterator;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class DocIdSets {
 
     /**

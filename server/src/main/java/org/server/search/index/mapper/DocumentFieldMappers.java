@@ -32,9 +32,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+ 
 @Immutable
 public class DocumentFieldMappers implements Iterable<FieldMapper> {
 

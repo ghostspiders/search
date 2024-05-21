@@ -38,9 +38,7 @@ import static org.server.search.monitor.dump.summary.SummaryDumpContributor.*;
 import static org.server.search.monitor.dump.thread.ThreadDumpContributor.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * 
- */
+ 
 public class DumpMonitorService extends AbstractComponent {
 
     private final String dumpLocation;

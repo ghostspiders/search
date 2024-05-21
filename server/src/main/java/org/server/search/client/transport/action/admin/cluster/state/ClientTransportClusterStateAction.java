@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportClusterStateAction extends BaseClientTransportAction<ClusterStateRequest, ClusterStateResponse> {
 
     @Inject public ClientTransportClusterStateAction(Settings settings, TransportService transportService) {

@@ -28,9 +28,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class SimpleDumpGenerator implements DumpGenerator {
 
     private final File dumpLocation;

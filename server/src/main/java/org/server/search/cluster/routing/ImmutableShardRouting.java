@@ -27,9 +27,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 
- */
+ 
 public class ImmutableShardRouting implements Streamable, Serializable, ShardRouting {
 
     protected String index;

@@ -27,9 +27,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.*;
 
-/**
- * 
- */
+ 
 public class DeadlockAnalyzer {
 
     private static final Deadlock NULL_RESULT[] = new Deadlock[0];

@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class FieldNameAnalyzer extends Analyzer {
 
     private final ImmutableMap<String, Analyzer> analyzers;

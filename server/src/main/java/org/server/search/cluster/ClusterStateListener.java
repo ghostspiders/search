@@ -19,9 +19,7 @@
 
 package org.server.search.cluster;
 
-/**
- * 
- */
+ 
 public interface ClusterStateListener {
 
     void clusterChanged(ClusterChangedEvent event);

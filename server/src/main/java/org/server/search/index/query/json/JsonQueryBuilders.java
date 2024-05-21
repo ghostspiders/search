@@ -19,9 +19,7 @@
 
 package org.server.search.index.query.json;
 
-/**
- * 
- */
+ 
 public abstract class JsonQueryBuilders {
 
     public static MatchAllJsonQueryBuilder matchAllQuery() {

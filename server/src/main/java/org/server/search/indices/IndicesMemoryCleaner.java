@@ -37,9 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * 
- */
+ 
 public class IndicesMemoryCleaner extends AbstractComponent {
 
     private final IndicesService indicesService;

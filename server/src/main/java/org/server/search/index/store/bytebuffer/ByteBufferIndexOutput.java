@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-/**
- * 
- */
+ 
 public class ByteBufferIndexOutput extends IndexOutput {
 
     private final ByteBuffersDirectory dir;

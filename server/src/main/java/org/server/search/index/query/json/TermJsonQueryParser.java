@@ -37,9 +37,7 @@ import java.io.IOException;
 
 import static org.server.search.index.query.support.QueryParsers.*;
 
-/**
- * 
- */
+ 
 public class TermJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 
     public static final String NAME = "term";

@@ -25,9 +25,7 @@ import org.server.search.index.query.QueryParsingException;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface JsonQueryParser extends IndexComponent {
 
     String name();

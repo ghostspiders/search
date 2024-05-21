@@ -32,9 +32,7 @@ import java.io.IOException;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public class IndexDeleteByQueryRequest extends IndexReplicationOperationRequest {
 
     private String querySource;

@@ -31,9 +31,7 @@ import org.server.search.util.Preconditions;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class LogDocMergePolicyProvider extends AbstractIndexShardComponent implements MergePolicyProvider<LogDocMergePolicy> {
 

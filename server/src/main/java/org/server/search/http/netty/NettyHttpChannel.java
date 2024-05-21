@@ -28,9 +28,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
 
-/**
- * 
- */
+ 
 public class NettyHttpChannel implements HttpChannel {
     private final Channel channel;
     private final io.netty.handler.codec.http.HttpRequest request;

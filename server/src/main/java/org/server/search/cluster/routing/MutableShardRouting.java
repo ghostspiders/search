@@ -19,9 +19,7 @@
 
 package org.server.search.cluster.routing;
 
-/**
- * 
- */
+ 
 public class MutableShardRouting extends ImmutableShardRouting {
 
     public MutableShardRouting() {

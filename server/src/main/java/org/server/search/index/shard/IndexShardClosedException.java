@@ -19,9 +19,7 @@
 
 package org.server.search.index.shard;
 
-/**
- * 
- */
+ 
 public class IndexShardClosedException extends IllegalIndexShardStateException {
     public IndexShardClosedException(ShardId shardId) {
         super(shardId, IndexShardState.CLOSED, "Closed");

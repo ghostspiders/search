@@ -35,9 +35,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class HttpMainAction extends BaseHttpServerHandler {
 
     private final JsonNode rootNode;

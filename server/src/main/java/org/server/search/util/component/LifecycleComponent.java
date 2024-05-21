@@ -21,9 +21,7 @@ package org.server.search.util.component;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public interface LifecycleComponent<T> {
 
     Lifecycle.State lifecycleState();

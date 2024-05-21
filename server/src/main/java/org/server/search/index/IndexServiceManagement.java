@@ -26,9 +26,7 @@ import org.server.search.jmx.MBean;
 import org.server.search.jmx.ManagedAttribute;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 @MBean(objectName = "", description = "")
 public class IndexServiceManagement extends AbstractIndexComponent {
 

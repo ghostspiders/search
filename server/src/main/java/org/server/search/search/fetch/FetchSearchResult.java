@@ -30,9 +30,7 @@ import java.io.IOException;
 import static org.server.search.search.SearchShardTarget.*;
 import static org.server.search.search.internal.InternalSearchHits.*;
 
-/**
- * 
- */
+ 
 public class FetchSearchResult implements Streamable, FetchSearchResultProvider {
 
     private long id;

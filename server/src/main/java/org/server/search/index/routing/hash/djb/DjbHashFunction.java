@@ -21,9 +21,7 @@ package org.server.search.index.routing.hash.djb;
 
 import org.server.search.index.routing.hash.HashFunction;
 
-/**
- * 
- */
+ 
 public class DjbHashFunction implements HashFunction {
 
     @Override public int hash(String type, String id) {

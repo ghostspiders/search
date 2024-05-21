@@ -21,9 +21,7 @@ package org.server.search.index.query;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class QueryBuilderException extends SearchException {
 
     public QueryBuilderException(String msg) {

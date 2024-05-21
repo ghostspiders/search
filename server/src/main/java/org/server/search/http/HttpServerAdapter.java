@@ -19,9 +19,7 @@
 
 package org.server.search.http;
 
-/**
- * 
- */
+ 
 public interface HttpServerAdapter {
 
     void dispatchRequest(HttpRequest request, HttpChannel channel);

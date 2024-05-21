@@ -31,9 +31,7 @@ import java.io.IOException;
 import static org.server.search.search.fetch.FetchSearchResult.*;
 import static org.server.search.search.query.QuerySearchResult.*;
 
-/**
- * 
- */
+ 
 public class QueryFetchSearchResult implements Streamable, QuerySearchResultProvider, FetchSearchResultProvider {
 
     private QuerySearchResult queryResult;

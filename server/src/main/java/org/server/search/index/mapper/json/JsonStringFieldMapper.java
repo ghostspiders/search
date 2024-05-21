@@ -25,9 +25,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonStringFieldMapper extends JsonFieldMapper<String> {
 
     public static class Defaults extends JsonFieldMapper.Defaults {

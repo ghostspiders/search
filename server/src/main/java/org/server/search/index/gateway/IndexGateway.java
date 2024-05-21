@@ -21,9 +21,7 @@ package org.server.search.index.gateway;
 
 import org.server.search.index.IndexComponent;
 
-/**
- * 
- */
+ 
 public interface IndexGateway extends IndexComponent {
 
     Class<? extends IndexShardGateway> shardGatewayClass();

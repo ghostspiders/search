@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class DeleteByQueryResponse implements ActionResponse, Streamable {
 
     private Map<String, IndexDeleteByQueryResponse> indexResponses = new HashMap<String, IndexDeleteByQueryResponse>();

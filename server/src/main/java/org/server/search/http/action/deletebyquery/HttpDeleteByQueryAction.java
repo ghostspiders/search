@@ -38,9 +38,7 @@ import java.io.IOException;
 import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.http.action.support.HttpActions.*;
 
-/**
- * 
- */
+ 
 public class HttpDeleteByQueryAction extends BaseHttpServerHandler {
 
     @Inject public HttpDeleteByQueryAction(Settings settings, HttpServer httpService, Client client) {

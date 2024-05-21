@@ -58,9 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * 
- */
+ 
 public class SearchService extends AbstractComponent implements LifecycleComponent<SearchService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

@@ -23,9 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.threadpool.cached.CachedThreadPool;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ThreadPoolModule extends AbstractModule {
 
     private final Settings settings;

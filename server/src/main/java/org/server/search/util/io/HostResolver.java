@@ -28,9 +28,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-/**
- * 
- */
+ 
 public abstract class HostResolver {
 
     public static final String GLOBAL_NETWORK_BINDHOST_SETTING = "network.bindHost";

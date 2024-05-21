@@ -23,9 +23,7 @@ import org.server.search.index.shard.ShardId;
 
 import java.util.Iterator;
 
-/**
- * 
- */
+ 
 public interface ShardsIterator extends Iterable<ShardRouting>, Iterator<ShardRouting> {
 
     /**

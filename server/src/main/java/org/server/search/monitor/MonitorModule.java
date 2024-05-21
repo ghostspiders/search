@@ -42,9 +42,7 @@ import static org.server.search.monitor.dump.heap.HeapDumpContributor.*;
 import static org.server.search.monitor.dump.summary.SummaryDumpContributor.*;
 import static org.server.search.monitor.dump.thread.ThreadDumpContributor.*;
 
-/**
- * 
- */
+ 
 public class MonitorModule extends AbstractModule {
 
     public static final class MonitorSettings {

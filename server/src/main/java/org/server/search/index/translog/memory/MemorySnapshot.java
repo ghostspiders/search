@@ -32,9 +32,7 @@ import java.util.Iterator;
 
 import static org.server.search.index.translog.TranslogStreams.*;
 
-/**
- * 
- */
+ 
 public class MemorySnapshot implements Translog.Snapshot {
 
     private long id;

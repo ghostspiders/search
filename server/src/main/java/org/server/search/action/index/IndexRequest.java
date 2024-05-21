@@ -31,9 +31,7 @@ import java.io.IOException;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public class IndexRequest extends ShardReplicationOperationRequest {
 
     public static enum OpType {

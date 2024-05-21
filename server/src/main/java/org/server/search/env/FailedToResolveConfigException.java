@@ -21,9 +21,7 @@ package org.server.search.env;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class FailedToResolveConfigException extends SearchException {
 
     public FailedToResolveConfigException(String msg) {

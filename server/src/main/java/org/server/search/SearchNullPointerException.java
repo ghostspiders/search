@@ -19,9 +19,7 @@
 
 package org.server.search;
 
-/**
- * 
- */
+ 
 public class SearchNullPointerException extends SearchException {
 
     public SearchNullPointerException() {

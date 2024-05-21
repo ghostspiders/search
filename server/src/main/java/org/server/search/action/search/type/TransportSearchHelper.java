@@ -31,9 +31,7 @@ import org.server.search.util.Tuple;
 
 import java.util.regex.Pattern;
 
-/**
- * 
- */
+ 
 public abstract class TransportSearchHelper {
 
 

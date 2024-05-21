@@ -21,9 +21,7 @@ package org.server.search.action;
 
 import org.server.search.cluster.ClusterState;
 
-/**
- * 
- */
+ 
 public class Actions {
 
     public static String[] processIndices(ClusterState state, String[] indices) {

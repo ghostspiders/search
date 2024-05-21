@@ -23,9 +23,7 @@ import org.apache.lucene.search.Query;
 
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class SearchContextFacets {
 
     public static enum QueryExecutionType {

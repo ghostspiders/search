@@ -25,9 +25,7 @@ import org.server.search.util.io.compression.lzf.LZFEncoder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class LzfCompressor implements Compressor {
 
     private static class Cached {

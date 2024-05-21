@@ -40,9 +40,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public abstract class TransportShardsOperationActions<Request extends ShardsOperationRequest, Response extends ShardsOperationResponse, ShardRequest extends ShardOperationRequest, ShardResponse extends ShardOperationResponse> extends BaseAction<Request, Response> {
 
     protected final ClusterService clusterService;

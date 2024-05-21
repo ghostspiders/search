@@ -31,9 +31,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class QueryJsonFilterParser extends AbstractIndexComponent{
 
     public static final String NAME = "query";

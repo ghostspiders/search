@@ -28,9 +28,7 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.index.deletionpolicy.DeletionPolicyModule.DeletionPolicySettings.*;
 import static org.server.search.index.deletionpolicy.DeletionPolicyModule.DeletionPolicySettings.TYPE;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class DeletionPolicyModule extends AbstractModule {
 

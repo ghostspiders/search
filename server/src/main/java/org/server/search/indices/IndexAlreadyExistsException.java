@@ -22,9 +22,7 @@ package org.server.search.indices;
 import org.server.search.index.Index;
 import org.server.search.index.IndexException;
 
-/**
- * 
- */
+ 
 public class IndexAlreadyExistsException extends IndexException {
 
     public IndexAlreadyExistsException(Index index) {

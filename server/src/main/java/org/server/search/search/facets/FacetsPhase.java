@@ -35,9 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class FacetsPhase implements SearchPhase {
 
     @Override public Map<String, ? extends SearchParseElement> parseElements() {

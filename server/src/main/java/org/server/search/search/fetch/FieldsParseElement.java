@@ -26,9 +26,7 @@ import org.server.search.search.internal.SearchContext;
 
 import java.util.ArrayList;
 
-/**
- * 
- */
+ 
 public class FieldsParseElement implements SearchParseElement {
 
     @Override public void parse(JsonParser jp, SearchContext context) throws Exception {

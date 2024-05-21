@@ -29,9 +29,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.Set;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 public interface IndicesService extends Iterable<IndexService>, LifecycleComponent<IndicesService> {
 

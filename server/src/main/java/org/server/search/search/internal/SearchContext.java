@@ -39,9 +39,7 @@ import org.server.search.util.lease.Releasable;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class SearchContext implements Releasable {
 
     private final long id;

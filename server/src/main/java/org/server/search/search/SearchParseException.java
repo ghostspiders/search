@@ -19,9 +19,7 @@
 
 package org.server.search.search;
 
-/**
- * 
- */
+ 
 public class SearchParseException extends Search1Exception {
 
     public SearchParseException(String msg) {

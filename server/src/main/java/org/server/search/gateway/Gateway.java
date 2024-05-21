@@ -23,9 +23,7 @@ import com.google.inject.Module;
 import org.server.search.cluster.metadata.MetaData;
 import org.server.search.util.component.LifecycleComponent;
 
-/**
- * 
- */
+ 
 public interface Gateway extends LifecycleComponent<Gateway> {
 
     void write(MetaData metaData) throws GatewayException;

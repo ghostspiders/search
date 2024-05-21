@@ -22,9 +22,7 @@ package org.server.search.cluster;
 import org.server.search.util.TimeValue;
 import org.server.search.util.component.LifecycleComponent;
 
-/**
- * 
- */
+ 
 public interface ClusterService extends LifecycleComponent<ClusterService> {
 
     ClusterState state();

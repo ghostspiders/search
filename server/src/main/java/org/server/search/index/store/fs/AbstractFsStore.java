@@ -28,9 +28,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class AbstractFsStore<T extends FSDirectory> extends AbstractStore<T> {
 
     public AbstractFsStore(ShardId shardId, @IndexSettings Settings indexSettings) {

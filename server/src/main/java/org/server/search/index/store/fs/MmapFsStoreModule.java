@@ -22,9 +22,7 @@ package org.server.search.index.store.fs;
 import com.google.inject.AbstractModule;
 import org.server.search.index.store.Store;
 
-/**
- * 
- */
+ 
 public class MmapFsStoreModule extends AbstractModule {
 
     @Override protected void configure() {

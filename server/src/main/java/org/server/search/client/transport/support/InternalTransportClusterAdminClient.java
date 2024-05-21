@@ -42,9 +42,7 @@ import org.server.search.client.transport.action.admin.cluster.state.ClientTrans
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class InternalTransportClusterAdminClient extends AbstractComponent implements ClusterAdminClient {
 
     private final TransportClientNodesService nodesService;

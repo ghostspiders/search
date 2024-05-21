@@ -34,9 +34,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpIndexAction extends BaseHttpServerHandler {
 
     @Inject public HttpIndexAction(Settings settings, HttpServer httpService, Client client) {

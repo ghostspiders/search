@@ -31,9 +31,7 @@ import org.server.search.util.settings.Settings;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 
- */
+ 
 public class DiscoveryService extends AbstractComponent implements LifecycleComponent<DiscoveryService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

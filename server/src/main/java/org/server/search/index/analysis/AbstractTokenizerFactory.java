@@ -26,9 +26,7 @@ import org.server.search.util.settings.Settings;
 
 import javax.swing.text.Highlighter;
 
-/**
- * 
- */
+ 
 public abstract class AbstractTokenizerFactory extends AbstractIndexComponent implements TokenizerFactory {
 
     private final String name;

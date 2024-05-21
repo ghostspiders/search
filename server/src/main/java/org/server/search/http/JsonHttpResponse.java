@@ -34,9 +34,7 @@ import java.util.Set;
 
 import static org.server.search.http.HttpResponse.Status.OK;
 
-/**
- * 
- */
+ 
 public class JsonHttpResponse extends Utf8HttpResponse {
 
     private static ThreadLocal<String> cache = new ThreadLocal<String>() {

@@ -25,9 +25,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 public interface JsonMapper {
 

@@ -28,9 +28,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+ 
 public class YamlSettingsLoader implements SettingsLoader {
 
     @Override public Map<String, String> load(String source) throws IOException {

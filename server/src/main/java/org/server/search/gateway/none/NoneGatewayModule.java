@@ -22,9 +22,7 @@ package org.server.search.gateway.none;
 import com.google.inject.AbstractModule;
 import org.server.search.gateway.Gateway;
 
-/**
- * 
- */
+ 
 public class NoneGatewayModule extends AbstractModule {
 
     @Override protected void configure() {

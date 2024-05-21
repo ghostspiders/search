@@ -30,9 +30,7 @@ import java.util.regex.Pattern;
 
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+ 
 public class PathTrie<T> {
     private final TrieNode<T> root;
     private final Pattern pattern;

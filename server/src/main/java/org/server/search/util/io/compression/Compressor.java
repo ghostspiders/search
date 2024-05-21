@@ -21,9 +21,7 @@ package org.server.search.util.io.compression;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface Compressor {
 
     byte[] compress(byte[] value) throws IOException;

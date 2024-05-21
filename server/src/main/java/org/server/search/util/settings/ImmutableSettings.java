@@ -33,9 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 @Immutable
 public class ImmutableSettings implements Settings {

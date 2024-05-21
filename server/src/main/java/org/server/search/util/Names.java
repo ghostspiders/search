@@ -28,9 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Random;
 
-/**
- * 
- */
+ 
 public abstract class Names {
 
     public static String randomNodeName(URL nodeNames) {

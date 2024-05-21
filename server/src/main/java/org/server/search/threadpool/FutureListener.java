@@ -19,9 +19,7 @@
 
 package org.server.search.threadpool;
 
-/**
- * 
- */
+ 
 public interface FutureListener<T> {
 
     void onResult(T result);

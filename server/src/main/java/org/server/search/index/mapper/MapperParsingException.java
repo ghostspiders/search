@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper;
 
-/**
- * 
- */
+ 
 public class MapperParsingException extends MapperException {
 
     public MapperParsingException(String message) {

@@ -30,9 +30,7 @@ import org.server.search.index.mapper.FieldMapperListener;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     public static class Defaults {

@@ -32,9 +32,7 @@ import java.io.IOException;
 import static org.server.search.search.facets.Facets.*;
 import static org.server.search.search.internal.InternalSearchHits.*;
 
-/**
- * 
- */
+ 
 public class InternalSearchResponse implements Streamable, ToJson {
 
     private InternalSearchHits hits;

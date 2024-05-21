@@ -24,9 +24,7 @@ import org.server.search.SearchException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class ActionRequestValidationException extends SearchException {
 
     private final List<String> validationErrors = new ArrayList<String>();

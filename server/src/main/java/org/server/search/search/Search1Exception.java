@@ -21,9 +21,7 @@ package org.server.search.search;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class Search1Exception extends SearchException {
 
     public Search1Exception(String msg) {

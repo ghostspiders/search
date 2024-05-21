@@ -41,9 +41,7 @@ import static org.server.search.ExceptionsHelper.*;
 import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class HttpCreateIndexAction extends BaseHttpServerHandler {
 
     @Inject public HttpCreateIndexAction(Settings settings, HttpServer httpService, Client client) {

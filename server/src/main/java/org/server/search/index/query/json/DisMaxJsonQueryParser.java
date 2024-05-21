@@ -36,9 +36,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class DisMaxJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 
     @Inject public DisMaxJsonQueryParser(Index index, @IndexSettings Settings settings) {

@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class FailedCommunicationException extends TransportException {
 
     public FailedCommunicationException(String message) {

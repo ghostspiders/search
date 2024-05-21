@@ -34,9 +34,7 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.action.search.type.ParsedScrollId.*;
 import static org.server.search.action.search.type.TransportSearchHelper.*;
 
-/**
- * 
- */
+ 
 public class TransportSearchScrollAction extends BaseAction<SearchScrollRequest, SearchResponse> {
 
     private final TransportSearchScrollQueryThenFetchAction queryThenFetchAction;

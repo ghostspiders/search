@@ -22,9 +22,7 @@ package org.server.search.index.mapper;
 import org.apache.lucene.index.Term;
 import org.server.search.util.concurrent.ThreadSafe;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 public interface UidFieldMapper extends FieldMapper<Uid> {
 

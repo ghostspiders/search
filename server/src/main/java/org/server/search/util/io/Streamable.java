@@ -23,9 +23,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface Streamable {
 
     void readFrom(DataInput in) throws IOException, ClassNotFoundException;

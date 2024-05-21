@@ -23,9 +23,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public class ExplainParseElement implements SearchParseElement {
 
     @Override public void parse(JsonParser jp, SearchContext context) throws Exception {

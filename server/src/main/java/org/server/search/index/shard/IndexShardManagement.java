@@ -33,9 +33,7 @@ import java.io.IOException;
 
 import static org.server.search.index.IndexServiceManagement.*;
 
-/**
- * 
- */
+ 
 @MBean(objectName = "", description = "")
 public class IndexShardManagement extends AbstractIndexShardComponent {
 

@@ -22,9 +22,7 @@ package org.server.search.index.shard;
 import com.google.inject.AbstractModule;
 import org.server.search.index.shard.recovery.RecoveryAction;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class IndexShardModule extends AbstractModule {
 

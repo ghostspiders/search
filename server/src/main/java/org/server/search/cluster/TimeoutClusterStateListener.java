@@ -21,9 +21,7 @@ package org.server.search.cluster;
 
 import org.server.search.util.TimeValue;
 
-/**
- * 
- */
+ 
 public interface TimeoutClusterStateListener extends ClusterStateListener {
 
     void onTimeout(TimeValue timeout);

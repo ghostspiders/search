@@ -32,9 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- * 
- */
+ 
 public class SummaryDumpContributor implements DumpContributor {
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");

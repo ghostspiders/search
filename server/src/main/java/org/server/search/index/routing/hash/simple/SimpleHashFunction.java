@@ -21,9 +21,7 @@ package org.server.search.index.routing.hash.simple;
 
 import org.server.search.index.routing.hash.HashFunction;
 
-/**
- * 
- */
+ 
 public class SimpleHashFunction implements HashFunction {
 
     @Override public int hash(String type, String id) {

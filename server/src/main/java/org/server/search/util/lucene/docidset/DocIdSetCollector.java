@@ -30,9 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class DocIdSetCollector implements Collector {
 
     private final Collector collector;

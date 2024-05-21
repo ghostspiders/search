@@ -19,9 +19,7 @@
 
 package org.server.search.search.action;
 
-/**
- * 
- */
+ 
 public interface SearchServiceListener<T> {
 
     void onResult(T result);

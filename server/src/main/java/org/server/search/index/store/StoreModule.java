@@ -31,9 +31,7 @@ import org.server.search.util.OsUtils;
 import org.server.search.util.guice.ModulesFactory;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class StoreModule extends AbstractModule {
 
     private final Settings settings;

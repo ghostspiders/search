@@ -29,9 +29,7 @@ import java.io.IOException;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public class IndexReplicationOperationRequest implements ActionRequest {
 
     protected TimeValue timeout = ShardReplicationOperationRequest.DEFAULT_TIMEOUT;

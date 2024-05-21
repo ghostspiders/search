@@ -30,9 +30,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * 
- */
+ 
 public class TransportIndexDeleteByQueryAction extends TransportIndexReplicationOperationAction<IndexDeleteByQueryRequest, IndexDeleteByQueryResponse, ShardDeleteByQueryRequest, ShardDeleteByQueryResponse> {
 
     private final ClusterService clusterService;

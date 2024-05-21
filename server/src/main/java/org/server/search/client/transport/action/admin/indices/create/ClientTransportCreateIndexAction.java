@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportCreateIndexAction extends BaseClientTransportAction<CreateIndexRequest, CreateIndexResponse> {
 
     @Inject public ClientTransportCreateIndexAction(Settings settings, TransportService transportService) {

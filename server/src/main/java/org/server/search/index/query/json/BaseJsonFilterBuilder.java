@@ -23,9 +23,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class BaseJsonFilterBuilder implements JsonFilterBuilder {
 
     @Override public void toJson(JsonBuilder builder) throws IOException {

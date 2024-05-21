@@ -36,9 +36,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.*;
 
-/**
- * 
- */
+ 
 public class FsGateway extends AbstractComponent implements Gateway {
 
     private final Lifecycle lifecycle = new Lifecycle();

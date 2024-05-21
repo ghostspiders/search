@@ -26,9 +26,7 @@ import org.server.search.util.settings.Settings;
 
 import java.lang.reflect.Constructor;
 
-/**
- * 
- */
+ 
 public class ModulesFactory {
 
     public static Module createModule(String moduleClass, Settings settings) throws ClassNotFoundException {

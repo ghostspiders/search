@@ -21,9 +21,7 @@ package org.server.search.cluster.routing;
 
 import org.server.search.SearchIllegalStateException;
 
-/**
- * 
- */
+ 
 public enum ShardRoutingState {
     UNASSIGNED((byte) 1), INITIALIZING((byte) 2), STARTED((byte) 3), RELOCATING((byte) 4);
 

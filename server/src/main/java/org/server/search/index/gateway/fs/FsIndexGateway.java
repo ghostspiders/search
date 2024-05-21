@@ -34,9 +34,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.File;
 
-/**
- * 
- */
+ 
 public class FsIndexGateway extends AbstractIndexComponent implements IndexGateway {
 
     private final Environment environment;

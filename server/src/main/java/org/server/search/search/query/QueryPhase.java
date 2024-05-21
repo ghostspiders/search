@@ -30,9 +30,7 @@ import org.server.search.search.internal.SearchContext;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class QueryPhase implements SearchPhase {
 
     private final FacetsPhase facetsPhase;

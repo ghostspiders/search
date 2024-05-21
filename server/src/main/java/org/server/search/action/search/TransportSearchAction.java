@@ -34,9 +34,7 @@ import org.server.search.util.settings.Settings;
 
 import static org.server.search.action.search.SearchType.*;
 
-/**
- * 
- */
+ 
 public class TransportSearchAction extends BaseAction<SearchRequest, SearchResponse> {
 
     private final TransportSearchDfsQueryThenFetchAction dfsQueryThenFetchAction;

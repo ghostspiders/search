@@ -21,9 +21,7 @@ package org.server.search.search.fetch;
 
 import org.server.search.search.SearchShardTarget;
 
-/**
- * 
- */
+ 
 public interface FetchSearchResultProvider {
 
     long id();

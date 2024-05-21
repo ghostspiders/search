@@ -40,9 +40,7 @@ import java.lang.reflect.Constructor;
 
 import static org.server.search.action.support.PlainActionFuture.*;
 
-/**
- * 
- */
+ 
 public abstract class BaseClientTransportAction<Request extends ActionRequest, Response extends ActionResponse> extends AbstractComponent implements ClientTransportAction<Request, Response> {
 
     protected final TransportService transportService;

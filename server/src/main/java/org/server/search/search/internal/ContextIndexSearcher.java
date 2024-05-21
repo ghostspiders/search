@@ -27,9 +27,7 @@ import org.server.search.util.lucene.docidset.DocIdSetCollector;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class ContextIndexSearcher extends IndexSearcher {
 
     private SearchContext searchContext;

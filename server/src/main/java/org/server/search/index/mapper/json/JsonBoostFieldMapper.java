@@ -30,9 +30,7 @@ import org.server.search.util.Numbers;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implements BoostFieldMapper {
 
     public static class Defaults extends JsonNumberFieldMapper.Defaults {

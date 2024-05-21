@@ -26,9 +26,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class NodeOperationResponse implements Streamable {
 
     private Node node;

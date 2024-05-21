@@ -21,9 +21,7 @@ package org.server.search.util.transport;
 
 import java.util.StringTokenizer;
 
-/**
- * 
- */
+ 
 public class PortsRange {
 
     private final String portRange;

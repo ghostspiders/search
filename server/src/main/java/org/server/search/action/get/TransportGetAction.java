@@ -30,9 +30,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class TransportGetAction extends TransportSingleOperationAction<GetRequest, GetResponse> {
 
     @Inject public TransportGetAction(Settings settings, ClusterService clusterService, TransportService transportService,

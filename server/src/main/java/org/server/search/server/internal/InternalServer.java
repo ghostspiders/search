@@ -69,9 +69,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * 
- */
+ 
 public final class InternalServer implements Server {
 
     private final Lifecycle lifecycle = new Lifecycle();

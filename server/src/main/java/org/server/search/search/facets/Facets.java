@@ -32,9 +32,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.*;
 import static org.server.search.search.facets.CountFacet.*;
 
-/**
- * 
- */
+ 
 public class Facets implements Streamable, ToJson {
 
     private final List<Facet> EMPTY = ImmutableList.of();

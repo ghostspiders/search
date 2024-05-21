@@ -32,9 +32,7 @@ import org.server.search.action.admin.cluster.ping.single.SinglePingResponse;
 import org.server.search.action.admin.cluster.state.ClusterStateRequest;
 import org.server.search.action.admin.cluster.state.ClusterStateResponse;
 
-/**
- * 
- */
+ 
 public interface ClusterAdminClient {
 
     ActionFuture<ClusterStateResponse> state(ClusterStateRequest request);

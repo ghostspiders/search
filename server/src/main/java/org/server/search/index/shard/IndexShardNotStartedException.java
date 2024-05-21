@@ -19,9 +19,7 @@
 
 package org.server.search.index.shard;
 
-/**
- * 
- */
+ 
 public class IndexShardNotStartedException extends IllegalIndexShardStateException {
 
     public IndexShardNotStartedException(ShardId shardId, IndexShardState currentState) {

@@ -23,9 +23,7 @@ import org.server.search.util.io.Streamable;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface TransportChannel {
     String action();
 

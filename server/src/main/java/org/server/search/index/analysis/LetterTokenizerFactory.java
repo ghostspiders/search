@@ -29,9 +29,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public class LetterTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject public LetterTokenizerFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {

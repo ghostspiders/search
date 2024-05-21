@@ -22,9 +22,7 @@ package org.server.search.action;
 import org.server.search.SearchException;
 import org.server.search.util.Nullable;
 
-/**
- * 
- */
+ 
 public interface Action<Request extends ActionRequest, Response extends ActionResponse> {
 
     ActionFuture<Response> submit(Request request) throws SearchException;

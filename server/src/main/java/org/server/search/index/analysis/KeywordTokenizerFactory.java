@@ -29,9 +29,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public class KeywordTokenizerFactory extends AbstractTokenizerFactory {
 
     private final int bufferSize;

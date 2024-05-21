@@ -36,9 +36,7 @@ import org.server.search.util.settings.Settings;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-/**
- * 
- */
+ 
 public abstract class TransportNodesOperationAction<Request extends NodesOperationRequest, Response extends NodesOperationResponse, NodeRequest extends NodeOperationRequest, NodeResponse extends NodeOperationResponse> extends BaseAction<Request, Response> {
 
     protected final ClusterName clusterName;

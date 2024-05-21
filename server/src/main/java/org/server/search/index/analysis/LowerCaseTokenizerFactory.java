@@ -30,9 +30,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public class LowerCaseTokenizerFactory extends AbstractTokenizerFactory {
 
     @Inject public LowerCaseTokenizerFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {

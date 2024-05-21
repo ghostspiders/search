@@ -33,9 +33,7 @@ import java.util.concurrent.TimeUnit;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * 
- */
+ 
 public class CachedThreadPool extends AbstractThreadPool {
 
     private final TimeValue keepAlive;

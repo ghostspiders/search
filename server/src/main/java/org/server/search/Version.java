@@ -25,9 +25,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
-/**
- * 
- */
+ 
 public class Version {
 
     private static final String number;

@@ -19,9 +19,7 @@
 
 package org.server.search.http;
 
-/**
- * 
- */
+ 
 public class BindHttpException extends HttpException {
 
     public BindHttpException(String message) {

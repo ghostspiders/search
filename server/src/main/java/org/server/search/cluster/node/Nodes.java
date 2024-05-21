@@ -34,9 +34,7 @@ import java.util.Set;
 import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+ 
 public class Nodes implements Iterable<Node> {
 
     public static Nodes EMPTY_NODES = newNodesBuilder().build();

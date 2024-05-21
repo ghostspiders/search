@@ -23,9 +23,7 @@ import org.server.search.index.deletionpolicy.SnapshotIndexCommit;
 import org.server.search.index.shard.IndexShardComponent;
 import org.server.search.index.translog.Translog;
 
-/**
- * 
- */
+ 
 public interface IndexShardGateway extends IndexShardComponent {
 
     /**

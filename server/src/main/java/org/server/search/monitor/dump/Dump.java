@@ -24,9 +24,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public interface Dump {
 
     long timestamp();

@@ -24,9 +24,7 @@ import org.server.search.index.AbstractIndexComponent;
 import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
-/**
- * 
- */
+ 
 public class RangeJsonFilterParser extends AbstractIndexComponent {
 
     public static final String NAME = "range";

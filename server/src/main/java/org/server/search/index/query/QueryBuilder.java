@@ -19,9 +19,7 @@
 
 package org.server.search.index.query;
 
-/**
- * 
- */
+ 
 public interface QueryBuilder {
 
     String build() throws QueryBuilderException;

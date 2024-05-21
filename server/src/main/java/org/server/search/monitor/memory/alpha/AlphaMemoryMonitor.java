@@ -37,9 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class AlphaMemoryMonitor extends AbstractComponent implements MemoryMonitor {
 
     private final Lifecycle lifecycle = new Lifecycle();

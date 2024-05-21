@@ -19,9 +19,7 @@
 
 package org.server.search.http;
 
-/**
- * 
- */
+ 
 public abstract class AbstractHttpResponse implements HttpResponse {
 
     @Override public byte[] prefixContent() {

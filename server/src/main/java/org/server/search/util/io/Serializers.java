@@ -24,9 +24,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * 
- */
+ 
 public final class Serializers {
 
     public static byte[] throwableToBytes(Throwable t) throws IOException {

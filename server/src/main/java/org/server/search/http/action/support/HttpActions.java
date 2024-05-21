@@ -27,9 +27,7 @@ import org.server.search.util.Strings;
 
 import java.util.regex.Pattern;
 
-/**
- * 
- */
+ 
 public class HttpActions {
 
     public final static Pattern indicesPattern;

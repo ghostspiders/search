@@ -32,9 +32,7 @@ import java.io.IOException;
 
 import static org.server.search.search.internal.InternalSearchResponse.*;
 
-/**
- * 
- */
+ 
 public class SearchResponse implements ActionResponse, ToJson {
 
     private InternalSearchResponse internalResponse;

@@ -35,9 +35,7 @@ import org.server.search.util.settings.Settings;
 import java.io.Reader;
 import java.lang.reflect.UndeclaredThrowableException;
 
-/**
- * 
- */
+ 
 public class EdgeNGramTokenizerFactory extends AbstractTokenizerFactory{
 
     private final int minGram;

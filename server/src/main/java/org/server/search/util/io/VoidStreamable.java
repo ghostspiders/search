@@ -23,9 +23,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class VoidStreamable implements Streamable {
 
     public static final VoidStreamable INSTANCE = new VoidStreamable();

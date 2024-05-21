@@ -21,9 +21,7 @@ package org.server.search.util.io;
 
 import java.io.*;
 
-/**
- * 
- */
+ 
 public class ThrowableObjectInputStream extends ObjectInputStream {
 
     private final ClassLoader classLoader;

@@ -21,9 +21,7 @@ package org.server.search.index.gateway;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class IndexShardGatewaySnapshotNotAllowedException extends IndexShardGatewayException {
 
     public IndexShardGatewaySnapshotNotAllowedException(ShardId shardId, String msg) {

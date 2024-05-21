@@ -24,9 +24,7 @@ import org.server.search.index.mapper.DocumentMapper;
 import org.server.search.index.mapper.MapperService;
 import org.server.search.util.Nullable;
 
-/**
- * 
- */
+ 
 public final class QueryParsers {
 
     private QueryParsers() {

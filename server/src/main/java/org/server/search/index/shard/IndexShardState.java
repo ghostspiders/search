@@ -21,9 +21,7 @@ package org.server.search.index.shard;
 
 import org.server.search.SearchIllegalArgumentException;
 
-/**
- * 
- */
+ 
 public enum IndexShardState {
     CREATED((byte) 0),
     RECOVERING((byte) 1),

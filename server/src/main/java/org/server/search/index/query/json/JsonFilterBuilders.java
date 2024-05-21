@@ -19,9 +19,7 @@
 
 package org.server.search.index.query.json;
 
-/**
- * 
- */
+ 
 public abstract class JsonFilterBuilders {
 
     public static TermJsonFilterBuilder termFilter(String name, String value) {

@@ -27,9 +27,7 @@ import org.server.search.client.transport.TransportClientNodesService;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class InternalTransportAdminClient extends AbstractComponent implements AdminClient {
 
     private final TransportClientNodesService nodesService;

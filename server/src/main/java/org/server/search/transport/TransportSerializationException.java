@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class TransportSerializationException extends TransportException {
 
     public TransportSerializationException(String msg) {

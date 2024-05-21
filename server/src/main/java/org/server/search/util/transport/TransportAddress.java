@@ -23,9 +23,7 @@ import org.server.search.util.io.Streamable;
 
 import java.io.Serializable;
 
-/**
- * 
- */
+ 
 public interface TransportAddress extends Streamable, Serializable {
 
     short uniqueAddressTypeId();

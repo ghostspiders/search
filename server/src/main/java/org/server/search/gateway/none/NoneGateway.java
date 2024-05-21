@@ -27,9 +27,7 @@ import org.server.search.gateway.GatewayException;
 import org.server.search.index.gateway.none.NoneIndexGatewayModule;
 import org.server.search.util.component.Lifecycle;
 
-/**
- * 
- */
+ 
 public class NoneGateway implements Gateway {
 
     private final Lifecycle lifecycle = new Lifecycle();

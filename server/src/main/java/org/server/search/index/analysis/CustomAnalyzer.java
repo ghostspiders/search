@@ -26,9 +26,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import java.io.IOException;
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public class CustomAnalyzer extends Analyzer implements PositionIncrementGapAnalyzer {
 
     private final TokenizerFactory tokenizerFactory;

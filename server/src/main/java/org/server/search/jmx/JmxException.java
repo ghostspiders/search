@@ -21,9 +21,7 @@ package org.server.search.jmx;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class JmxException extends SearchException {
 
     public JmxException(String message) {

@@ -19,9 +19,7 @@
 
 package org.server.search.action;
 
-/**
- * 
- */
+ 
 public class NoSuchNodeException extends FailedNodeException {
 
     public NoSuchNodeException(String nodeId) {

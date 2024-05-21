@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class ActionNotFoundTransportException extends TransportException {
 
     public ActionNotFoundTransportException(String message) {

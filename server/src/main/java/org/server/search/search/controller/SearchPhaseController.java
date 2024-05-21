@@ -51,9 +51,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class SearchPhaseController {
     private static final ShardDoc[] EMPTY = new ShardDoc[0];
 

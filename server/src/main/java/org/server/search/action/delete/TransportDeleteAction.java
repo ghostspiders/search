@@ -36,9 +36,7 @@ import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class TransportDeleteAction extends TransportShardReplicationOperationAction<DeleteRequest, DeleteResponse> {
 
     private final boolean autoCreateIndex;

@@ -19,9 +19,7 @@
 
 package org.server.search.monitor.dump;
 
-/**
- * 
- */
+ 
 public interface DumpContributor {
 
     String getName();

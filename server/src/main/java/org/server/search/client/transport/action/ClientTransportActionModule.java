@@ -40,9 +40,7 @@ import org.server.search.client.transport.action.index.ClientTransportIndexActio
 import org.server.search.client.transport.action.search.ClientTransportSearchAction;
 import org.server.search.client.transport.action.search.ClientTransportSearchScrollAction;
 
-/**
- * 
- */
+ 
 public class ClientTransportActionModule extends AbstractModule {
 
     @Override protected void configure() {

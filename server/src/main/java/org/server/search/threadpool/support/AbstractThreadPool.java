@@ -30,9 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 
-/**
- * 
- */
+ 
 public abstract class AbstractThreadPool extends AbstractComponent implements ThreadPool {
 
     protected volatile boolean started;

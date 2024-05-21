@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportCountAction extends BaseClientTransportAction<CountRequest, CountResponse> {
 
     @Inject public ClientTransportCountAction(Settings settings, TransportService transportService) {

@@ -24,9 +24,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public abstract class AbstractTokenFilterFactory extends AbstractIndexComponent implements TokenFilterFactory {
 
     private final String name;

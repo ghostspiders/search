@@ -21,9 +21,7 @@ package org.server.search.search.facets;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class FacetPhaseExecutionException extends SearchException {
 
     public FacetPhaseExecutionException(String facetName, String msg, Throwable t) {

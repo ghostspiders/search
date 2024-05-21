@@ -22,9 +22,7 @@ package org.server.search.index.query;
 import org.server.search.index.Index;
 import org.server.search.index.IndexException;
 
-/**
- * 
- */
+ 
 public class QueryParsingException extends IndexException {
 
     public QueryParsingException(Index index, String msg) {

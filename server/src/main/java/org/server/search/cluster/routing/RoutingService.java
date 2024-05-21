@@ -35,9 +35,7 @@ import java.util.concurrent.Future;
 import static org.server.search.cluster.ClusterState.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class RoutingService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<RoutingService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

@@ -23,9 +23,7 @@ import org.server.search.index.shard.IndexShardException;
 import org.server.search.index.shard.ShardId;
 import org.server.search.util.SizeValue;
 
-/**
- * 
- */
+ 
 public class RecoverFilesRecoveryException extends IndexShardException {
 
     private final int numberOfFiles;

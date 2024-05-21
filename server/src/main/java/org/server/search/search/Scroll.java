@@ -28,9 +28,7 @@ import java.io.IOException;
 
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class Scroll implements Streamable {
 
     private TimeValue timeout;

@@ -36,9 +36,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class BoolJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 
     @Inject public BoolJsonQueryParser(Index index, @IndexSettings Settings settings) {

@@ -19,9 +19,7 @@
 
 package org.server.search.jmx;
 
-/**
- * 
- */
+ 
 public class JmxRegistrationException extends JmxException {
 
     public JmxRegistrationException(String message) {

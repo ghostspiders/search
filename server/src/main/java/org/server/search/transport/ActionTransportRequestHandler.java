@@ -21,9 +21,7 @@ package org.server.search.transport;
 
 import org.server.search.util.io.Streamable;
 
-/**
- * 
- */
+ 
 public interface ActionTransportRequestHandler<T extends Streamable> extends TransportRequestHandler<T> {
 
     String action();

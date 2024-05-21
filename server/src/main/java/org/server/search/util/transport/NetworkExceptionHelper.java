@@ -22,9 +22,7 @@ package org.server.search.util.transport;
 import java.net.ConnectException;
 import java.nio.channels.ClosedChannelException;
 
-/**
- * 
- */
+ 
 public class NetworkExceptionHelper {
 
     public static boolean isConnectException(Throwable e) {

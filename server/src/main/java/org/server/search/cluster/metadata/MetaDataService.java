@@ -51,9 +51,7 @@ import static org.server.search.cluster.ClusterState.*;
 import static org.server.search.cluster.metadata.IndexMetaData.*;
 import static org.server.search.cluster.metadata.MetaData.*;
 
-/**
- * 
- */
+ 
 public class MetaDataService extends AbstractComponent {
 
     private final ClusterService clusterService;

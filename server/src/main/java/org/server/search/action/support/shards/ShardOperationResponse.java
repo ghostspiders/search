@@ -28,9 +28,7 @@ import java.io.IOException;
 
 import static org.server.search.cluster.routing.ImmutableShardRouting.*;
 
-/**
- * 
- */
+ 
 public class ShardOperationResponse implements Streamable {
 
     private ShardRouting shardRouting;

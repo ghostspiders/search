@@ -22,9 +22,7 @@ package org.server.search.transport;
 import org.server.search.SearchWrapperException;
 import org.server.search.util.transport.TransportAddress;
 
-/**
- * 
- */
+ 
 public class RemoteTransportException extends TransportException implements SearchWrapperException {
 
     private TransportAddress address;

@@ -23,9 +23,7 @@ import org.apache.lucene.search.Query;
 import org.server.search.SearchException;
 import org.server.search.index.IndexComponent;
 
-/**
- * 
- */
+ 
 public interface IndexQueryParser extends IndexComponent {
 
     String name();

@@ -27,9 +27,7 @@ import org.server.search.util.settings.Settings;
 
 import static org.server.search.util.guice.ModulesFactory.*;
 
-/**
- * 
- */
+ 
 public class HttpServerModule extends AbstractModule {
 
     private final Settings settings;

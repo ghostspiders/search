@@ -24,9 +24,7 @@ import org.jgroups.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- */
+ 
 public class JgroupsCustomLogFactory implements CustomLogFactory {
 
     @Override public Log getLog(Class clazz) {

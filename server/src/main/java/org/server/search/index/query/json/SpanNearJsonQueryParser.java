@@ -36,9 +36,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class SpanNearJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 
     public static final String NAME = "spanNear";

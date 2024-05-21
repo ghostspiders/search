@@ -38,9 +38,7 @@ import static com.google.common.collect.Lists.*;
 import static org.server.search.index.mapper.json.JsonMapperBuilders.*;
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 public class JsonObjectMapper implements JsonMapper {
 

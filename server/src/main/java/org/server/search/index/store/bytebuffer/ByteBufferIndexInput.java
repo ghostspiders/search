@@ -25,9 +25,7 @@ import org.apache.lucene.store.IndexInput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/**
- * 
- */
+ 
 public class ByteBufferIndexInput extends IndexInput {
 
     private final ByteBufferFile file;

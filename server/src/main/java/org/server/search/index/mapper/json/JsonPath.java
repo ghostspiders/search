@@ -21,9 +21,7 @@ package org.server.search.index.mapper.json;
 
 import org.server.search.util.concurrent.NotThreadSafe;
 
-/**
- * 
- */
+ 
 @NotThreadSafe
 public class JsonPath {
 

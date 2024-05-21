@@ -35,9 +35,7 @@ import org.server.search.action.search.SearchRequest;
 import org.server.search.action.search.SearchResponse;
 import org.server.search.action.search.SearchScrollRequest;
 
-/**
- * 
- */
+ 
 public interface Client {
 
     void close() throws InterruptedException;

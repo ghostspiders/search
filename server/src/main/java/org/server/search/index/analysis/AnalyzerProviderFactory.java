@@ -21,9 +21,7 @@ package org.server.search.index.analysis;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface AnalyzerProviderFactory {
 
     AnalyzerProvider create(String name, Settings settings);

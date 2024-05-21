@@ -48,9 +48,7 @@ import org.server.search.client.transport.action.search.ClientTransportSearchScr
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class InternalTransportClient extends AbstractComponent implements Client {
 
     private final TransportClientNodesService nodesService;

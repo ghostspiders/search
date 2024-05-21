@@ -29,9 +29,7 @@ import org.server.search.index.engine.Engine;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class CachedDfSource implements Engine.Searcher {
 
     private final AggregatedDfs dfs;

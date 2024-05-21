@@ -22,9 +22,7 @@ package org.server.search.index.routing.plain;
 import com.google.inject.AbstractModule;
 import org.server.search.index.routing.OperationRouting;
 
-/**
- * 
- */
+ 
 public class PlainOperationRoutingModule extends AbstractModule {
 
     @Override protected void configure() {

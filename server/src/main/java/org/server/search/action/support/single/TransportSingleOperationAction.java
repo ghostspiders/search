@@ -41,9 +41,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Iterator;
 
-/**
- * 
- */
+ 
 public abstract class TransportSingleOperationAction<Request extends SingleOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 
     protected final ClusterService clusterService;

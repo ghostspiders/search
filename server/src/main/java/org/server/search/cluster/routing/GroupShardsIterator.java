@@ -24,9 +24,7 @@ import org.server.search.util.IdentityHashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * 
- */
+ 
 public class GroupShardsIterator implements Iterable<ShardsIterator> {
 
     private final Set<ShardsIterator> iterators;

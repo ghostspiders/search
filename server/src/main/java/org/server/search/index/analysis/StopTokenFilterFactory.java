@@ -33,9 +33,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.Set;
 
-/**
- * 
- */
+ 
 public class StopTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final Set<String> stopWords;

@@ -41,9 +41,7 @@ import static org.server.search.monitor.jvm.DeadlockAnalyzer.*;
 import static org.server.search.monitor.jvm.JvmStats.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class JvmMonitorService extends AbstractComponent implements LifecycleComponent<JvmMonitorService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

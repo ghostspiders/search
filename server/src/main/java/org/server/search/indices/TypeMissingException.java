@@ -22,9 +22,7 @@ package org.server.search.indices;
 import org.server.search.index.Index;
 import org.server.search.index.IndexException;
 
-/**
- * 
- */
+ 
 public class TypeMissingException extends IndexException {
 
     public TypeMissingException(Index index, String type) {

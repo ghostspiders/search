@@ -35,9 +35,7 @@ import java.io.IOException;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpBroadcastPingAction extends BaseHttpServerHandler {
 
     @Inject public HttpBroadcastPingAction(Settings settings, HttpServer httpService, Client client) {

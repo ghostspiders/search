@@ -24,9 +24,7 @@ import org.apache.lucene.store.IndexOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * 
- */
+ 
 public class MemoryIndexOutput extends IndexOutput {
 
     private final MemoryDirectory dir;

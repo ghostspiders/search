@@ -61,9 +61,7 @@ import java.util.ArrayList;
 
 import static org.server.search.util.settings.ImmutableSettings.*;
 
-/**
- * 
- */
+ 
 public class TransportClient implements Client {
 
     private final Injector injector;

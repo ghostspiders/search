@@ -19,9 +19,7 @@
 
 package org.server.search.action;
 
-/**
- * 
- */
+ 
 public interface ActionListener<Response> {
 
     void onResponse(Response response);

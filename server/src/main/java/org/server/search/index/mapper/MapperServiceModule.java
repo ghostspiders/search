@@ -21,9 +21,7 @@ package org.server.search.index.mapper;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+ 
 public class MapperServiceModule extends AbstractModule {
 
     @Override protected void configure() {

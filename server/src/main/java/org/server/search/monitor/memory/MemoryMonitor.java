@@ -21,9 +21,7 @@ package org.server.search.monitor.memory;
 
 import org.server.search.util.component.LifecycleComponent;
 
-/**
- * 
- */
+ 
 public interface MemoryMonitor extends LifecycleComponent<MemoryMonitor> {
 
 }

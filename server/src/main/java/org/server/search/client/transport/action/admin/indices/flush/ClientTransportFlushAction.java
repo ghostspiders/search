@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportFlushAction extends BaseClientTransportAction<FlushRequest, FlushResponse> {
 
     @Inject public ClientTransportFlushAction(Settings settings, TransportService transportService) {

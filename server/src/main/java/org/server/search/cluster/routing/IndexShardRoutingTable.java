@@ -35,9 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.google.common.collect.Lists.*;
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * 
- */
+ 
 public class IndexShardRoutingTable implements Iterable<ShardRouting> {
 
     private final ShardId shardId;

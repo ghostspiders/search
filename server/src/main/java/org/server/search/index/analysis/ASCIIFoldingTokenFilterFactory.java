@@ -26,9 +26,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ASCIIFoldingTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject public ASCIIFoldingTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, String name, Settings settings) {

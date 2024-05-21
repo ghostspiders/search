@@ -39,9 +39,7 @@ import java.util.regex.Pattern;
 
 import static org.server.search.util.MapBuilder.*;
 
-/**
- * 
- */
+ 
 public class ResourceDMBean implements DynamicMBean {
     private static final Class<?>[] primitives = {int.class, byte.class, short.class, long.class,
             float.class, double.class, boolean.class, char.class};

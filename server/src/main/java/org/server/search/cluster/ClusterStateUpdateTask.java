@@ -19,9 +19,7 @@
 
 package org.server.search.cluster;
 
-/**
- * 
- */
+ 
 public interface ClusterStateUpdateTask {
 
     ClusterState execute(ClusterState currentState);

@@ -25,9 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * 
- */
+ 
 public class CompoundShardsIterator implements ShardsIterator, Iterator<ShardRouting> {
 
     private int index = 0;

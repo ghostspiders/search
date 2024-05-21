@@ -27,9 +27,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class RoutingNode implements Iterable<MutableShardRouting> {
 
     private final String nodeId;

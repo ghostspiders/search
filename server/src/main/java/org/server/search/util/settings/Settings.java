@@ -25,9 +25,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 @ThreadSafe
 public interface Settings {
 

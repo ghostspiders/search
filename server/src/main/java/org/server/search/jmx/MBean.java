@@ -21,9 +21,7 @@ package org.server.search.jmx;
 
 import java.lang.annotation.*;
 
-/**
- * 
- */
+ 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Inherited

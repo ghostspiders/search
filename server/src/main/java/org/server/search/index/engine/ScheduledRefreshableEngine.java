@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.util.TimeValue;
 
-/**
- * 
- */
+ 
 public interface ScheduledRefreshableEngine {
 
     TimeValue refreshInterval();

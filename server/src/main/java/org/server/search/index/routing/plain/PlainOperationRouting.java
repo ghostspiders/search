@@ -38,9 +38,7 @@ import org.server.search.util.IdentityHashSet;
 import org.server.search.util.Nullable;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class PlainOperationRouting extends AbstractIndexComponent implements OperationRouting {
 
     private final HashFunction hashFunction;

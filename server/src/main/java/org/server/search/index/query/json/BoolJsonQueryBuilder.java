@@ -25,9 +25,7 @@ import org.server.search.util.json.JsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * 
- */
+ 
 public class BoolJsonQueryBuilder extends BaseJsonQueryBuilder {
 
     private ArrayList<Clause> clauses = new ArrayList<Clause>();

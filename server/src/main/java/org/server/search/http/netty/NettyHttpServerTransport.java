@@ -58,9 +58,7 @@ import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.concurrent.DynamicExecutors.*;
 import static org.server.search.util.io.HostResolver.*;
 
-/**
- * 
- */
+ 
 public class NettyHttpServerTransport extends AbstractComponent implements HttpServerTransport {
 
     private final Lifecycle lifecycle = new Lifecycle();

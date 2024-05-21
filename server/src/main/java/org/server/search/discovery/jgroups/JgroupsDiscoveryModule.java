@@ -23,9 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.discovery.Discovery;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class JgroupsDiscoveryModule extends AbstractModule {
 
     private final Settings settings;

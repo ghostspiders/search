@@ -26,9 +26,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class ShardDeleteByQueryResponse implements ActionResponse, Streamable {
 
     @Override public void readFrom(DataInput in) throws IOException, ClassNotFoundException {

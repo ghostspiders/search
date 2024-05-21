@@ -23,9 +23,7 @@ import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.Settings;
 import org.slf4j.Logger;
 
-/**
- * 
- */
+ 
 public class AbstractComponent {
 
     protected final Logger logger;

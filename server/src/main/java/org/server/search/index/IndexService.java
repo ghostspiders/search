@@ -29,9 +29,7 @@ import org.server.search.index.similarity.SimilarityService;
 
 import java.util.Set;
 
-/**
- * 
- */
+ 
 @IndexLifecycle
 public interface IndexService extends IndexComponent, Iterable<IndexShard> {
 

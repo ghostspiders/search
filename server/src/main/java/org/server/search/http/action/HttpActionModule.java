@@ -40,9 +40,7 @@ import org.server.search.http.action.index.HttpIndexAction;
 import org.server.search.http.action.main.HttpMainAction;
 import org.server.search.http.action.search.HttpSearchAction;
 
-/**
- * 
- */
+ 
 public class HttpActionModule extends AbstractModule {
 
     @Override protected void configure() {

@@ -21,9 +21,7 @@ package org.server.search.cluster.routing;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class RoutingException extends SearchException {
 
     public RoutingException(String message) {

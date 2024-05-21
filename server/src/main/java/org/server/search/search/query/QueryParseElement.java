@@ -25,9 +25,7 @@ import org.server.search.index.query.json.JsonIndexQueryParser;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public class QueryParseElement implements SearchParseElement {
 
     @Override public void parse(JsonParser jp, SearchContext context) throws Exception {

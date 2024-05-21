@@ -24,9 +24,7 @@ import org.server.search.gateway.Gateway;
 import org.server.search.util.guice.ModulesFactory;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class IndexGatewayModule extends AbstractModule {
 
     private final Settings settings;

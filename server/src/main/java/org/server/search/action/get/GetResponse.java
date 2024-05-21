@@ -26,9 +26,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class GetResponse implements ActionResponse, Streamable {
 
     private String index;

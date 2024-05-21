@@ -27,9 +27,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class NodesOperationRequest implements ActionRequest {
 
     public static String[] ALL_NODES = Strings.EMPTY_ARRAY;

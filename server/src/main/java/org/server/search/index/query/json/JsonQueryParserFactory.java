@@ -21,9 +21,7 @@ package org.server.search.index.query.json;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface JsonQueryParserFactory {
 
     JsonQueryParser create(String name, Settings settings);

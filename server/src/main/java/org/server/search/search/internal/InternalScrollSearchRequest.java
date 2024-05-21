@@ -28,9 +28,7 @@ import java.io.IOException;
 
 import static org.server.search.search.Scroll.*;
 
-/**
- * 
- */
+ 
 public class InternalScrollSearchRequest implements Streamable {
 
     private long id;

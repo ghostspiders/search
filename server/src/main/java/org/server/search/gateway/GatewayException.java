@@ -21,9 +21,7 @@ package org.server.search.gateway;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class GatewayException extends SearchException {
 
     public GatewayException(String msg) {

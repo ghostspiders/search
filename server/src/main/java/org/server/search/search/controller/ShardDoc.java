@@ -21,9 +21,7 @@ package org.server.search.search.controller;
 
 import org.server.search.search.SearchShardTarget;
 
-/**
- * 
- */
+ 
 public interface ShardDoc {
 
     SearchShardTarget shardTarget();

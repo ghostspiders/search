@@ -22,9 +22,7 @@ package org.server.search.search;
 import com.fasterxml.jackson.core.JsonParser;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public interface SearchParseElement {
 
     void parse(JsonParser jp, SearchContext context) throws Exception;

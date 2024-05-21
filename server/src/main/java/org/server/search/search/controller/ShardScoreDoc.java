@@ -22,9 +22,7 @@ package org.server.search.search.controller;
 import org.apache.lucene.search.ScoreDoc;
 import org.server.search.search.SearchShardTarget;
 
-/**
- * 
- */
+ 
 public class ShardScoreDoc extends ScoreDoc implements ShardDoc {
 
     private final SearchShardTarget shardTarget;

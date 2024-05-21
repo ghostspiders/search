@@ -30,9 +30,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.*;
 
-/**
- * 
- */
+ 
 public class JsonQueryParserRegistry {
 
     private final Map<String, JsonQueryParser> queryParsers;

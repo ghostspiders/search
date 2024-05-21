@@ -21,9 +21,7 @@ package org.server.search.index.query;
 
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface IndexQueryParserFactory {
 
     IndexQueryParser create(String name, Settings settings);

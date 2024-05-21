@@ -32,9 +32,7 @@ import java.lang.management.RuntimeMXBean;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class JvmConfig implements Streamable, Serializable {
 
     private static JvmConfig INSTANCE;

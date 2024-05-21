@@ -23,9 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.index.IndexLifecycle;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 @IndexLifecycle
 public class IndexSettingsModule extends AbstractModule {
 

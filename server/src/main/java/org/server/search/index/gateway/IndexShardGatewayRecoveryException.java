@@ -21,9 +21,7 @@ package org.server.search.index.gateway;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class IndexShardGatewayRecoveryException extends IndexShardGatewayException {
 
     public IndexShardGatewayRecoveryException(ShardId shardId, String msg, Throwable cause) {

@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportDeleteByQueryAction extends BaseClientTransportAction<DeleteByQueryRequest, DeleteByQueryResponse> {
 
     @Inject public ClientTransportDeleteByQueryAction(Settings settings, TransportService transportService) {

@@ -27,9 +27,7 @@ import org.server.search.client.transport.action.support.BaseClientTransportActi
 import org.server.search.transport.TransportService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ClientTransportGetAction extends BaseClientTransportAction<GetRequest, GetResponse> {
 
     @Inject public ClientTransportGetAction(Settings settings, TransportService transportService) {

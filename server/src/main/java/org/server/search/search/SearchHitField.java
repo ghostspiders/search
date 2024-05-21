@@ -23,9 +23,7 @@ import org.server.search.util.io.Streamable;
 
 import java.util.List;
 
-/**
- * 
- */
+ 
 public interface SearchHitField extends Streamable {
 
     String name();

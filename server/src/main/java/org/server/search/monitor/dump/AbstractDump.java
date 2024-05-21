@@ -26,9 +26,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public abstract class AbstractDump implements Dump {
 
     private final long timestamp;

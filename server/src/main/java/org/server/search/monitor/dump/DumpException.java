@@ -21,9 +21,7 @@ package org.server.search.monitor.dump;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class DumpException extends SearchException {
 
     public DumpException(String msg) {

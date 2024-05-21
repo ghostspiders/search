@@ -19,9 +19,7 @@
 
 package org.server.search.util;
 
-/**
- * 
- */
+ 
 public class OsUtils {
 
     /**

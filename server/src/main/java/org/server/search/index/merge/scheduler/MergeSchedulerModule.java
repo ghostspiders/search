@@ -26,9 +26,7 @@ import org.server.search.util.settings.Settings;
 import static org.server.search.index.merge.scheduler.MergeSchedulerModule.MergeSchedulerSettings.*;
 import static org.server.search.index.merge.scheduler.MergeSchedulerModule.MergeSchedulerSettings.TYPE;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class MergeSchedulerModule extends AbstractModule {
 

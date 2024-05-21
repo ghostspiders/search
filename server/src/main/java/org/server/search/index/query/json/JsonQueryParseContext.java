@@ -30,9 +30,7 @@ import org.server.search.index.query.QueryParsingException;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonQueryParseContext {
 
     private final Index index;

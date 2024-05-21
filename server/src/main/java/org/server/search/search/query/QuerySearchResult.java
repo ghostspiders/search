@@ -32,9 +32,7 @@ import static org.server.search.search.SearchShardTarget.*;
 import static org.server.search.search.facets.Facets.*;
 import static org.server.search.util.lucene.Lucene.*;
 
-/**
- * 
- */
+ 
 public class QuerySearchResult implements Streamable, QuerySearchResultProvider {
 
     private long id;

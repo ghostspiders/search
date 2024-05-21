@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper;
 
-/**
- * 
- */
+ 
 public final class Uid {
 
     public static final char DELIMITER = '#';

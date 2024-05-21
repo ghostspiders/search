@@ -22,9 +22,7 @@ package org.server.search.discovery;
 import org.server.search.cluster.ClusterState;
 import org.server.search.util.component.LifecycleComponent;
 
-/**
- * 
- */
+ 
 public interface Discovery extends LifecycleComponent<Discovery> {
 
     void addListener(InitialStateDiscoveryListener listener);

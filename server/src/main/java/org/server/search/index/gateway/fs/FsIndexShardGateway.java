@@ -56,9 +56,7 @@ import static com.google.common.collect.Lists.*;
 import static org.server.search.index.translog.TranslogStreams.*;
 import static org.server.search.util.lucene.Directories.*;
 
-/**
- * 
- */
+ 
 public class FsIndexShardGateway extends AbstractIndexShardComponent implements IndexShardGateway {
 
     private final InternalIndexShard indexShard;

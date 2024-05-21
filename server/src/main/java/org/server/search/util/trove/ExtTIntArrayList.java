@@ -21,9 +21,7 @@ package org.server.search.util.trove;
 
 import org.server.search.util.gnu.trove.TIntArrayList;
 
-/**
- * 
- */
+ 
 public class ExtTIntArrayList extends TIntArrayList {
 
     public ExtTIntArrayList() {

@@ -21,9 +21,7 @@ package org.server.search.search.query;
 
 import org.server.search.search.SearchShardTarget;
 
-/**
- * 
- */
+ 
 public interface QuerySearchResultProvider {
 
     /**

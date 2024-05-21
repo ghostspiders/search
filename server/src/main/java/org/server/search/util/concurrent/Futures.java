@@ -24,9 +24,7 @@ import org.server.search.SearchInterruptedException;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * 
- */
+ 
 public class Futures {
 
     public static SearchException convert(Exception e) {

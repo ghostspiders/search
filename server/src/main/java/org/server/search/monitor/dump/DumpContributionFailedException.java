@@ -19,9 +19,7 @@
 
 package org.server.search.monitor.dump;
 
-/**
- * 
- */
+ 
 public class DumpContributionFailedException extends DumpException {
 
     private final String name;

@@ -26,9 +26,7 @@ import java.util.ArrayList;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class DisMaxJsonQueryBuilder extends BaseJsonQueryBuilder {
 
     private ArrayList<JsonQueryBuilder> queries = newArrayList();

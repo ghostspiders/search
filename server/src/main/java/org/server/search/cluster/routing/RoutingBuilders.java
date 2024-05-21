@@ -19,9 +19,7 @@
 
 package org.server.search.cluster.routing;
 
-/**
- * 
- */
+ 
 public final class RoutingBuilders {
 
     private RoutingBuilders() {

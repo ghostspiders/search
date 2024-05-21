@@ -31,9 +31,7 @@ import org.server.search.util.Strings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonIntegerFieldMapper extends JsonNumberFieldMapper<Integer> {
 
     public static class Defaults extends JsonNumberFieldMapper.Defaults {

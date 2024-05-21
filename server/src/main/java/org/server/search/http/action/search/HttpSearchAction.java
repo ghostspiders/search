@@ -44,9 +44,7 @@ import java.util.regex.Pattern;
 
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpSearchAction extends BaseHttpServerHandler {
 
     public final static Pattern fieldsPattern;

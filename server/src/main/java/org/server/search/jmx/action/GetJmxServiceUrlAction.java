@@ -33,9 +33,7 @@ import org.server.search.util.io.StringStreamable;
 import org.server.search.util.io.VoidStreamable;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class GetJmxServiceUrlAction extends AbstractComponent {
 
     private final JmxService jmxService;

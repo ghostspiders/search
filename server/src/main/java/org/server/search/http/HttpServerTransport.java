@@ -22,9 +22,7 @@ package org.server.search.http;
 import org.server.search.util.component.LifecycleComponent;
 import org.server.search.util.transport.BoundTransportAddress;
 
-/**
- * 
- */
+ 
 public interface HttpServerTransport extends LifecycleComponent<HttpServerTransport> {
 
     BoundTransportAddress boundAddress();

@@ -26,9 +26,7 @@ import org.server.search.index.IndexShardMissingException;
 import org.server.search.indices.IndexMissingException;
 import org.server.search.util.Nullable;
 
-/**
- * 
- */
+ 
 public interface OperationRouting {
 
     ShardsIterator indexShards(ClusterState clusterState, String type, String id) throws IndexMissingException, IndexShardMissingException;

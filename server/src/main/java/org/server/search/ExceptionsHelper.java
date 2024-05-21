@@ -19,9 +19,7 @@
 
 package org.server.search;
 
-/**
- * 
- */
+ 
 public final class ExceptionsHelper {
 
     public static Throwable unwrapCause(Throwable t) {

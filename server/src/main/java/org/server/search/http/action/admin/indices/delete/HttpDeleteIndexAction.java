@@ -38,9 +38,7 @@ import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.util.TimeValue.*;
 import static org.server.search.util.json.JsonBuilder.Cached.*;
 
-/**
- * 
- */
+ 
 public class HttpDeleteIndexAction extends BaseHttpServerHandler {
 
     @Inject public HttpDeleteIndexAction(Settings settings, HttpServer httpService, Client client) {

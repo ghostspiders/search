@@ -21,9 +21,7 @@ package org.server.search.index;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class IndexException extends SearchException {
 
     private final Index index;

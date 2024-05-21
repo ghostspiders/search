@@ -27,9 +27,7 @@ import org.server.search.action.ActionResponse;
 import org.server.search.cluster.node.Node;
 import org.server.search.util.Nullable;
 
-/**
- * 
- */
+ 
 public interface ClientTransportAction<Request extends ActionRequest, Response extends ActionResponse> {
 
     ActionFuture<Response> submit(Node node, Request request) throws SearchException;

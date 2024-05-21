@@ -19,9 +19,7 @@
 
 package org.server.search.http;
 
-/**
- * 
- */
+ 
 public interface HttpChannel {
     void sendResponse(HttpResponse response);
 }

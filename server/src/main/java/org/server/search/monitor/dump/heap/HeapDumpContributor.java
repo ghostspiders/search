@@ -28,9 +28,7 @@ import org.server.search.util.settings.Settings;
 
 import java.lang.reflect.Method;
 
-/**
- * 
- */
+ 
 public class HeapDumpContributor implements DumpContributor {
 
     public static final String HEAP_DUMP = "heap";

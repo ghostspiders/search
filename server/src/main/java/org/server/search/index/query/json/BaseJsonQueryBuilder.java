@@ -24,9 +24,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class BaseJsonQueryBuilder implements JsonQueryBuilder {
 
     @Override public String build() throws QueryBuilderException {

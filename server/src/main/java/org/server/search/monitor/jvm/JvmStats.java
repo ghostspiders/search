@@ -31,9 +31,7 @@ import java.lang.management.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 
- */
+ 
 public class JvmStats implements Streamable, Serializable {
 
     private static RuntimeMXBean runtimeMXBean;

@@ -28,9 +28,7 @@ import org.server.search.util.settings.Settings;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class IndexQueryParserModule extends AbstractModule {
 
     private final Settings settings;

@@ -37,9 +37,7 @@ import static org.server.search.action.count.CountRequest.*;
 import static org.server.search.http.HttpResponse.Status.*;
 import static org.server.search.http.action.support.HttpActions.*;
 
-/**
- * 
- */
+ 
 public class HttpCountAction extends BaseHttpServerHandler {
 
     @Inject public HttpCountAction(Settings settings, HttpServer httpService, Client client) {

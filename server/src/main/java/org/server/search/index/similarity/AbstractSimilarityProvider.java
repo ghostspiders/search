@@ -25,9 +25,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public abstract class AbstractSimilarityProvider<T extends Similarity> extends AbstractIndexComponent implements SimilarityProvider<T> {
 
     private final String name;

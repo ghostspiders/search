@@ -30,9 +30,7 @@ import java.io.IOException;
 
 import static org.server.search.action.Actions.*;
 
-/**
- * 
- */
+ 
 public class ShardDeleteByQueryRequest extends ShardReplicationOperationRequest {
 
     private int shardId;

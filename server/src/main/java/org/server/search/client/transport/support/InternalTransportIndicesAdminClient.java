@@ -48,9 +48,7 @@ import org.server.search.client.transport.action.admin.indices.status.ClientTran
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class InternalTransportIndicesAdminClient extends AbstractComponent implements IndicesAdminClient {
 
     private final TransportClientNodesService nodesService;

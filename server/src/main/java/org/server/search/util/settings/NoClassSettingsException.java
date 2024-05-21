@@ -19,9 +19,7 @@
 
 package org.server.search.util.settings;
 
-/**
- * 
- */
+ 
 public class NoClassSettingsException extends SettingsException {
 
     public NoClassSettingsException(String message) {

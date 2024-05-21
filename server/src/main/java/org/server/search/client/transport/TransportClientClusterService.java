@@ -25,9 +25,7 @@ import org.server.search.discovery.DiscoveryService;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class TransportClientClusterService extends AbstractComponent {
 
     private final ClusterService clusterService;

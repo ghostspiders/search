@@ -24,9 +24,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-/**
- * 
- */
+ 
 public class InetSocketTransportAddress implements TransportAddress {
 
     private InetSocketAddress address;

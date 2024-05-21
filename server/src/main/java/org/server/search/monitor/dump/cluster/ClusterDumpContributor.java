@@ -32,9 +32,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.PrintWriter;
 
-/**
- * 
- */
+ 
 public class ClusterDumpContributor implements DumpContributor {
 
     public static final String CLUSTER = "cluster";

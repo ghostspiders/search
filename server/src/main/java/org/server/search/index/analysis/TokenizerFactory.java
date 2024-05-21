@@ -24,9 +24,7 @@ import org.server.search.index.IndexComponent;
 
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public interface TokenizerFactory extends IndexComponent {
 
     String name();

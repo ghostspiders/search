@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class NotSerializableTransportException extends TransportException {
 
     public NotSerializableTransportException(Throwable t) {

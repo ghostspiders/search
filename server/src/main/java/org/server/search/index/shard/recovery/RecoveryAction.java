@@ -56,9 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.concurrent.TimeUnit.*;
 import static org.server.search.util.concurrent.ConcurrentMaps.*;
 
-/**
- * 
- */
+ 
 public class RecoveryAction extends AbstractIndexShardComponent {
 
     private final SizeValue fileChunkSize;

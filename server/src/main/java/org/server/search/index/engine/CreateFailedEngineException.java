@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class CreateFailedEngineException extends EngineException {
 
     private final String type;

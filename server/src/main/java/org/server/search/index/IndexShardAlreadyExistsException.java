@@ -21,9 +21,7 @@ package org.server.search.index;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class IndexShardAlreadyExistsException extends SearchException {
 
     public IndexShardAlreadyExistsException(String message) {

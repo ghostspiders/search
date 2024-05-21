@@ -21,9 +21,7 @@ package org.server.search.action;
 
 import org.server.search.SearchIllegalArgumentException;
 
-/**
- * 
- */
+ 
 public enum ThreadingModel {
     NONE((byte) 0),
     OPERATION((byte) 1),

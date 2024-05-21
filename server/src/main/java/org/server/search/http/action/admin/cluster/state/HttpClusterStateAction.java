@@ -38,9 +38,7 @@ import org.server.search.util.settings.Settings;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class HttpClusterStateAction extends BaseHttpServerHandler {
 
     @Inject public HttpClusterStateAction(Settings settings, HttpServer httpServer, Client client) {

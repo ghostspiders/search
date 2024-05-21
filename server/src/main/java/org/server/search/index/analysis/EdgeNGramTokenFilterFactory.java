@@ -32,9 +32,7 @@ import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
 
-/**
- * 
- */
+ 
 public class EdgeNGramTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final int minGram;

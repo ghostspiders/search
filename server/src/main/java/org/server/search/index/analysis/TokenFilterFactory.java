@@ -22,9 +22,7 @@ package org.server.search.index.analysis;
 import org.apache.lucene.analysis.TokenStream;
 import org.server.search.index.IndexComponent;
 
-/**
- * 
- */
+ 
 public interface TokenFilterFactory extends IndexComponent {
 
     String name();

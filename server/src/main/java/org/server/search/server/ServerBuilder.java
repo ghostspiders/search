@@ -23,9 +23,7 @@ import org.server.search.server.internal.InternalServer;
 import org.server.search.util.settings.ImmutableSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ServerBuilder {
 
     private Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;

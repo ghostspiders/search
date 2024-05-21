@@ -22,9 +22,7 @@ package org.server.search.search.query;
 import org.server.search.search.Search1Exception;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public class QueryPhaseExecutionException extends Search1Exception {
 
     public QueryPhaseExecutionException(SearchContext context) {

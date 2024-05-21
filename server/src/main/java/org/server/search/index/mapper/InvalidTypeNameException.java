@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper;
 
-/**
- * 
- */
+ 
 public class InvalidTypeNameException extends MapperException {
 
     public InvalidTypeNameException(String message) {

@@ -21,9 +21,7 @@ package org.server.search.util.settings;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+ 
 public class SettingsModule extends AbstractModule {
 
     private final Settings settings;

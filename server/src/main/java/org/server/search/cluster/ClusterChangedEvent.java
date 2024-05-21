@@ -21,9 +21,7 @@ package org.server.search.cluster;
 
 import org.server.search.cluster.node.Nodes;
 
-/**
- * 
- */
+ 
 public class ClusterChangedEvent {
 
     private final String source;

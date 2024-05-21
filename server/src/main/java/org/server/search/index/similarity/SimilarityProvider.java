@@ -23,9 +23,7 @@ import com.google.inject.Provider;
 import org.apache.lucene.search.similarities.Similarity;
 import org.server.search.index.IndexComponent;
 
-/**
- * 
- */
+ 
 public interface SimilarityProvider<T extends Similarity> extends IndexComponent, Provider<T> {
 
     String name();

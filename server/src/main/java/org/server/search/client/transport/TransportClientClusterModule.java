@@ -27,9 +27,7 @@ import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.NoClassSettingsException;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class TransportClientClusterModule extends AbstractModule {
 
     private final Settings settings;

@@ -21,9 +21,7 @@ package org.server.search.env;
 
 import com.google.inject.AbstractModule;
 
-/**
- * 
- */
+ 
 public class EnvironmentModule extends AbstractModule {
 
     private final Environment environment;

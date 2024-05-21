@@ -23,9 +23,7 @@ import org.server.search.util.json.JsonBuilder;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class ConstantScoreQueryJsonQueryBuilder extends BaseJsonQueryBuilder {
 
     private final JsonFilterBuilder filterBuilder;

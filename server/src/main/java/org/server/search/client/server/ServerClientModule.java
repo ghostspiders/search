@@ -25,9 +25,7 @@ import org.server.search.client.Client;
 import org.server.search.client.ClusterAdminClient;
 import org.server.search.client.IndicesAdminClient;
 
-/**
- * 
- */
+ 
 public class ServerClientModule extends AbstractModule {
 
     @Override protected void configure() {

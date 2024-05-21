@@ -22,9 +22,7 @@ package org.server.search.index.query.json;
 import org.server.search.index.query.QueryBuilder;
 import org.server.search.util.json.ToJson;
 
-/**
- * 
- */
+ 
 public interface JsonQueryBuilder extends QueryBuilder, ToJson {
 
 }

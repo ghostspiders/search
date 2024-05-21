@@ -37,9 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class FetchPhase implements SearchPhase {
 
     @Override public Map<String, ? extends SearchParseElement> parseElements() {

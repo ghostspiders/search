@@ -21,9 +21,7 @@ package org.server.search.util.json;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface ToJson {
 
     void toJson(JsonBuilder builder) throws IOException;

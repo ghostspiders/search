@@ -33,9 +33,7 @@ import org.server.search.util.SizeValue;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 public class LogByteSizeMergePolicyProvider extends AbstractIndexShardComponent implements MergePolicyProvider<LogByteSizeMergePolicy> {
 

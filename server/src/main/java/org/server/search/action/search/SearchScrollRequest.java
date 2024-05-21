@@ -30,9 +30,7 @@ import java.io.IOException;
 import static org.server.search.action.Actions.*;
 import static org.server.search.search.Scroll.*;
 
-/**
- * 
- */
+ 
 public class SearchScrollRequest implements ActionRequest {
 
     private String scrollId;

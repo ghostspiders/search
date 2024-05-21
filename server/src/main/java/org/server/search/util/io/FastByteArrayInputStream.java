@@ -22,9 +22,7 @@ package org.server.search.util.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * 
- */
+ 
 public class FastByteArrayInputStream extends InputStream {
 
     /**

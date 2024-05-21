@@ -36,9 +36,7 @@ import static org.server.search.search.SearchShardTarget.*;
 import static org.server.search.search.internal.InternalSearchHitField.*;
 import static org.server.search.util.lucene.Lucene.*;
 
-/**
- * 
- */
+ 
 public class InternalSearchHit implements SearchHit {
 
     private String id;

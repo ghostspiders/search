@@ -23,9 +23,7 @@ import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.routing.RoutingTable;
 import org.server.search.cluster.routing.ShardRouting;
 
-/**
- * 
- */
+ 
 public interface ShardsRoutingStrategy {
 
     /**

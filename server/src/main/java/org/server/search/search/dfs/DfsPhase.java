@@ -28,9 +28,7 @@ import org.server.search.util.gnu.trove.THashSet;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class DfsPhase implements SearchPhase {
 
     @Override public Map<String, ? extends SearchParseElement> parseElements() {

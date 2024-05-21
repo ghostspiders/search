@@ -19,9 +19,7 @@
 
 package org.server.search.index;
 
-/**
- * 
- */
+ 
 @IndexLifecycle
 public interface IndexComponent {
 

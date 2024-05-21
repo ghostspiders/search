@@ -37,9 +37,7 @@ import static org.server.search.action.Actions.*;
 import static org.server.search.search.Scroll.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class SearchRequest implements ActionRequest {
 
     private static TObjectFloatHashMap<String> EMPTY = new TObjectFloatHashMap<String>();

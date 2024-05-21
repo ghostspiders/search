@@ -22,9 +22,7 @@ package org.server.search.index.store.bytebuffer;
 import com.google.inject.AbstractModule;
 import org.server.search.index.store.Store;
 
-/**
- * 
- */
+ 
 public class ByteBufferStoreModule extends AbstractModule {
 
     @Override protected void configure() {

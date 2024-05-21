@@ -27,9 +27,7 @@ import org.server.search.index.gateway.IndexShardGateway;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class NoneIndexGateway extends AbstractIndexComponent implements IndexGateway {
 
     @Inject public NoneIndexGateway(Index index, @IndexSettings Settings indexSettings) {

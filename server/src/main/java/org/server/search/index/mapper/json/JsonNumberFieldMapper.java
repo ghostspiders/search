@@ -30,9 +30,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-/**
- * 
- */
+ 
 public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldMapper<T> {
 
     public static class Defaults extends JsonFieldMapper.Defaults {

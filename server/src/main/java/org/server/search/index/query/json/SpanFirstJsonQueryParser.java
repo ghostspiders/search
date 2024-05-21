@@ -33,9 +33,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class SpanFirstJsonQueryParser extends AbstractIndexComponent implements JsonQueryParser {
 
     public static final String NAME = "spanFirst";

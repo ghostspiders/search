@@ -25,9 +25,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public abstract class BroadcastShardOperationRequest implements Streamable {
 
     private String index;

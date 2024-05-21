@@ -21,9 +21,7 @@ package org.server.search.action.search;
 
 import org.server.search.SearchIllegalArgumentException;
 
-/**
- * 
- */
+ 
 public enum SearchType {
     DFS_QUERY_THEN_FETCH((byte) 0),
     QUERY_THEN_FETCH((byte) 1),

@@ -23,9 +23,7 @@ import org.apache.lucene.store.IndexInput;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class MemoryIndexInput extends IndexInput {
 
     private final int bufferSize;

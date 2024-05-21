@@ -24,9 +24,7 @@ import org.server.search.search.internal.SearchContext;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public interface SearchPhase {
 
     Map<String, ? extends SearchParseElement> parseElements();

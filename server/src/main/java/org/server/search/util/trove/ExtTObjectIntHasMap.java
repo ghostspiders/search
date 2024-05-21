@@ -22,9 +22,7 @@ package org.server.search.util.trove;
 import org.server.search.util.gnu.trove.TObjectHashingStrategy;
 import org.server.search.util.gnu.trove.TObjectIntHashMap;
 
-/**
- * 
- */
+ 
 public class ExtTObjectIntHasMap<T> extends TObjectIntHashMap<T> {
 
     private int defaultReturnValue = 0;

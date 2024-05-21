@@ -22,9 +22,7 @@ package org.server.search.server;
 import org.server.search.client.Client;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public interface Server {
 
     Settings settings();

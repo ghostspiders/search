@@ -30,9 +30,7 @@ import java.net.URL;
 import static org.server.search.util.Strings.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 
-/**
- * 
- */
+ 
 public class Environment {
 
     private final File homeFile;

@@ -41,9 +41,7 @@ import static org.server.search.cluster.ClusterState.*;
 import static org.server.search.cluster.metadata.MetaData.*;
 import static org.server.search.util.TimeValue.*;
 
-/**
- * 
- */
+ 
 public class GatewayService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<GatewayService> {
 
     private final Lifecycle lifecycle = new Lifecycle();

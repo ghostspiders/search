@@ -22,9 +22,7 @@ package org.server.search.util.trove;
 import org.server.search.util.gnu.trove.TIntHashingStrategy;
 import org.server.search.util.gnu.trove.TIntIntHashMap;
 
-/**
- * 
- */
+ 
 public class ExtTIntIntHashMap extends TIntIntHashMap {
 
     private int defaultReturnValue = 0;

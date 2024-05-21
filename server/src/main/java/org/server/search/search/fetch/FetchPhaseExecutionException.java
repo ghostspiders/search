@@ -22,9 +22,7 @@ package org.server.search.search.fetch;
 import org.server.search.SearchException;
 import org.server.search.search.internal.SearchContext;
 
-/**
- * 
- */
+ 
 public class FetchPhaseExecutionException extends SearchException {
 
     public FetchPhaseExecutionException(SearchContext context, String msg) {

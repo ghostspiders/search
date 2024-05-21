@@ -24,9 +24,7 @@ import org.server.search.index.shard.ShardId;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class PlainShardsIterator implements ShardsIterator {
 
     private final ShardId shardId;

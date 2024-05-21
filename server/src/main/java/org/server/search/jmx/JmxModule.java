@@ -29,9 +29,7 @@ import org.server.search.jmx.action.GetJmxServiceUrlAction;
 import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class JmxModule extends AbstractModule {
 
     private final Settings settings;

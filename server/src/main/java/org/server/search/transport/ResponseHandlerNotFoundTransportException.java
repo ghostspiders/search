@@ -19,9 +19,7 @@
 
 package org.server.search.transport;
 
-/**
- * 
- */
+ 
 public class ResponseHandlerNotFoundTransportException extends TransportException {
 
     private final long requestId;

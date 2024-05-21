@@ -25,9 +25,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class PrefixJsonFilterParser extends AbstractIndexComponent{
 
     public static final String NAME = "prefix";

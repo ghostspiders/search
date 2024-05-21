@@ -25,9 +25,7 @@ import org.server.search.client.transport.support.InternalTransportClient;
 import org.server.search.client.transport.support.InternalTransportClusterAdminClient;
 import org.server.search.client.transport.support.InternalTransportIndicesAdminClient;
 
-/**
- * 
- */
+ 
 public class ClientTransportModule extends AbstractModule {
 
     @Override protected void configure() {

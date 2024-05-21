@@ -35,9 +35,7 @@ import java.io.InputStream;
 
 import static org.server.search.transport.Transport.Helper.*;
 
-/**
- * 
- */
+ 
 public class MessageChannelHandler extends ChannelInboundHandlerAdapter  {
 
     private final Logger logger;

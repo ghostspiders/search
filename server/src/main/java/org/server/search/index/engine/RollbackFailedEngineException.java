@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class RollbackFailedEngineException extends EngineException {
 
     public RollbackFailedEngineException(ShardId shardId, Throwable t) {

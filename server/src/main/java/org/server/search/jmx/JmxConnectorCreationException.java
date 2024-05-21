@@ -19,9 +19,7 @@
 
 package org.server.search.jmx;
 
-/**
- * 
- */
+ 
 public class JmxConnectorCreationException extends JmxException {
 
     public JmxConnectorCreationException(String message) {

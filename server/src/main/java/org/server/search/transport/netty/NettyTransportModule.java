@@ -22,9 +22,7 @@ package org.server.search.transport.netty;
 import com.google.inject.AbstractModule;
 import org.server.search.transport.Transport;
 
-/**
- * 
- */
+ 
 public class NettyTransportModule extends AbstractModule {
 
     @Override protected void configure() {

@@ -26,9 +26,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class DefaultSimilarityProvider extends AbstractSimilarityProvider<ClassicSimilarity> {
 
     private ClassicSimilarity similarity;

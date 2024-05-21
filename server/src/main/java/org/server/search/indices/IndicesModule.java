@@ -23,9 +23,7 @@ import com.google.inject.AbstractModule;
 import org.server.search.indices.cluster.IndicesClusterStateService;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class IndicesModule extends AbstractModule {
 
     private final Settings settings;

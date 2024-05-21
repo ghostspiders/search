@@ -21,9 +21,7 @@ package org.server.search.index.shard;
 
 import org.server.search.index.IndexException;
 
-/**
- * 
- */
+ 
 public class IndexShardException extends IndexException {
 
     private final ShardId shardId;

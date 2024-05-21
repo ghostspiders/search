@@ -28,9 +28,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class StandardTokenizerFactory extends AbstractTokenizerFactory {
 
     private final int maxTokenLength;

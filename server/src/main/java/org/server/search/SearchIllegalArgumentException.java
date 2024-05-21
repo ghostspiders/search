@@ -19,9 +19,7 @@
 
 package org.server.search;
 
-/**
- * 
- */
+ 
 public class SearchIllegalArgumentException extends SearchException {
 
     public SearchIllegalArgumentException() {

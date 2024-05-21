@@ -24,9 +24,7 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class MapBackedSet<E> extends AbstractSet<E> implements Serializable {
 
     private static final long serialVersionUID = -6761513279741915432L;

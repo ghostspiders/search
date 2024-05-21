@@ -23,9 +23,7 @@ import org.server.search.SearchIllegalArgumentException;
 import org.server.search.util.io.Streamable;
 import org.server.search.util.json.ToJson;
 
-/**
- * 
- */
+ 
 public interface Facet extends Streamable, ToJson {
 
     enum Type {

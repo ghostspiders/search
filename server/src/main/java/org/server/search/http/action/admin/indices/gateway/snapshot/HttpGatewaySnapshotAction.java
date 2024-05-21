@@ -37,9 +37,7 @@ import java.io.IOException;
 import static org.server.search.action.support.replication.ShardReplicationOperationRequest.*;
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpGatewaySnapshotAction extends BaseHttpServerHandler {
 
     @Inject public HttpGatewaySnapshotAction(Settings settings, HttpServer httpService, Client client) {

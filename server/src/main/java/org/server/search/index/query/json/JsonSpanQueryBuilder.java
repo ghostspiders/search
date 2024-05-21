@@ -19,9 +19,7 @@
 
 package org.server.search.index.query.json;
 
-/**
- * 
- */
+ 
 public interface JsonSpanQueryBuilder extends JsonQueryBuilder {
 
 }

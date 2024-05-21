@@ -43,9 +43,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.*;
 
-/**
- * 
- */
+ 
 public class JsonIndexQueryParser extends AbstractIndexComponent implements IndexQueryParser {
 
     public static final class Defaults {

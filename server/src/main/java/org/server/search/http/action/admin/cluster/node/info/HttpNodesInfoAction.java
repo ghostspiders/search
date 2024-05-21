@@ -33,9 +33,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class HttpNodesInfoAction extends BaseHttpServerHandler {
 
     @Inject public HttpNodesInfoAction(Settings settings, HttpServer httpServer, Client client) {

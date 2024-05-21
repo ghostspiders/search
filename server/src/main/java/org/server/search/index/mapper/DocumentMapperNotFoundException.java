@@ -19,9 +19,7 @@
 
 package org.server.search.index.mapper;
 
-/**
- * 
- */
+ 
 public class DocumentMapperNotFoundException extends MapperException {
 
     public DocumentMapperNotFoundException(String message) {

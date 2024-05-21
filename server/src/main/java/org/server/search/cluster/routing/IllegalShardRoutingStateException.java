@@ -19,9 +19,7 @@
 
 package org.server.search.cluster.routing;
 
-/**
- * 
- */
+ 
 public class IllegalShardRoutingStateException extends RoutingException {
 
     private final ShardRouting shard;

@@ -28,9 +28,7 @@ import org.server.search.util.Numbers;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class JsonDoubleFieldMapper extends JsonNumberFieldMapper<Double> {
 
     public static class Defaults extends JsonNumberFieldMapper.Defaults {

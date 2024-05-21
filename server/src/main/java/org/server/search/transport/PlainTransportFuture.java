@@ -28,9 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * 
- */
+ 
 public class PlainTransportFuture<V extends Streamable> implements TransportFuture<V>, TransportResponseHandler<V> {
 
     private final CountDownLatch latch;

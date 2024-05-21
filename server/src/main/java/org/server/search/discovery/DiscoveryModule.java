@@ -26,9 +26,7 @@ import org.server.search.util.settings.Settings;
 
 import static org.server.search.util.guice.ModulesFactory.*;
 
-/**
- * 
- */
+ 
 public class DiscoveryModule extends AbstractModule {
 
     private final Settings settings;

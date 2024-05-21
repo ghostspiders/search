@@ -23,9 +23,7 @@ import org.server.search.util.concurrent.NotThreadSafe;
 
 import java.io.DataOutputStream;
 
-/**
- * 
- */
+ 
 @NotThreadSafe
 public class ByteArrayDataOutputStream extends DataOutputStream {
 

@@ -21,9 +21,7 @@ package org.server.search.action;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class PrimaryMissingActionException extends SearchException {
 
     public PrimaryMissingActionException(String message) {

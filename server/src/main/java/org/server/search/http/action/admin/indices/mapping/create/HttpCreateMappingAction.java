@@ -37,9 +37,7 @@ import java.io.IOException;
 import static org.server.search.ExceptionsHelper.*;
 import static org.server.search.http.HttpResponse.Status.*;
 
-/**
- * 
- */
+ 
 public class HttpCreateMappingAction extends BaseHttpServerHandler {
 
     @Inject public HttpCreateMappingAction(Settings settings, HttpServer httpService, Client client) {

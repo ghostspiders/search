@@ -28,9 +28,7 @@ import org.server.search.util.settings.Settings;
 
 import java.io.Reader;
 
-/**
- * 
- */
+ 
 public class NGramTokenizerFactory extends AbstractTokenizerFactory {
 
     private final int minGram;

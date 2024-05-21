@@ -21,9 +21,7 @@ package org.server.search.util.io;
 
 import java.io.*;
 
-/**
- * 
- */
+ 
 public class FastDataOutputStream extends FilterOutputStream implements DataOutput {
     /**
      * The number of bytes written to the data output stream so far.

@@ -26,9 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-/**
- * 
- */
+ 
 public interface ThreadPool extends ScheduledExecutorService {
 
     boolean isStarted();

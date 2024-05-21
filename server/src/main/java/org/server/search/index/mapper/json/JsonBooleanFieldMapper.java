@@ -26,9 +26,7 @@ import org.server.search.util.lucene.Lucene;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 // TODO this can be made better, maybe storing a byte for it?
 public class JsonBooleanFieldMapper extends JsonFieldMapper<Boolean> {
 

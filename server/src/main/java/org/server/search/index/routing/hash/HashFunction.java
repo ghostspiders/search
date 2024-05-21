@@ -19,9 +19,7 @@
 
 package org.server.search.index.routing.hash;
 
-/**
- * 
- */
+ 
 public interface HashFunction {
 
     int hash(String type, String id);

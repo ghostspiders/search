@@ -19,9 +19,7 @@
 
 package org.server.search.index.store.memory;
 
-/**
- * 
- */
+ 
 public class MemoryFile {
 
     private final MemoryDirectory dir;

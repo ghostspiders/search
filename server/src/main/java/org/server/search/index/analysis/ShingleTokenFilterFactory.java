@@ -27,9 +27,7 @@ import org.server.search.index.Index;
 import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ShingleTokenFilterFactory extends AbstractTokenFilterFactory {
 
     private final int maxShingleSize;

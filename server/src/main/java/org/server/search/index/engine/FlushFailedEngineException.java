@@ -21,9 +21,7 @@ package org.server.search.index.engine;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class FlushFailedEngineException extends EngineException {
 
     public FlushFailedEngineException(ShardId shardId, Throwable t) {

@@ -27,9 +27,7 @@ import org.server.search.util.settings.Settings;
 
 import static org.server.search.action.support.PlainActionFuture.*;
 
-/**
- * 
- */
+ 
 public abstract class BaseAction<Request extends ActionRequest, Response extends ActionResponse> extends AbstractComponent implements Action<Request, Response> {
 
     protected BaseAction(Settings settings) {

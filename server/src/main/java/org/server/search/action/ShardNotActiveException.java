@@ -21,9 +21,7 @@ package org.server.search.action;
 
 import org.server.search.index.shard.ShardId;
 
-/**
- * 
- */
+ 
 public class ShardNotActiveException extends ShardOperationFailedException {
 
     public ShardNotActiveException(ShardId shardId) {

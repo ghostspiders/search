@@ -24,9 +24,7 @@ import org.server.search.util.Nullable;
 import java.io.File;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public interface DumpGenerator {
 
     Result generateDump(String cause, @Nullable Map<String, Object> context) throws DumpGenerationFailedException;

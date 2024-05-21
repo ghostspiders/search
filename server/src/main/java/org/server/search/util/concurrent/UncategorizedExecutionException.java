@@ -21,9 +21,7 @@ package org.server.search.util.concurrent;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class UncategorizedExecutionException extends SearchException {
 
     public UncategorizedExecutionException(String msg) {

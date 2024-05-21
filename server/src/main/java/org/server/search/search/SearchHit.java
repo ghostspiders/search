@@ -25,9 +25,7 @@ import org.server.search.util.json.ToJson;
 
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public interface SearchHit extends Streamable, ToJson {
 
     String index();

@@ -19,9 +19,7 @@
 
 package org.server.search.index.analysis;
 
-/**
- * 
- */
+ 
 public interface PositionIncrementGapAnalyzer {
 
     void setPositionIncrementGap(int positionIncrementGap);

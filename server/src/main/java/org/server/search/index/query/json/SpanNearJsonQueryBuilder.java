@@ -25,9 +25,7 @@ import org.server.search.util.json.JsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * 
- */
+ 
 public class SpanNearJsonQueryBuilder extends BaseJsonQueryBuilder implements JsonSpanQueryBuilder {
 
     private ArrayList<JsonSpanQueryBuilder> clauses = new ArrayList<JsonSpanQueryBuilder>();

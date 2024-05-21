@@ -21,8 +21,6 @@ package org.server.search.action;
 
 import org.server.search.util.io.Streamable;
 
-/**
- * 
- */
+ 
 public interface ActionResponse extends Streamable {
 }

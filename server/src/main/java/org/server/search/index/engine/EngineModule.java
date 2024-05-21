@@ -24,9 +24,7 @@ import org.server.search.index.engine.robin.RobinEngineModule;
 import org.server.search.util.guice.ModulesFactory;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class EngineModule extends AbstractModule {
 
     public static final class EngineSettings {

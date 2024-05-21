@@ -31,9 +31,7 @@ import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
-/**
- * 
- */
+ 
 public class ThreadDumpContributor implements DumpContributor {
 
     private static final ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();

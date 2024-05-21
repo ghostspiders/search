@@ -30,9 +30,7 @@ import org.server.search.util.concurrent.ThreadSafe;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 @IndexShardLifecycle
 @ThreadSafe
 public interface IndexShard extends IndexShardComponent {

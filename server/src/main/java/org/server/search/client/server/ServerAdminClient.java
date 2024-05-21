@@ -26,9 +26,7 @@ import org.server.search.client.IndicesAdminClient;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 
-/**
- * 
- */
+ 
 public class ServerAdminClient extends AbstractComponent implements AdminClient {
 
     private final ServerIndicesAdminClient indicesAdminClient;

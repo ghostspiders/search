@@ -31,9 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * 
- */
+ 
 public class PlainActionFuture<T> implements ActionFuture<T>, ActionListener<T> {
 
     public static <T> PlainActionFuture<T> newFuture() {

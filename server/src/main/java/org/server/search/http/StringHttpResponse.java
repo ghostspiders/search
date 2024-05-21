@@ -18,9 +18,7 @@
  */
 
 package org.server.search.http;
-/**
- * 
- */
+ 
 public class StringHttpResponse extends Utf8HttpResponse {
 
 

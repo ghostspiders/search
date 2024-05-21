@@ -21,9 +21,7 @@ package org.server.search.index.query.json;
 
 import org.server.search.util.json.ToJson;
 
-/**
- * 
- */
+ 
 public interface JsonFilterBuilder extends ToJson {
 
 }

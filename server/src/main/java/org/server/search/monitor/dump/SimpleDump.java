@@ -25,9 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
-/**
- * 
- */
+ 
 public class SimpleDump extends AbstractDump {
 
     private final File location;

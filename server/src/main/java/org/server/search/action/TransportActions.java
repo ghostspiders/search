@@ -19,9 +19,7 @@
 
 package org.server.search.action;
 
-/**
- * 
- */
+ 
 public class TransportActions {
 
     public static final String INDEX = "indices/index/shard/index";

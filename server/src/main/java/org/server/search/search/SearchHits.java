@@ -22,9 +22,7 @@ package org.server.search.search;
 import org.server.search.util.io.Streamable;
 import org.server.search.util.json.ToJson;
 
-/**
- * 
- */
+ 
 public interface SearchHits extends Streamable, ToJson {
 
     long totalHits();

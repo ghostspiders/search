@@ -25,9 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * 
- */
+ 
 public interface ActionFuture<T> extends Future<T> {
 
     T actionGet() throws SearchException;

@@ -68,9 +68,7 @@ import static org.server.search.util.io.HostResolver.*;
 import static org.server.search.util.settings.ImmutableSettings.Builder.*;
 import static org.server.search.util.transport.NetworkExceptionHelper.*;
 
-/**
- * 
- */
+ 
 public class NettyTransport extends AbstractComponent implements Transport {
 
     static {

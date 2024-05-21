@@ -26,9 +26,7 @@ import io.netty.util.CharsetUtil;
 import java.io.StreamCorruptedException;
 import java.util.List;
 
-/**
- * 
- */
+ 
 public class SizeHeaderFrameDecoder extends ByteToMessageDecoder {
     private int length;
 

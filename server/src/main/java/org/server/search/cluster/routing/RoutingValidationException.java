@@ -19,9 +19,7 @@
 
 package org.server.search.cluster.routing;
 
-/**
- * 
- */
+ 
 public class RoutingValidationException extends RoutingException {
 
     public RoutingValidationException(String message) {

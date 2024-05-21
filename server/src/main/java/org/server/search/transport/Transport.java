@@ -26,9 +26,7 @@ import org.server.search.util.transport.BoundTransportAddress;
 
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public interface Transport extends LifecycleComponent<Transport> {
 
     class Helper {

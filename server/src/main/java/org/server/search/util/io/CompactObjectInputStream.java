@@ -23,9 +23,7 @@ import org.server.search.util.Classes;
 
 import java.io.*;
 
-/**
- * 
- */
+ 
 class CompactObjectInputStream extends ObjectInputStream {
 
     private final ClassLoader classLoader;

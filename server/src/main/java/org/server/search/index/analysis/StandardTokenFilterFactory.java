@@ -28,9 +28,7 @@ import org.server.search.index.settings.IndexSettings;
 import org.server.search.util.settings.Settings;
 
 
-/**
- * 
- */
+ 
 public class StandardTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject public StandardTokenFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {

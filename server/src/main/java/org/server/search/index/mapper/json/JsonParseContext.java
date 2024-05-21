@@ -23,9 +23,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import org.apache.lucene.document.Document;
 import org.server.search.util.concurrent.NotThreadSafe;
 
-/**
- * 
- */
+ 
 @NotThreadSafe
 public class JsonParseContext {
 

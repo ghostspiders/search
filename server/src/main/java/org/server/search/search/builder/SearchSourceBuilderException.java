@@ -21,9 +21,7 @@ package org.server.search.search.builder;
 
 import org.server.search.search.Search1Exception;
 
-/**
- * 
- */
+ 
 public class SearchSourceBuilderException extends Search1Exception {
 
     public SearchSourceBuilderException(String msg) {

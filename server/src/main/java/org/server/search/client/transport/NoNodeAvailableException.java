@@ -21,9 +21,7 @@ package org.server.search.client.transport;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class NoNodeAvailableException extends SearchException {
 
     public NoNodeAvailableException() {

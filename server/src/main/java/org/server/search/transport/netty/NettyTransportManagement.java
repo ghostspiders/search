@@ -23,9 +23,7 @@ import com.google.inject.Inject;
 import org.server.search.jmx.MBean;
 import org.server.search.jmx.ManagedAttribute;
 
-/**
- * 
- */
+ 
 @MBean(objectName = "service=transport,transportType=netty", description = "Netty Transport")
 public class NettyTransportManagement {
 

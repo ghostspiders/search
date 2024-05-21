@@ -22,9 +22,7 @@ package org.server.search.index.gateway.fs;
 import com.google.inject.AbstractModule;
 import org.server.search.index.gateway.IndexGateway;
 
-/**
- * 
- */
+ 
 public class FsIndexGatewayModule extends AbstractModule {
 
     @Override protected void configure() {

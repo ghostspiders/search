@@ -23,9 +23,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * 
- */
+ 
 public class TranslogStreams {
 
     public static Translog.Operation readTranslogOperation(DataInput in) throws IOException, ClassNotFoundException {

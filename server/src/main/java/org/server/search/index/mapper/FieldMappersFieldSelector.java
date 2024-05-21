@@ -24,9 +24,7 @@ import org.apache.lucene.index.StoredFieldVisitor;
 import java.io.IOException;
 import java.util.HashSet;
 
-/**
- * 
- */
+ 
 public class FieldMappersFieldSelector extends StoredFieldVisitor {
 
     private final HashSet<String> names = new HashSet<String>();

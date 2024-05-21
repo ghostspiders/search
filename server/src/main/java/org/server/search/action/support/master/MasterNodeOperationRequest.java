@@ -21,9 +21,7 @@ package org.server.search.action.support.master;
 
 import org.server.search.action.ActionRequest;
 
-/**
- * 
- */
+ 
 public abstract class MasterNodeOperationRequest implements ActionRequest {
 
     @Override public boolean listenerThreaded() {

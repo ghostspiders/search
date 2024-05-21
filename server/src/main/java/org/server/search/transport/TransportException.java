@@ -21,9 +21,7 @@ package org.server.search.transport;
 
 import org.server.search.SearchException;
 
-/**
- * 
- */
+ 
 public class TransportException extends SearchException {
 
     public TransportException(String msg) {
