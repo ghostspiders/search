@@ -77,88 +77,109 @@ public class ServerIndicesAdminClient extends AbstractComponent implements Indic
         this.createMappingAction = createMappingAction;
         this.gatewaySnapshotAction = gatewaySnapshotAction;
     }
-
+    // 返回一个ActionFuture，表示对IndicesStatusRequest的请求将异步处理
     @Override public ActionFuture<IndicesStatusResponse> status(IndicesStatusRequest request) {
-        return indicesStatusAction.submit(request);
+        return indicesStatusAction.submit(request); // 提交请求到indicesStatusAction
     }
 
+    // 同样提交IndicesStatusRequest，但提供一个ActionListener来处理结果
     @Override public ActionFuture<IndicesStatusResponse> status(IndicesStatusRequest request, ActionListener<IndicesStatusResponse> listener) {
-        return indicesStatusAction.submit(request, listener);
+        return indicesStatusAction.submit(request, listener); // 提交请求和监听器到indicesStatusAction
     }
 
+    // 直接执行IndicesStatusRequest，使用ActionListener来接收结果
     @Override public void execStatus(IndicesStatusRequest request, ActionListener<IndicesStatusResponse> listener) {
-        indicesStatusAction.execute(request, listener);
+        indicesStatusAction.execute(request, listener); // 直接执行操作并传递监听器
     }
 
+    // 创建索引的异步方法，返回ActionFuture
     @Override public ActionFuture<CreateIndexResponse> create(CreateIndexRequest request) {
-        return createIndexAction.submit(request);
+        return createIndexAction.submit(request); // 提交请求到createIndexAction
     }
 
+    // 创建索引的异步方法，包括ActionListener
     @Override public ActionFuture<CreateIndexResponse> create(CreateIndexRequest request, ActionListener<CreateIndexResponse> listener) {
-        return createIndexAction.submit(request, listener);
+        return createIndexAction.submit(request, listener); // 提交请求和监听器到createIndexAction
     }
 
+    // 直接执行创建索引操作，使用ActionListener
     @Override public void execCreate(CreateIndexRequest request, ActionListener<CreateIndexResponse> listener) {
-        createIndexAction.execute(request, listener);
+        createIndexAction.execute(request, listener); // 直接执行创建索引操作并传递监听器
     }
 
+    // 删除索引的异步方法，返回ActionFuture
     @Override public ActionFuture<DeleteIndexResponse> delete(DeleteIndexRequest request) {
-        return deleteIndexAction.submit(request);
+        return deleteIndexAction.submit(request); // 提交请求到deleteIndexAction
     }
 
+    // 删除索引的异步方法，包括ActionListener
     @Override public ActionFuture<DeleteIndexResponse> delete(DeleteIndexRequest request, ActionListener<DeleteIndexResponse> listener) {
-        return deleteIndexAction.submit(request, listener);
+        return deleteIndexAction.submit(request, listener); // 提交请求和监听器到deleteIndexAction
     }
 
+    // 直接执行删除索引操作，使用ActionListener
     @Override public void execDelete(DeleteIndexRequest request, ActionListener<DeleteIndexResponse> listener) {
-        deleteIndexAction.execute(request, listener);
+        deleteIndexAction.execute(request, listener); // 直接执行删除索引操作并传递监听器
     }
 
+    // 刷新索引的异步方法，返回ActionFuture
     @Override public ActionFuture<RefreshResponse> refresh(RefreshRequest request) {
-        return refreshAction.submit(request);
+        return refreshAction.submit(request); // 提交请求到refreshAction
     }
 
+    // 刷新索引的异步方法，包括ActionListener
     @Override public ActionFuture<RefreshResponse> refresh(RefreshRequest request, ActionListener<RefreshResponse> listener) {
-        return refreshAction.submit(request, listener);
+        return refreshAction.submit(request, listener); // 提交请求和监听器到refreshAction
     }
 
+    // 直接执行刷新索引操作，使用ActionListener
     @Override public void execRefresh(RefreshRequest request, ActionListener<RefreshResponse> listener) {
-        refreshAction.execute(request, listener);
+        refreshAction.execute(request, listener); // 直接执行刷新索引操作并传递监听器
     }
 
+    // 清空索引的异步方法，返回ActionFuture
     @Override public ActionFuture<FlushResponse> flush(FlushRequest request) {
-        return flushAction.submit(request);
+        return flushAction.submit(request); // 提交请求到flushAction
     }
 
+    // 清空索引的异步方法，包括ActionListener
     @Override public ActionFuture<FlushResponse> flush(FlushRequest request, ActionListener<FlushResponse> listener) {
-        return flushAction.submit(request, listener);
+        return flushAction.submit(request, listener); // 提交请求和监听器到flushAction
     }
 
+    // 直接执行清空索引操作，使用ActionListener
     @Override public void execFlush(FlushRequest request, ActionListener<FlushResponse> listener) {
-        flushAction.execute(request, listener);
+        flushAction.execute(request, listener); // 直接执行清空索引操作并传递监听器
     }
 
+    // 创建映射的异步方法，返回ActionFuture
     @Override public ActionFuture<CreateMappingResponse> createMapping(CreateMappingRequest request) {
-        return createMappingAction.submit(request);
+        return createMappingAction.submit(request); // 提交请求到createMappingAction
     }
 
+    // 创建映射的异步方法，包括ActionListener
     @Override public ActionFuture<CreateMappingResponse> createMapping(CreateMappingRequest request, ActionListener<CreateMappingResponse> listener) {
-        return createMapping(request, listener);
+        // 注意：这里方法签名有误，应为createMappingAction.submit(request, listener)
+        return createMapping(request, listener); // 应修改为createMappingAction.submit(request, listener)
     }
 
+    // 直接执行创建映射操作，使用ActionListener
     @Override public void execCreateMapping(CreateMappingRequest request, ActionListener<CreateMappingResponse> listener) {
-        createMappingAction.execute(request, listener);
+        createMappingAction.execute(request, listener); // 直接执行创建映射操作并传递监听器
     }
 
+    // 执行网关快照的异步方法，返回ActionFuture
     @Override public ActionFuture<GatewaySnapshotResponse> gatewaySnapshot(GatewaySnapshotRequest request) {
-        return gatewaySnapshotAction.submit(request);
+        return gatewaySnapshotAction.submit(request); // 提交请求到gatewaySnapshotAction
     }
 
+    // 执行网关快照的异步方法，包括ActionListener
     @Override public ActionFuture<GatewaySnapshotResponse> gatewaySnapshot(GatewaySnapshotRequest request, ActionListener<GatewaySnapshotResponse> listener) {
-        return gatewaySnapshotAction.submit(request, listener);
+        return gatewaySnapshotAction.submit(request, listener); // 提交请求和监听器到gatewaySnapshotAction
     }
 
+    // 直接执行网关快照操作，使用ActionListener
     @Override public void execGatewaySnapshot(GatewaySnapshotRequest request, ActionListener<GatewaySnapshotResponse> listener) {
-        gatewaySnapshotAction.execute(request, listener);
+        gatewaySnapshotAction.execute(request, listener); // 直接执行网关快照操作并传递监听器
     }
 }

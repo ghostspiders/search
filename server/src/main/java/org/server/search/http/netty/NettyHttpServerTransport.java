@@ -61,38 +61,55 @@ import static org.server.search.util.io.HostResolver.*;
  
 public class NettyHttpServerTransport extends AbstractComponent implements HttpServerTransport {
 
+    // 生命周期管理对象，用于管理HTTP服务器的启动、停止等状态
     private final Lifecycle lifecycle = new Lifecycle();
 
+    // 线程池，用于执行HTTP服务器相关的任务
     private final ThreadPool threadPool;
 
+    // 工作线程数量
     private final int workerCount;
 
+    // 用于绑定HTTP服务器的端口号
     private final String port;
 
+    // 用于绑定HTTP服务器的主机地址
     private final String bindHost;
 
+    // 用于发布（即外部访问）的主机地址
     private final String publishHost;
 
+    // 是否启用TCP_NODELAY选项，用于禁用Nagle's算法
     private final Boolean tcpNoDelay;
 
+    // 是否启用TCP_KEEPALIVE选项，用于保持TCP连接活跃
     private final Boolean tcpKeepAlive;
 
+    // 是否重用地址
     private final Boolean reuseAddress;
 
+    // TCP发送缓冲区大小
     private final SizeValue tcpSendBufferSize;
 
+    // TCP接收缓冲区大小
     private final SizeValue tcpReceiveBufferSize;
 
+    // HTTP连接的keep-alive超时时间
     private final TimeValue httpKeepAlive;
 
+    // HTTP keep-alive的心跳检测间隔
     private final TimeValue httpKeepAliveTickDuration;
 
+    // Netty的服务器启动工具，用于初始化和启动服务器
     private volatile ServerBootstrap serverBootstrap;
 
+    // 已绑定的传输地址，存储服务器绑定的地址和端口信息
     private volatile BoundTransportAddress boundAddress;
 
-    private volatile ChannelFuture  serverChannelFuture;
+    // Netty的ChannelFuture，表示服务器Channel的异步操作结果
+    private volatile ChannelFuture serverChannelFuture;
 
+    // HTTP服务器适配器，用于将Netty的事件分派到Elasticsearch的HTTP请求处理逻辑
     private volatile HttpServerAdapter httpServerAdapter;
 
     @Inject public NettyHttpServerTransport(Settings settings, ThreadPool threadPool) {
@@ -123,28 +140,48 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
         this.httpServerAdapter = httpServerAdapter;
     }
 
-    @Override public HttpServerTransport start() throws HttpException {
+    // HttpServerTransport的start方法，用于启动HTTP服务器传输层
+    @Override
+    public HttpServerTransport start() throws HttpException {
         if (!lifecycle.moveToStarted()) {
-            return this;
+            return this; // 如果无法转换到启动状态，则直接返回当前实例
         }
+
+        // 创建Boss线程组，用于接受连接，这里使用单个线程
         EventLoopGroup bossGroup = new NioEventLoopGroup(1, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpBoss")));
+        // 创建Worker线程组，用于处理接受到的连接
         EventLoopGroup workerGroup = new NioEventLoopGroup(4, Executors.newCachedThreadPool(daemonThreadFactory(settings, "httpIoWorker")));
+
+        // 初始化ServerBootstrap，用于启动Netty服务器
         serverBootstrap = new ServerBootstrap();
-        serverBootstrap.group(bossGroup,workerGroup);
-        serverBootstrap.channel(NioServerSocketChannel.class);
-        HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"), httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
+        serverBootstrap.group(bossGroup, workerGroup); // 设置线程组
+        serverBootstrap.channel(NioServerSocketChannel.class); // 设置服务器通道类型为NioServerSocketChannel
+
+        // 创建HTTP Keep-Alive定时器
+        HashedWheelTimer keepAliveTimer = new HashedWheelTimer(daemonThreadFactory(settings, "keepAliveTimer"),
+                httpKeepAliveTickDuration.millis(), TimeUnit.MILLISECONDS);
+
+        // 创建HttpRequestHandler处理器
         HttpRequestHandler requestHandler = new HttpRequestHandler(this);
 
+        // 设置ServerBootstrap的子通道初始化器
         serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
+                // 添加Netty的HTTP请求解码器
                 ch.pipeline().addLast("decoder", new HttpRequestDecoder());
+                // 添加HTTP对象聚合器，用于将多个小块数据合并为一个完整的HTTP请求
                 ch.pipeline().addLast("aggregator", new HttpObjectAggregator(65535));
+                // 添加HTTP响应编码器
                 ch.pipeline().addLast("encoder", new HttpResponseEncoder());
+                // 添加分块写处理器
                 ch.pipeline().addLast("chunked", new ChunkedWriteHandler());
+                // 添加自定义的HttpRequestHandler处理器
                 ch.pipeline().addLast("handler", requestHandler);
             }
         });
+
+        // 设置TCP参数
         if (tcpNoDelay != null) {
             serverBootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay);
         }
@@ -162,20 +199,23 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
             serverBootstrap.childOption(ChannelOption.SO_REUSEADDR, reuseAddress);
         }
 
-        // Bind and start to accept incoming connections.
+        // 绑定并启动服务器以接受传入连接
         InetAddress hostAddressX;
         try {
-            hostAddressX = resultBindHostAddress(bindHost, settings);
+            hostAddressX = resultBindHostAddress(bindHost, settings); // 解析绑定主机地址
         } catch (IOException e) {
             throw new BindHttpException("Failed to resolve host [" + bindHost + "]", e);
         }
         final InetAddress hostAddress = hostAddressX;
 
+        // 端口范围
         PortsRange portsRange = new PortsRange(port);
         final AtomicReference<Exception> lastException = new AtomicReference<Exception>();
         boolean success = portsRange.iterate(new PortsRange.PortCallback() {
-            @Override public boolean onPortNumber(int portNumber) {
+            @Override
+            public boolean onPortNumber(int portNumber) {
                 try {
+                    // 绑定到指定端口并启动服务器
                     serverChannelFuture = serverBootstrap.bind(new InetSocketAddress(hostAddress, portNumber)).sync();
                 } catch (Exception e) {
                     lastException.set(e);
@@ -188,17 +228,14 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
             throw new BindHttpException("Failed to bind to [" + port + "]", lastException.get());
         }
 
+        // 获取绑定的地址
         InetSocketAddress boundAddress = (InetSocketAddress) serverChannelFuture.channel().localAddress();
         InetSocketAddress publishAddress;
         try {
             InetAddress publishAddressX = resultPublishHostAddress(publishHost, settings);
             if (publishAddressX == null) {
-                // if its 0.0.0.0, we can't publish that.., default to the local ip address 
-                if (boundAddress.getAddress().isAnyLocalAddress()) {
-                    publishAddress = new InetSocketAddress(resultPublishHostAddress(publishHost, settings, LOCAL_IP), boundAddress.getPort());
-                } else {
-                    publishAddress = boundAddress;
-                }
+                // 如果发布地址为null，则使用绑定地址
+                publishAddress = boundAddress;
             } else {
                 publishAddress = new InetSocketAddress(publishAddressX, boundAddress.getPort());
             }
@@ -206,7 +243,7 @@ public class NettyHttpServerTransport extends AbstractComponent implements HttpS
             throw new BindTransportException("Failed to resolve publish address", e);
         }
         this.boundAddress = new BoundTransportAddress(new InetSocketTransportAddress(boundAddress), new InetSocketTransportAddress(publishAddress));
-        return this;
+        return this; // 返回当前HttpServerTransport实例
     }
 
     @Override public HttpServerTransport stop() throws SearchException, InterruptedException {

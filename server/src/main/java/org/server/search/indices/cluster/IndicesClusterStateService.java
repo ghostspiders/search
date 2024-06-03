@@ -62,18 +62,25 @@ import static com.google.common.collect.Sets.*;
 
 public class IndicesClusterStateService extends AbstractComponent implements ClusterStateListener, LifecycleComponent<IndicesClusterStateService> {
 
+    // 生命周期管理对象，用于管理服务的启动、停止等状态
     private final Lifecycle lifecycle = new Lifecycle();
 
+    // IndicesService，用于操作和管理索引的服务
     private final IndicesService indicesService;
 
+    // ClusterService，集群服务，用于获取和更新集群状态
     private final ClusterService clusterService;
 
+    // ThreadPool，线程池，用于执行异步任务和并发处理
     private final ThreadPool threadPool;
 
+    // ShardStateAction，分片状态操作，用于处理分片状态变更的逻辑
     private final ShardStateAction shardStateAction;
 
+    // NodeIndexCreatedAction，节点索引创建动作，用于处理索引在节点上创建的事件
     private final NodeIndexCreatedAction nodeIndexCreatedAction;
 
+    // NodeIndexDeletedAction，节点索引删除动作，用于处理索引在节点上删除的事件
     private final NodeIndexDeletedAction nodeIndexDeletedAction;
 
     @Inject public IndicesClusterStateService(Settings settings, IndicesService indicesService, ClusterService clusterService,

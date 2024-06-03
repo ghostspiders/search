@@ -44,24 +44,34 @@ import static org.server.search.util.concurrent.DynamicExecutors.*;
 
 public class DefaultClusterService extends AbstractComponent implements ClusterService {
 
+    // 生命周期管理对象，用于管理服务的启动、停止等状态
     private final Lifecycle lifecycle = new Lifecycle();
 
+    // 超时时间间隔，用于设置各种超时相关的操作
     private final TimeValue timeoutInterval;
 
+    // 线程池，用于执行异步任务和并发处理
     private final ThreadPool threadPool;
 
+    // 服务发现服务，用于处理节点间的发现和通信
     private final DiscoveryService discoveryService;
 
+    // 传输服务，负责节点间的数据传输
     private final TransportService transportService;
 
+    // 用于执行集群状态更新任务的ExecutorService，可能会根据需要进行更新
     private volatile ExecutorService updateTasksExecutor;
 
+    // 集群状态监听器列表，用于在集群状态发生变化时进行通知
     private final List<ClusterStateListener> clusterStateListeners = new CopyOnWriteArrayList<ClusterStateListener>();
 
+    // 集群状态超时监听器列表，用于处理集群状态超时事件
     private final List<TimeoutHolder> clusterStateTimeoutListeners = new CopyOnWriteArrayList<TimeoutHolder>();
 
+    // 计划执行的任务，例如定期检查集群状态的变更
     private volatile ScheduledFuture scheduledFuture;
 
+    // 当前的集群状态，初始时通过newClusterStateBuilder().build()创建
     private volatile ClusterState clusterState = newClusterStateBuilder().build();
 
     @Inject public DefaultClusterService(Settings settings, DiscoveryService discoveryService, TransportService transportService, ThreadPool threadPool) {
@@ -146,26 +156,38 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
         clusterStateTimeoutListeners.remove(new TimeoutHolder(listener, -1, null));
     }
 
+    // 提交一个集群状态更新任务
     public void submitStateUpdateTask(final String source, final ClusterStateUpdateTask updateTask) {
+        // 检查服务是否已启动，如果没有，则直接返回
         if (!lifecycle.started()) {
             return;
         }
+        // 在updateTasksExecutor线程池中执行更新任务
         updateTasksExecutor.execute(new Runnable() {
             @Override public void run() {
+                // 再次检查服务是否已启动，如果没有，则直接返回
                 if (!lifecycle.started()) {
                     return;
                 }
+                // 记录旧的集群状态
                 ClusterState previousClusterState = clusterState;
+
+                // 执行更新任务，获取新的集群状态
                 clusterState = updateTask.execute(previousClusterState);
+
+                // 如果集群状态发生了变化
                 if (previousClusterState != clusterState) {
+                    // 如果是主节点，控制版本号的递增
                     if (clusterState.nodes().localNodeMaster()) {
-                        // only the master controls the version numbers
                         clusterState = newClusterStateBuilder().state(clusterState).incrementVersion().build();
                     }
 
+                    // 如果启用了调试日志，记录集群状态更新信息
                     if (logger.isDebugEnabled()) {
                         logger.debug("Cluster state updated, version [{}], source [{}]", clusterState.version(), source);
                     }
+
+                    // 如果启用了跟踪日志，打印详细的集群状态信息
                     if (logger.isTraceEnabled()) {
                         StringBuilder sb = new StringBuilder("Cluster State:\n");
                         sb.append(clusterState.nodes().prettyPrint());
@@ -174,8 +196,10 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
                         logger.trace(sb.toString());
                     }
 
+                    // 创建集群状态变更事件
                     ClusterChangedEvent clusterChangedEvent = new ClusterChangedEvent(source, clusterState, previousClusterState, discoveryService.firstMaster());
-                    // new cluster state, notify all listeners
+
+                    // 检查是否有节点变化，并在有变化时记录日志
                     final Nodes.Delta nodesDelta = clusterChangedEvent.nodesDelta();
                     if (nodesDelta.hasChanges() && logger.isInfoEnabled()) {
                         String summary = nodesDelta.shortSummary();
@@ -184,30 +208,36 @@ public class DefaultClusterService extends AbstractComponent implements ClusterS
                         }
                     }
 
+                    // 在线程池中执行，处理节点添加逻辑
                     threadPool.execute(new Runnable() {
                         @Override public void run() {
                             transportService.nodesAdded(nodesDelta.addedNodes());
                         }
                     });
 
+                    // 通知所有集群状态超时监听器集群状态已变更
                     for (TimeoutHolder timeoutHolder : clusterStateTimeoutListeners) {
                         timeoutHolder.listener.clusterChanged(clusterChangedEvent);
                     }
+
+                    // 通知所有集群状态监听器集群状态已变更
                     for (ClusterStateListener listener : clusterStateListeners) {
                         listener.clusterChanged(clusterChangedEvent);
                     }
 
+                    // 在线程池中执行，处理节点移除逻辑
                     threadPool.execute(new Runnable() {
                         @Override public void run() {
                             transportService.nodesRemoved(nodesDelta.removedNodes());
                         }
                     });
 
-                    // if we are the master, publish the new state to all nodes
+                    // 如果是主节点，发布新的集群状态到所有节点
                     if (clusterState.nodes().localNodeMaster()) {
                         discoveryService.publish(clusterState);
                     }
 
+                    // 如果更新任务是ProcessedClusterStateUpdateTask的实例，执行额外的处理
                     if (updateTask instanceof ProcessedClusterStateUpdateTask) {
                         ((ProcessedClusterStateUpdateTask) updateTask).clusterStateProcessed(clusterState);
                     }
