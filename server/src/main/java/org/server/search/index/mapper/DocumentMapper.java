@@ -27,50 +27,61 @@ import org.server.search.util.concurrent.ThreadSafe;
 @ThreadSafe
 public interface DocumentMapper {
 
+    // 获取文档的类型
     String type();
 
     /**
-     * When constructed by parsing a mapping definition, will return it. Otherwise,
-     * returns <tt>null</tt>.
+     * 如果是通过解析映射定义构建的，则返回它。否则，返回null。
      */
     String mappingSource();
 
+    // 获取用于处理文档唯一标识符的字段映射器
     UidFieldMapper uidMapper();
 
+    // 获取用于处理文档ID的字段映射器
     IdFieldMapper idMapper();
 
+    // 获取用于处理文档类型的字段映射器
     TypeFieldMapper typeMapper();
 
+    // 获取用于处理文档源的字段映射器
     SourceFieldMapper sourceMapper();
 
+    // 获取用于处理文档提升因子的字段映射器
     BoostFieldMapper boostMapper();
 
+    // 获取所有文档字段映射器的集合
     DocumentFieldMappers mappers();
 
     /**
-     * The default index analyzer to be used. Note, the {@link DocumentFieldMappers#indexAnalyzer()} should
-     * probably be used instead.
+     * 获取默认的索引分析器。
+     * 注意，应该使用DocumentFieldMappers#indexAnalyzer()代替。
      */
     Analyzer indexAnalyzer();
 
     /**
-     * The default search analyzer to be used. Note, the {@link DocumentFieldMappers#searchAnalyzer()} should
-     * probably be used instead.
+     * 获取默认的搜索分析器。
+     * 注意，应该使用DocumentFieldMappers#searchAnalyzer()代替。
      */
     Analyzer searchAnalyzer();
 
     /**
-     * Parses the source into a parsed document.
-     * <p/>
-     * <p>Validates that the source has the provided id and type. Note, most times
-     * we will already have the id and the type even though they exist in the source as well.
+     * 将源数据解析为解析后的文档。
+     * <p>
+     * 验证源数据是否具有提供的类型和ID。
+     * 注意，大多数时候我们已经有ID和类型，即使它们也存在于源数据中。
      */
     ParsedDocument parse(@Nullable String type, @Nullable String id, String source) throws MapperParsingException;
 
     /**
-     * Parses the source into the parsed document.
+     * 将源数据解析为解析后的文档。
      */
     ParsedDocument parse(String source) throws MapperParsingException;
 
+    /**
+     * 添加字段映射器监听器。
+     * @param fieldMapperListener 要添加的监听器
+     * @param includeExisting 是否包括现有的字段映射器
+     */
     void addFieldMapperListener(FieldMapperListener fieldMapperListener, boolean includeExisting);
 }

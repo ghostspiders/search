@@ -124,18 +124,22 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
         }
     }
 
-    @Override public void clusterChanged(final ClusterChangedEvent event) {
+    @Override
+    public void clusterChanged(final ClusterChangedEvent event) {
+        // 如果不允许对索引进行更改，则直接返回
         if (!indicesService.changesAllowed())
             return;
 
         MetaData metaData = event.state().metaData();
-        // first, go over and create and indices that needs to be created
+        // 首先，遍历所有需要创建的索引并创建它们
         for (final IndexMetaData indexMetaData : metaData) {
             if (!indicesService.hasIndex(indexMetaData.index())) {
+                // 如果索引不存在，则创建它
                 if (logger.isDebugEnabled()) {
                     logger.debug("Index [{}]: Creating", indexMetaData.index());
                 }
                 indicesService.createIndex(indexMetaData.index(), indexMetaData.settings(), event.state().nodes().localNode().id());
+                // 在单独的线程中触发节点索引创建的回调
                 threadPool.execute(new Runnable() {
                     @Override public void run() {
                         nodeIndexCreatedAction.nodeIndexCreated(indexMetaData.index(), event.state().nodes().localNodeId());
@@ -144,38 +148,42 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
             }
         }
 
+        // 获取路由表
         RoutingTable routingTable = event.state().routingTable();
 
+        // 获取本地节点的路由节点信息
         RoutingNode routingNodes = event.state().routingNodes().nodesToShards().get(event.state().nodes().localNodeId());
         if (routingNodes != null) {
+            // 应用路由节点和路由表的更改
             applyShards(routingNodes, routingTable, event.state().nodes());
         }
 
-        // go over and update mappings
+        // 遍历所有索引的元数据，更新映射
         for (IndexMetaData indexMetaData : metaData) {
             if (!indicesService.hasIndex(indexMetaData.index())) {
-                // we only create / update here
+                // 如果索引服务中没有这个索引，跳过映射更新
                 continue;
             }
             String index = indexMetaData.index();
             IndexService indexService = indicesService.indexServiceSafe(index);
             MapperService mapperService = indexService.mapperService();
             ImmutableMap<String, String> mappings = indexMetaData.mappings();
-            // we don't support removing mappings for now ...
+            // 目前不支持删除映射
             for (Map.Entry<String, String> entry : mappings.entrySet()) {
                 String mappingType = entry.getKey();
                 String mappingSource = entry.getValue();
 
                 try {
+                    // 如果映射类型不存在，则添加映射
                     if (!mapperService.hasMapping(mappingType)) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Index [" + index + "] Adding mapping [" + mappingType + "], source [" + mappingSource + "]");
                         }
                         mapperService.add(mappingType, mappingSource);
                     } else {
+                        // 如果映射已存在但源不匹配，则更新映射
                         DocumentMapper existingMapper = mapperService.documentMapper(mappingType);
                         if (!mappingSource.equals(existingMapper.mappingSource())) {
-                            // mapping changed, update it
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Index [" + index + "] Updating mapping [" + mappingType + "], source [" + mappingSource + "]");
                             }
@@ -183,25 +191,28 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
                         }
                     }
                 } catch (Exception e) {
+                    // 如果添加映射失败，记录警告
                     logger.warn("Failed to add mapping [" + mappingType + "], source [" + mappingSource + "]", e);
                 }
             }
         }
 
-        // go over and delete either all indices or specific shards
+        // 遍历所有索引服务中的索引，删除那些在元数据中不存在的索引或特定分片
         for (final String index : indicesService.indices()) {
             if (metaData.index(index) == null) {
+                // 如果元数据中没有这个索引，则删除它
                 if (logger.isDebugEnabled()) {
                     logger.debug("Index [{}]: Deleting", index);
                 }
                 indicesService.deleteIndex(index);
+                // 在单独的线程中触发节点索引删除的回调
                 threadPool.execute(new Runnable() {
                     @Override public void run() {
                         nodeIndexDeletedAction.nodeIndexDeleted(index, event.state().nodes().localNodeId());
                     }
                 });
             } else if (routingNodes != null) {
-                // now, go over and delete shards that needs to get deleted
+                // 如果路由节点信息不为空，删除那些在新的路由节点信息中不存在的分片
                 Set<Integer> newShardIds = newHashSet();
                 for (final ShardRouting shardRouting : routingNodes) {
                     if (shardRouting.index().equals(index)) {
@@ -214,6 +225,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
                 }
                 for (Integer existingShardId : indexService.shardIds()) {
                     if (!newShardIds.contains(existingShardId)) {
+                        // 如果现有的分片ID不在新的分片ID集合中，则删除该分片
                         if (logger.isDebugEnabled()) {
                             logger.debug("Index [{}]: Deleting shard [{}]", index, existingShardId);
                         }
@@ -225,39 +237,52 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
     }
 
     private void applyShards(final RoutingNode routingNodes, final RoutingTable routingTable, final Nodes nodes) throws SearchException {
+        // 如果不允许对索引进行更改，则直接返回
         if (!indicesService.changesAllowed())
             return;
 
+        // 遍历路由节点中所有的分片路由
         for (final ShardRouting shardRouting : routingNodes) {
+            // 安全地获取当前分片所属的索引服务
             final IndexService indexService = indicesService.indexServiceSafe(shardRouting.index());
 
+            // 获取当前分片的ID
             final int shardId = shardRouting.id();
 
+            // 如果索引服务中不存在该分片，并且集群主节点认为该分片已启动，则记录错误并标记分片为失败
             if (!indexService.hasShard(shardId) && shardRouting.started()) {
-                // the master thinks we are started, but we don't have this shard at all, mark it as failed
-                logger.warn("[" + shardRouting.index() + "][" + shardRouting.shardId().id() + "] Master " + nodes.masterNode() + " marked shard as started, but shard have not been created, mark shard as failed");
+                logger.warn("[" + shardRouting.index() + "][" + shardRouting.shardId().id() + "] Master " + nodes.masterNode() +
+                        " marked shard as started, but shard have not been created, mark shard as failed");
                 shardStateAction.shardFailed(shardRouting);
                 continue;
             }
 
+            // 如果索引服务中存在该分片
             if (indexService.hasShard(shardId)) {
+                // 将索引服务的分片转换为InternalIndexShard类型
                 InternalIndexShard indexShard = (InternalIndexShard) indexService.shard(shardId);
+                // 如果当前分片路由与索引分片的路由不一致
                 if (!shardRouting.equals(indexShard.routingEntry())) {
+                    // 更新索引分片的路由
                     indexShard.routingEntry(shardRouting);
+                    // 通知分片网关服务路由状态已改变
                     indexService.shardInjector(shardId).getInstance(IndexShardGatewayService.class).routingStateChanged();
                 }
             }
 
+            // 如果分片处于初始化状态
             if (shardRouting.initializing()) {
+                // 应用初始化分片的逻辑
                 applyInitializingShard(routingTable, nodes, shardRouting);
             }
         }
     }
 
     private void applyInitializingShard(final RoutingTable routingTable, final Nodes nodes, final ShardRouting shardRouting) throws SearchException {
+        // 安全地获取当前分片所属的索引服务
         final IndexService indexService = indicesService.indexServiceSafe(shardRouting.index());
         final int shardId = shardRouting.id();
-
+        // 如果索引服务中存在该分片
         if (indexService.hasShard(shardId)) {
             IndexShard indexShard = indexService.shardSafe(shardId);
             if (indexShard.state() == IndexShardState.STARTED) {
@@ -274,7 +299,7 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
                 }
             }
         }
-        // if there is no shard, create it
+        // 如果没有分片，则创建它
         if (!indexService.hasShard(shardId)) {
             try {
                 if (logger.isDebugEnabled()) {
@@ -296,13 +321,13 @@ public class IndicesClusterStateService extends AbstractComponent implements Clu
             }
         }
         final InternalIndexShard indexShard = (InternalIndexShard) indexService.shardSafe(shardId);
-
+        // 如果分片忽略恢复尝试，则直接返回
         if (indexShard.ignoreRecoveryAttempt()) {
             // we are already recovering (we can get to this state since the cluster event can happen several
             // times while we recover)
             return;
         }
-
+        // 在线程池中执行恢复逻辑
         threadPool.execute(new Runnable() {
             @Override public void run() {
                 // recheck here, since the cluster event can be called

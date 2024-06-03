@@ -34,44 +34,59 @@ import java.io.IOException;
 @IndexShardLifecycle
 @ThreadSafe
 public interface IndexShard extends IndexShardComponent {
-
+    // 返回当前分片的路由入口信息
     ShardRouting routingEntry();
 
+    // 返回当前分片的状态
     IndexShardState state();
 
     /**
-     * Returns the estimated flushable memory size. Returns <tt>null</tt> if not available.
+     * 返回估计的可刷新到磁盘的内存中数据的大小。
+     * 如果该信息不可用，则返回null。
      */
     SizeValue estimateFlushableMemorySize() throws SearchException;
 
+    // 创建一个新文档，指定类型、ID和文档源数据
     void create(String type, String id, String source) throws SearchException;
 
+    // 索引一个文档，指定类型、ID和文档源数据
     void index(String type, String id, String source) throws SearchException;
 
+    // 根据类型和ID删除文档
     void delete(String type, String id);
 
+    // 根据Term（可能是类型和ID的组合）删除文档
     void delete(Term uid);
 
+    // 根据查询源和文档类型执行删除操作
     void deleteByQuery(String querySource, @Nullable String queryParserName, String... types) throws SearchException;
 
+    // 根据类型和ID获取文档源数据
     String get(String type, String id) throws SearchException;
 
+    // 根据查询源、最小分数、查询解析器名称和文档类型执行计数操作
     long count(float minScore, String querySource, @Nullable String queryParserName, String... types) throws SearchException;
 
+    // 刷新分片，可选地等待所有索引操作完成
     void refresh(boolean waitForOperations) throws SearchException, IOException;
 
+    // 将内存中的数据刷新到磁盘
     void flush() throws SearchException;
 
+    // 对分片进行快照操作
     void snapshot(Engine.SnapshotHandler snapshotHandler) throws EngineException;
 
+    // 恢复分片
     void recover(Engine.RecoveryHandler recoveryHandler) throws EngineException;
 
+    // 获取用于搜索的搜索引擎对象
     Engine.Searcher searcher();
 
+    // 关闭分片
     void close();
 
     /**
-     * Returns <tt>true</tt> if this shard can ignore a recovery attempt made to it (since the already doing/done it)
+     * 如果分片可以忽略恢复尝试（因为已经在恢复或已完成），则返回true。
      */
     public boolean ignoreRecoveryAttempt();
 }

@@ -60,20 +60,28 @@ import static org.server.search.util.MapBuilder.*;
 @IndexLifecycle
 public class InternalIndexService extends AbstractIndexComponent implements IndexService {
 
+    // 注入器，用于创建类的实例
     private final Injector injector;
 
+    // 索引的设置
     private final Settings indexSettings;
 
+    // 映射服务，用于处理文档映射
     private final MapperService mapperService;
 
+    // 查询解析服务，用于解析查询
     private final IndexQueryParserService queryParserService;
 
+    // 相似度服务，用于管理不同的相似度算法
     private final SimilarityService similarityService;
 
+    // 操作路由，用于确定操作应该在哪些分片上执行
     private final OperationRouting operationRouting;
 
+    // 每个分片的注入器，不可变Map
     private volatile ImmutableMap<Integer, Injector> shardsInjectors = ImmutableMap.of();
 
+    // 所有分片的映射，不可变Map
     private volatile ImmutableMap<Integer, IndexShard> shards = ImmutableMap.of();
 
     @Inject public InternalIndexService(Injector injector, Index index, @IndexSettings Settings indexSettings,
@@ -153,7 +161,7 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
         }
         return shardInjector;
     }
-
+    // 创建一个新的分片
     @Override public synchronized IndexShard createShard(int sShardId) throws SearchException {
         ShardId shardId = new ShardId(index, sShardId);
         if (shardsInjectors.containsKey(shardId.id())) {
@@ -188,11 +196,12 @@ public class InternalIndexService extends AbstractIndexComponent implements Inde
 
         return indexShard;
     }
-
+    // 删除指定分片ID的分片
     @Override public synchronized void deleteShard(int shardId) throws SearchException {
         deleteShard(shardId, false);
     }
 
+    // 删除分片的私有方法，带有是否关闭的标志
     private synchronized void deleteShard(int shardId, boolean close) throws SearchException {
         Map<Integer, Injector> tmpShardInjectors = newHashMap(shardsInjectors);
         Injector shardInjector = tmpShardInjectors.remove(shardId);
