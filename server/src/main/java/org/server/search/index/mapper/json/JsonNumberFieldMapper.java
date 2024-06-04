@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.SortField;
 import org.server.search.util.gnu.trove.TIntObjectHashMap;
 
@@ -35,7 +36,7 @@ public abstract class JsonNumberFieldMapper<T extends Number> extends JsonFieldM
 
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final int PRECISION_STEP = 4;
-        public static final FieldType INDEX = new FieldType();
+        public static final FieldType INDEX = TextField.TYPE_STORED;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
     }

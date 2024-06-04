@@ -22,6 +22,7 @@ package org.server.search.index.mapper.json;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.FloatRangeDocValuesField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import com.fasterxml.jackson.core.JsonToken;
@@ -36,7 +37,7 @@ public class JsonBoostFieldMapper extends JsonNumberFieldMapper<Float> implement
     public static class Defaults extends JsonNumberFieldMapper.Defaults {
         public static final String NAME = "_boost";
         public static final Float NULL_VALUE = null;
-        public static final FieldType INDEX = new FieldType();
+        public static final FieldType INDEX = TextField.TYPE_STORED;
         public static final Field.Store STORE = Field.Store.NO;
     }
 

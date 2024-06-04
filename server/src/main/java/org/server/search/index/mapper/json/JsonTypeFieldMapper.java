@@ -22,6 +22,7 @@ package org.server.search.index.mapper.json;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.server.search.index.mapper.TypeFieldMapper;
@@ -35,7 +36,7 @@ public class JsonTypeFieldMapper extends JsonFieldMapper<String> implements Type
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_type";
         public static final String INDEX_NAME = "_type";
-        public static final FieldType INDEX = new FieldType();
+        public static final FieldType INDEX = TextField.TYPE_STORED;
         public static final Field.Store STORE = Field.Store.NO;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;

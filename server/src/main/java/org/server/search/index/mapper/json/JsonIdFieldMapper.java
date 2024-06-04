@@ -22,6 +22,7 @@ package org.server.search.index.mapper.json;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexableField;
 import org.server.search.index.mapper.FieldMapperListener;
 import org.server.search.index.mapper.IdFieldMapper;
@@ -36,7 +37,7 @@ public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFiel
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_id";
         public static final String INDEX_NAME = "_id";
-        public static final FieldType INDEX = new FieldType();
+        public static final FieldType INDEX = TextField.TYPE_STORED;
         public static final Field.Store STORE = Field.Store.NO;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;

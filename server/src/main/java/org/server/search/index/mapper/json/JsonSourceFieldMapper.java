@@ -36,7 +36,7 @@ public class JsonSourceFieldMapper extends JsonFieldMapper<String> implements So
     public static class Defaults extends JsonFieldMapper.Defaults {
         public static final String NAME = "_source";
         public static final boolean ENABLED = true;
-        public static final FieldType INDEX = new FieldType();
+        public static final FieldType INDEX = TextField.TYPE_STORED;
         public static final Field.Store STORE = Field.Store.YES;
         public static final boolean OMIT_NORMS = true;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = true;
