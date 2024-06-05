@@ -18,7 +18,6 @@
  */
 
 package org.server.search.util.lucene;
-
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
@@ -31,145 +30,257 @@ import org.server.search.util.gnu.trove.TIntArrayList;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Lucene {
 
+    /**
+     * 使用StandardAnalyzer创建的分析器实例，用于处理文本的分词。
+     * StandardAnalyzer是Lucene的标准分析器，适用于大多数文本分析场景。
+     * 它是公开的（public）、静态的（static）、并且是最终的（final），意味着这个实例在初始化后不能被修改。
+     */
     public static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer();
+
+    /**
+     * 使用KeywordAnalyzer创建的分析器实例，用于处理不进行分词的文本。
+     * KeywordAnalyzer通常用于索引那些需要精确匹配的字段，如关键字或ID。
+     * 它是公开的（public）、静态的（static）、并且是最终的（final），确保这个实例在使用过程中保持不变。
+     */
     public static final KeywordAnalyzer KEYWORD_ANALYZER = new KeywordAnalyzer();
 
     public static final int NO_DOC = -1;
 
+    /**
+     * 使用给定的查询和最小分数条件来计数匹配的文档数量。
+     *
+     * @param searcher Lucene的IndexSearcher对象，用于执行搜索操作。
+     * @param query Lucene的Query对象，定义了搜索条件。
+     * @param minScore 只有得分高于这个值的文档才会被计入总数。
+     * @return 满足查询条件并且得分高于minScore的文档数量。
+     * @throws IOException 如果搜索过程中发生I/O错误。
+     */
     public static long count(IndexSearcher searcher, Query query, float minScore) throws IOException {
+        // 创建一个CountCollector实例，用于收集得分高于minScore的文档
         CountCollector countCollector = new CountCollector(minScore);
+
+        // 使用searcher执行查询，并将countCollector作为Collector传入
         searcher.search(query, countCollector);
+
+        // 从countCollector获取计数结果并返回
         return countCollector.count();
     }
 
+    /**
+     * 根据给定的术语（Term）在索引中查找第一个匹配的文档ID。
+     *
+     * @param reader Lucene的IndexReader对象，用于读取索引数据。
+     * @param term 要搜索的术语。
+     * @return 如果找到匹配的文档，则返回该文档的ID；如果没有找到，则返回NO_DOC（-1）。
+     * @throws IOException 如果读取索引时发生I/O错误。
+     */
     public static int docId(IndexReader reader, Term term) throws IOException {
-            return NO_DOC;
-    }
-
-    public static TIntArrayList docIds(IndexReader reader, Term term, int expectedSize) throws IOException {
-        TIntArrayList list = new TIntArrayList(expectedSize);
-        return list;
+        // 创建TermDocs对象，用于迭代与术语匹配的文档
+        TermDocs termDocs = reader.termDocs(term);
+        try {
+            // 尝试找到第一个匹配的文档
+            if (termDocs.next()) {
+                return termDocs.doc(); // 返回当前匹配文档的ID
+            }
+            return NO_DOC; // 没有找到匹配的文档，返回-1
+        } finally {
+            termDocs.close(); // 确保在方法结束时关闭TermDocs资源
+        }
     }
 
     /**
-     * Closes the index reader, returning <tt>false</tt> if it failed to close.
+     * 根据给定的术语（Term）在索引中查找所有匹配的文档ID列表。
+     *
+     * @param reader Lucene的IndexReader对象，用于读取索引数据。
+     * @param term 要搜索的术语。
+     * @param expectedSize 预期的文档数量，用于初始化返回列表的初始容量。
+     * @return 包含所有匹配文档ID的TIntArrayList列表。
+     * @throws IOException 如果读取索引时发生I/O错误。
+     */
+    public static TIntArrayList docIds(IndexReader reader, Term term, int expectedSize) throws IOException {
+        // 创建TermDocs对象，用于迭代与术语匹配的文档
+        TermDocs termDocs = reader.termDocs(term);
+        TIntArrayList list = new TIntArrayList(expectedSize); // 创建一个可扩展的整型数组列表
+        try {
+            // 迭代所有匹配的文档，并添加它们的ID到列表中
+            while (termDocs.next()) {
+                list.add(termDocs.doc());
+            }
+        } finally {
+            termDocs.close(); // 确保在方法结束时关闭TermDocs资源
+        }
+        return list; // 返回包含所有文档ID的列表
+    }
+
+    /**
+     * 安全关闭提供的IndexReader实例。
+     * 如果IndexReader为null，则认为已经关闭，返回true。
+     * 如果关闭过程中发生IOException，则返回false，表示关闭失败。
+     *
+     * @param reader 需要关闭的IndexReader实例。
+     * @return 如果IndexReader成功关闭或为null，则返回true；否则返回false。
      */
     public static boolean safeClose(IndexReader reader) {
         if (reader == null) {
-            return true;
+            return true; // 如果reader为null，认为它已经关闭
         }
         try {
-            reader.close();
-            return true;
+            reader.close(); // 尝试关闭reader
+            return true; // 关闭成功
         } catch (IOException e) {
-            return false;
+            return false; // 捕获IOException，关闭失败
         }
     }
 
     /**
-     * Closes the index writer, returning <tt>false</tt> if it failed to close.
+     * 安全关闭提供的IndexWriter实例。
+     * 如果IndexWriter为null，则认为已经关闭，返回true。
+     * 如果关闭过程中发生IOException，则返回false，表示关闭失败。
+     *
+     * @param writer 需要关闭的IndexWriter实例。
+     * @return 如果IndexWriter成功关闭或为null，则返回true；否则返回false。
      */
     public static boolean safeClose(IndexWriter writer) {
         if (writer == null) {
-            return true;
+            return true; // 如果writer为null，认为它已经关闭
         }
         try {
-            writer.close();
-            return true;
+            writer.close(); // 尝试关闭writer
+            return true; // 关闭成功
         } catch (IOException e) {
-            return false;
+            return false; // 捕获IOException，关闭失败
         }
     }
 
+    /**
+     * 从DataInput流中读取TopDocs对象。
+     *
+     * @param in DataInput流，包含序列化的TopDocs数据。
+     * @return 根据输入流中的数据构造的TopDocs对象。
+     * @throws IOException 如果读取数据时发生I/O异常。
+     */
     public static TopDocs readTopDocs(DataInput in) throws IOException {
+        // 检查是否存在文档
         if (!in.readBoolean()) {
-            // no docs
+            // 没有文档，返回null
             return null;
         }
-        if (in.readBoolean()) {
-            int totalHit = in.readInt();
-            TotalHits totalHits = new TotalHits(totalHit, TotalHits.Relation.EQUAL_TO);
-            float maxScore = in.readFloat();
 
-            SortField[] fields = new SortField[in.readInt()];
-            for (int i = 0; i < fields.length; i++) {
-                fields[i] = new SortField(in.readUTF(), SortField.Type.DOC, in.readBoolean());
+        // 读取是否包含排序字段的标志
+        boolean hasSort = in.readBoolean();
+        int totalHits = in.readInt();  // 读取总的命中数量
+        float maxScore = in.readFloat();  // 读取最高得分
+
+        SortField[] fields = null;
+        FieldDoc[] fieldDocs = null;
+        if (hasSort) {
+            // 如果包含排序字段，则读取排序字段信息
+            int fieldCount = in.readInt();
+            fields = new SortField[fieldCount];
+            for (int i = 0; i < fieldCount; i++) {
+                String fieldname = in.readUTF();  // 读取字段名称
+                int type = in.readInt();         // 读取字段类型
+                boolean reverse = in.readBoolean();  // 读取是否逆序排序
+                fields[i] = new SortField(fieldname, type, reverse);
             }
 
-            FieldDoc[] fieldDocs = new FieldDoc[in.readInt()];
-            for (int i = 0; i < fieldDocs.length; i++) {
-                Comparable[] cFields = new Comparable[in.readInt()];
-                for (int j = 0; j < cFields.length; j++) {
-                    byte type = in.readByte();
-                    if (type == 0) {
-                        cFields[j] = in.readUTF();
-                    } else if (type == 1) {
-                        cFields[j] = in.readInt();
-                    } else if (type == 2) {
-                        cFields[j] = in.readLong();
-                    } else if (type == 3) {
-                        cFields[j] = in.readFloat();
-                    } else if (type == 4) {
-                        cFields[j] = in.readDouble();
-                    } else if (type == 5) {
-                        cFields[j] = in.readByte();
-                    } else {
-                        throw new IOException("Can't match type [" + type + "]");
+            // 读取排序字段的文档信息
+            int docCount = in.readInt();
+            fieldDocs = new FieldDoc[docCount];
+            for (int i = 0; i < docCount; i++) {
+                int fieldLength = in.readInt();  // 读取当前文档的排序字段数量
+                Comparable[] cFields = new Comparable[fieldLength];
+                for (int j = 0; j < fieldLength; j++) {
+                    byte type = in.readByte();  // 读取字段值的类型
+                    switch (type) {
+                        case 0:
+                            cFields[j] = in.readUTF();
+                            break;
+                        case 1:
+                            cFields[j] = in.readInt();
+                            break;
+                        case 2:
+                            cFields[j] = in.readLong();
+                            break;
+                        case 3:
+                            cFields[j] = in.readFloat();
+                            break;
+                        case 4:
+                            cFields[j] = in.readDouble();
+                            break;
+                        case 5:
+                            cFields[j] = in.readByte();
+                            break;
+                        default:
+                            throw new IOException("Can't match type [" + type + "]");
                     }
                 }
-                fieldDocs[i] = new FieldDoc(in.readInt(), in.readFloat(), cFields);
+                int docID = in.readInt();
+                float score = in.readFloat();
+                fieldDocs[i] = new FieldDoc(docID, score, cFields);
             }
-
-            return new TopFieldDocs(totalHits, fieldDocs, fields);
+            return new TopFieldDocs(totalHits, fieldDocs, fields, maxScore);
         } else {
-            int totalHit = in.readInt();
-            TotalHits totalHits = new TotalHits(totalHit, TotalHits.Relation.EQUAL_TO);
-
-            float maxScore = in.readFloat();
-
-            ScoreDoc[] scoreDocs = new ScoreDoc[in.readInt()];
-            for (int i = 0; i < scoreDocs.length; i++) {
-                scoreDocs[i] = new ScoreDoc(in.readInt(), in.readFloat());
+            // 如果不包含排序字段，则只读取得分和文档ID
+            ScoreDoc[] scoreDocs = new ScoreDoc[totalHits];
+            for (int i = 0; i < totalHits; i++) {
+                int docID = in.readInt();
+                float score = in.readFloat();
+                scoreDocs[i] = new ScoreDoc(docID, score);
             }
-            return new TopDocs(totalHits, scoreDocs);
+            return new TopDocs(totalHits, scoreDocs, maxScore);
         }
     }
 
+    /**
+     * 将TopDocs对象写入到DataOutput流中。
+     *
+     * @param out DataOutput流，用于写入TopDocs数据。
+     * @param topDocs 要写入的TopDocs对象。
+     * @param from 从哪个索引开始写入文档，用于分页或限制输出数量。
+     * @throws IOException 如果写入数据时发生I/O异常。
+     */
     public static void writeTopDocs(DataOutput out, TopDocs topDocs, int from) throws IOException {
+        // 检查是否有文档可写入
         if (topDocs.scoreDocs.length - from < 0) {
-            out.writeBoolean(false);
+            out.writeBoolean(false); // 没有可写入的文档
             return;
         }
-        out.writeBoolean(true);
+        out.writeBoolean(true); // 标记有文档数据
+
+        // 检查是否为TopFieldDocs类型，即是否包含排序字段
         if (topDocs instanceof TopFieldDocs) {
-            out.writeBoolean(true);
+            out.writeBoolean(true); // 标记包含排序字段
             TopFieldDocs topFieldDocs = (TopFieldDocs) topDocs;
 
-            out.writeLong(topDocs.totalHits.value);
-            out.writeFloat(topDocs.scoreDocs[0].score);
+            // 写入总的命中数量和最高得分
+            out.writeInt(topDocs.totalHits);
+            out.writeFloat(topDocs.getMaxScore());
 
+            // 写入排序字段信息
             out.writeInt(topFieldDocs.fields.length);
             for (SortField sortField : topFieldDocs.fields) {
-                out.writeUTF(sortField.getField());
-                out.writeUTF(sortField.getType().name());
-                out.writeBoolean(sortField.getReverse());
+                out.writeUTF(sortField.getField()); // 排序字段名称
+                out.writeInt(sortField.getType()); // 排序字段类型
+                out.writeBoolean(sortField.getReverse()); // 是否逆序排序
             }
 
+            // 写入文档信息，但不包括from之前的结果
             out.writeInt(topDocs.scoreDocs.length - from);
             int index = 0;
             for (ScoreDoc doc : topFieldDocs.scoreDocs) {
                 if (index++ < from) {
-                    continue;
+                    continue; // 跳过from之前的结果
                 }
                 FieldDoc fieldDoc = (FieldDoc) doc;
+                // 写入文档的排序字段值
                 out.writeInt(fieldDoc.fields.length);
-                for (Object field : fieldDoc.fields) {
+                for (Comparable field : fieldDoc.fields) {
+                    // 根据字段值的类型写入不同的数据
                     Class type = field.getClass();
                     if (type == String.class) {
                         out.write(0);
@@ -194,20 +305,25 @@ public class Lucene {
                     }
                 }
 
+                // 写入文档ID和得分
                 out.writeInt(doc.doc);
                 out.writeFloat(doc.score);
             }
         } else {
-            out.writeBoolean(false);
-            out.writeLong(topDocs.totalHits.value);
-            out.writeFloat(topDocs.scoreDocs[0].score);
+            // 如果不是TopFieldDocs类型，则不包含排序字段
+            out.writeBoolean(false); // 标记不包含排序字段
+            // 写入总的命中数量和最高得分
+            out.writeInt(topDocs.totalHits);
+            out.writeFloat(topDocs.getMaxScore());
 
+            // 写入文档信息，但不包括from之前的结果
             out.writeInt(topDocs.scoreDocs.length - from);
             int index = 0;
             for (ScoreDoc doc : topDocs.scoreDocs) {
                 if (index++ < from) {
-                    continue;
+                    continue; // 跳过from之前的结果
                 }
+                // 写入文档ID和得分
                 out.writeInt(doc.doc);
                 out.writeFloat(doc.score);
             }
@@ -217,18 +333,18 @@ public class Lucene {
     public static Explanation readExplanation(DataInput in) throws IOException {
         float value = in.readFloat();
         String description = in.readUTF();
-        List<Explanation> list = new ArrayList<>();
+        Explanation explanation = new Explanation(value, description);
         if (in.readBoolean()) {
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                list.add(Explanation.match(value, description));
+                explanation.addDetail(readExplanation(in));
             }
         }
-        return Explanation.match(value, description,list);
+        return explanation;
     }
 
     public static void writeExplanation(DataOutput out, Explanation explanation) throws IOException {
-        out.writeFloat(explanation.getValue().floatValue());
+        out.writeFloat(explanation.getValue());
         out.writeUTF(explanation.getDescription());
         Explanation[] subExplanations = explanation.getDetails();
         if (subExplanations == null) {
@@ -242,33 +358,52 @@ public class Lucene {
         }
     }
 
+    /**
+     * 自定义的Collector实现，用于计算得分高于指定最小值的文档数量。
+     */
     public static class CountCollector implements Collector {
-
+        // 得分的最小值，只有高于这个值的文档才会被计数
         private final float minScore;
-        private Scorer scorer;
+        // 当前文档的得分，由Lucene在搜索时提供
+        private  Scorer scorer1;
+        // 计数器，用于记录满足条件的文档数量
         private long count;
 
+        /**
+         * CountCollector构造函数。
+         *
+         * @param minScore 只有得分高于这个值的文档才会被计数。
+         */
         public CountCollector(float minScore) {
             this.minScore = minScore;
         }
 
+        /**
+         * 获取当前计数的文档数量。
+         *
+         * @return 满足得分条件的文档数量。
+         */
         public long count() {
             return this.count;
         }
 
-        /**
-         * Create a new {@link LeafCollector collector} to collect the given context.
-         *
-         * @param context next atomic reader context
-         */
         @Override
         public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
-            return null;
+            return new LeafCollector() {
+                @Override
+                public void setScorer(Scorable scorer) throws IOException {
+                    scorer1 = scorer.;
+                }
+
+                @Override
+                public void collect(int doc) throws IOException {
+                    if (scorer1.score() > minScore) {
+                        count++; // 如果文档得分高于最小值，则增加计数
+                    }
+                }
+            };
         }
 
-        /**
-         * Indicates what features are required from the scorer.
-         */
         @Override
         public ScoreMode scoreMode() {
             return null;

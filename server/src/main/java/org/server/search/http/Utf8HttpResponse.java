@@ -19,6 +19,7 @@
 
 package org.server.search.http;
 
+import cn.hutool.core.util.StrUtil;
 import org.apache.lucene.util.UnicodeUtil;
 
 /**
@@ -62,10 +63,16 @@ public class Utf8HttpResponse extends AbstractHttpResponse implements HttpRespon
     }
 
     @Override public byte[] content() {
+        if(StrUtil.isBlank(utf8Result)){
+            return null;
+        }
         return utf8Result.getBytes();
     }
 
     @Override public int contentLength() {
+        if(StrUtil.isBlank(utf8Result)){
+            return 0;
+        }
         return utf8Result.length();
     }
 
