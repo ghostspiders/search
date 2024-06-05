@@ -123,16 +123,35 @@ public abstract class TransportSingleOperationAction<Request extends SingleOpera
 
     private class AsyncSingleAction {
 
+        /**
+         * 用于处理响应的ActionListener，它是一个回调接口，用于在操作完成时得到通知。
+         * 这个成员变量被声明为final，表示一旦在构造函数中初始化后，就不能被再次赋值。
+         */
         private final ActionListener<Response> listener;
 
+        /**
+         * 包含分片迭代器的ShardsIterator对象，用于访问和迭代相关的分片。
+         * 这个对象提供了对分片信息的访问，并允许按需获取分片的状态和节点信息。
+         */
         private final ShardsIterator shards;
 
+        /**
+         * 分片路由的迭代器，用于遍历包含在ShardsIterator中的ShardRouting对象。
+         * 这个迭代器允许逐个处理每个分片路由，以执行特定的操作。
+         */
         private Iterator<ShardRouting> shardsIt;
 
+        /**
+         * 封装了请求信息的Request对象，它可能包含索引、查询或其他操作的详细信息。
+         * 这个成员变量被声明为final，表示它在初始化之后不能被再次赋值。
+         */
         private final Request request;
 
+        /**
+         * Nodes对象，包含有关Elasticsearch集群中节点的信息，如节点状态、属性等。
+         * 这个对象使得可以在操作中访问和使用集群的节点信息。
+         */
         private final Nodes nodes;
-
         private AsyncSingleAction(Request request, ActionListener<Response> listener) {
             this.request = request;
             this.listener = listener;
@@ -156,95 +175,136 @@ public abstract class TransportSingleOperationAction<Request extends SingleOpera
             }
             perform(e);
         }
-
         /**
-         * First get should try and use a shard that exists on a local node for better performance
+         * 执行首次获取操作，首选尝试使用本地节点的分片以提高性能。
          */
         private void performFirst() {
+            // 循环遍历分片迭代器
             while (shardsIt.hasNext()) {
-                final ShardRouting shard = shardsIt.next();
+                final ShardRouting shard = shardsIt.next(); // 获取下一个分片路由
+                // 如果分片未激活，跳过
                 if (!shard.active()) {
                     continue;
                 }
+                // 如果分片当前所在的节点是本地节点
                 if (shard.currentNodeId().equals(nodes.localNodeId())) {
+                    // 如果请求是线程操作
                     if (request.threadedOperation()) {
+                        // 在线程池中执行请求操作
                         threadPool.execute(new Runnable() {
                             @Override public void run() {
                                 try {
+                                    // 执行分片操作并获取响应
                                     Response response = shardOperation(request, shard.id());
+                                    // 回调监听器的onResponse方法
                                     listener.onResponse(response);
                                 } catch (Exception e) {
+                                    // 如果执行过程中出现异常，调用onFailure方法
                                     onFailure(shard, e);
                                 }
                             }
                         });
+                        // 执行完毕后返回
                         return;
                     } else {
+                        // 如果请求不是线程操作
                         try {
+                            // 执行分片操作并获取响应
                             final Response response = shardOperation(request, shard.id());
+                            // 如果请求需要线程化监听器回调
                             if (request.listenerThreaded()) {
                                 threadPool.execute(new Runnable() {
                                     @Override public void run() {
+                                        // 在线程池中回调监听器的onResponse方法
                                         listener.onResponse(response);
                                     }
                                 });
                             } else {
+                                // 直接回调监听器的onResponse方法
                                 listener.onResponse(response);
                             }
+                            // 执行完毕后返回
                             return;
                         } catch (Exception e) {
+                            // 如果执行过程中出现异常，调用onFailure方法
                             onFailure(shard, e);
                         }
                     }
                 }
             }
+            // 如果迭代器中没有更多的本地分片，即所有本地分片都已遍历完毕
             if (!shardsIt.hasNext()) {
-                // no local node get, go remote
+                // 重置分片迭代器，准备进行远程获取操作
                 shardsIt = shards.reset().iterator();
+                // 执行远程获取操作
                 perform(null);
             }
         }
 
+        /**
+         * 执行分片操作，尝试在非本地节点上执行请求，如果所有尝试都失败，则报告异常。
+         * @param lastException 最后一次捕获的异常，用于在所有分片尝试失败时报告
+         */
         private void perform(final Exception lastException) {
+            // 循环遍历分片迭代器中的分片路由
             while (shardsIt.hasNext()) {
                 final ShardRouting shard = shardsIt.next();
+                // 如果分片未激活，则跳过
                 if (!shard.active()) {
                     continue;
                 }
-                // no need to check for local nodes, we tried them already in performFirstGet
+                // 由于已经在performFirst中尝试过本地节点，这里不需要再次检查
                 if (!shard.currentNodeId().equals(nodes.localNodeId())) {
+                    // 获取远程节点信息
                     Node node = nodes.get(shard.currentNodeId());
-                    transportService.sendRequest(node, transportShardAction(), new ShardSingleOperationRequest(request, shard.id()), new BaseTransportResponseHandler<Response>() {
-                        @Override public Response newInstance() {
-                            return newResponse();
-                        }
+                    // 通过传输服务发送请求到远程节点
+                    transportService.sendRequest(node, transportShardAction(),
+                            new ShardSingleOperationRequest(request, shard.id()),
+                            new BaseTransportResponseHandler<Response>() {
+                                // 实例化一个新的响应对象
+                                @Override public Response newInstance() {
+                                    return newResponse();
+                                }
 
-                        @Override public void handleResponse(final Response response) {
-                            if (request.listenerThreaded()) {
-                                threadPool.execute(new Runnable() {
-                                    @Override public void run() {
+                                // 处理来自远程节点的响应
+                                @Override public void handleResponse(final Response response) {
+                                    // 根据请求是否需要线程化监听器回调，执行相应的操作
+                                    if (request.listenerThreaded()) {
+                                        threadPool.execute(new Runnable() {
+                                            @Override public void run() {
+                                                listener.onResponse(response);
+                                            }
+                                        });
+                                    } else {
                                         listener.onResponse(response);
                                     }
-                                });
-                            } else {
-                                listener.onResponse(response);
-                            }
-                        }
+                                }
 
-                        @Override public void handleException(RemoteTransportException exp) {
-                            onFailure(shard, exp);
-                        }
+                                // 处理来自远程节点的异常
+                                @Override public void handleException(RemoteTransportException exp) {
+                                    // 调用onFailure方法，并传递分片路由和异常信息
+                                    onFailure(shard, exp);
+                                }
 
-                        @Override public boolean spawn() {
-                            // no need to spawn, we will execute the listener on a different thread if needed in handleResponse
-                            return false;
-                        }
-                    });
+                                // 是否需要在新线程中处理请求
+                                @Override public boolean spawn() {
+                                    // 不需要在新线程中处理，响应时会根据需要在不同线程执行监听器
+                                    return false;
+                                }
+                            });
+                    // 发送请求后返回，等待响应或异常处理
                     return;
                 }
             }
+            // 如果分片迭代器中没有更多分片，即所有分片尝试失败
             if (!shardsIt.hasNext()) {
-                final NoShardAvailableActionException failure = new NoShardAvailableActionException(shards.shardId(), "No shard available for [" + request.type() + "#" + request.id() + "]", lastException);
+                // 创建一个NoShardAvailableActionException异常，表示没有可用的分片
+                final NoShardAvailableActionException failure = new NoShardAvailableActionException(
+                        shards.shardId(),
+                        "No shard available for [" + request.type() + "#" + request.id() + "]",
+                        lastException
+                );
+                // 根据请求是否需要线程化监听器回调，执行失败回调
                 if (request.listenerThreaded()) {
                     threadPool.execute(new Runnable() {
                         @Override public void run() {
