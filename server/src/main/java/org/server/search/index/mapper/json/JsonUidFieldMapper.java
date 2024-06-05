@@ -82,7 +82,7 @@ public class JsonUidFieldMapper extends JsonFieldMapper<Uid> implements UidField
             throw new MapperParsingException("No id found while parsing the json source");
         }
         jsonContext.uid(Uid.createUid(jsonContext.stringBuilder(), jsonContext.type(), jsonContext.id()));
-        return new Field(name, jsonContext.uid().getBytes(),index);
+        return new Field(name, jsonContext.uid(),index);
     }
 
     @Override public Uid value(Field field) {

@@ -35,10 +35,10 @@ import java.io.IOException;
 public abstract class JsonFieldMapper<T> implements FieldMapper<T>, JsonMapper {
 
     public static class Defaults {
-        FieldType customType = new FieldType();
-        public static final FieldType INDEX = TextField.TYPE_STORED;
+
+        public static final FieldType INDEX = TextField.TYPE_NOT_STORED;
         public static final Field.Store STORE = Field.Store.NO;
-        public static final FieldType  TERM_VECTOR = new FieldType();
+        public static final FieldType  TERM_VECTOR = TextField.TYPE_NOT_STORED;
         public static final float BOOST = 1.0f;
         public static final boolean OMIT_NORMS = false;
         public static final boolean OMIT_TERM_FREQ_AND_POSITIONS = false;

@@ -41,24 +41,35 @@ public class JsonDocumentMapper implements DocumentMapper {
 
     public static class Builder {
 
+        // JsonUidFieldMapper，用于处理文档的唯一标识符（UID）的映射
         private JsonUidFieldMapper uidFieldMapper = new JsonUidFieldMapper();
 
+        // JsonIdFieldMapper，用于处理文档ID的映射
         private JsonIdFieldMapper idFieldMapper = new JsonIdFieldMapper();
 
+        // JsonTypeFieldMapper，用于处理文档类型的映射
         private JsonTypeFieldMapper typeFieldMapper = new JsonTypeFieldMapper();
 
+        // JsonSourceFieldMapper，用于处理文档原始JSON源数据的映射
         private JsonSourceFieldMapper sourceFieldMapper = new JsonSourceFieldMapper();
 
+        // JsonBoostFieldMapper，用于处理文档提升因子（boost）的映射
         private JsonBoostFieldMapper boostFieldMapper = new JsonBoostFieldMapper();
 
+        // indexAnalyzer，用于索引时的文本分析，可能需要设置特定的分析器
         private Analyzer indexAnalyzer;
 
+        // searchAnalyzer，用于搜索时的文本分析，可能需要设置特定的分析器
         private Analyzer searchAnalyzer;
 
+        // rootObjectMapper，根对象的JSON映射器，用于处理整个JSON文档的映射
         private final JsonObjectMapper rootObjectMapper;
 
+        // mappingSource，存储映射定义的JSON源数据
         private String mappingSource;
 
+        // builderContext，构建器上下文，用于在构建映射时存储和传递上下文信息
+        // JsonPath(1)表示这是根路径
         private JsonMapper.BuilderContext builderContext = new JsonMapper.BuilderContext(new JsonPath(1));
 
         public Builder(JsonObjectMapper.Builder builder) {
@@ -127,32 +138,46 @@ public class JsonDocumentMapper implements DocumentMapper {
         }
     };
 
+    // JsonFactory用于创建JSON解析器和生成器，这里使用的是Jackson库的默认工厂
     private final JsonFactory jsonFactory = Jackson.defaultJsonFactory();
 
+    // 文档类型，用于标识文档的类型
     private final String type;
 
+    // 映射源代码，存储了文档的映射定义
     private final String mappingSource;
 
+    // 用于处理文档唯一标识符（UID）的JSON字段映射器
     private final JsonUidFieldMapper uidFieldMapper;
 
+    // 用于处理文档ID的JSON字段映射器
     private final JsonIdFieldMapper idFieldMapper;
 
+    // 用于处理文档类型的JSON字段映射器
     private final JsonTypeFieldMapper typeFieldMapper;
 
+    // 用于处理文档原始JSON源数据的JSON字段映射器
     private final JsonSourceFieldMapper sourceFieldMapper;
 
+    // 用于处理文档提升因子（boost）的JSON字段映射器
     private final JsonBoostFieldMapper boostFieldMapper;
 
+    // 根对象的JSON映射器，处理整个JSON文档的映射
     private final JsonObjectMapper rootObjectMapper;
 
+    // 索引时使用的分析器，用于文档索引时的文本处理
     private final Analyzer indexAnalyzer;
 
+    // 搜索时使用的分析器，用于文档搜索时的文本处理
     private final Analyzer searchAnalyzer;
 
+    // 文档字段映射器，包含文档中所有字段的映射信息
     private volatile DocumentFieldMappers fieldMappers;
 
+    // 字段映射监听器列表，用于在字段映射更新时接收通知
     private final List<FieldMapperListener> fieldMapperListeners = newArrayList();
 
+    // 互斥锁，用于同步操作，保证线程安全
     private final Object mutex = new Object();
 
     public JsonDocumentMapper(JsonObjectMapper rootObjectMapper,
@@ -242,64 +267,78 @@ public class JsonDocumentMapper implements DocumentMapper {
         return parse(null, null, source);
     }
 
-    @Override public ParsedDocument parse(String type, String id, String source) {
+    @Override
+    public ParsedDocument parse(String type, String id, String source) {
+        // 从缓存中获取JsonParseContext对象
         JsonParseContext jsonContext = cache.get();
 
+        // 如果提供了类型（type）并且与映射器的类型不匹配，则抛出异常
         if (type != null && !type.equals(this.type)) {
             throw new MapperParsingException("Type mismatch, provide type [" + type + "] but mapper is of type [" + this.type + "]");
         }
+        // 设置类型为映射器的类型
         type = this.type;
 
         try {
+            // 使用jsonFactory创建JsonParser，准备解析文档源数据
             JsonParser jp = jsonFactory.createJsonParser(new FastStringReader(source));
+            // 重置jsonContext，准备解析
             jsonContext.reset(jp, new Document(), type, source);
 
-            // will result in JsonToken.START_OBJECT
+            // 读取下一个token，应该是JSON对象的开始
             JsonToken token = jp.nextToken();
             if (token != JsonToken.START_OBJECT) {
                 throw new MapperException("Malformed json, must start with an object");
             }
+            // 继续读取下一个token
             token = jp.nextToken();
+            // 检查token是否是字段名，这里期望的是类型（type）字段
             if (token != JsonToken.FIELD_NAME) {
                 throw new MapperException("Malformed json, after first object, the type name must exists");
             }
+            // 检查当前字段名是否与映射器的类型匹配
             if (!jp.getCurrentName().equals(type)) {
                 if (type == null) {
                     throw new MapperException("Json content type [" + jp.getCurrentName() + "] does not match the type of the mapper [" + type + "]");
                 }
-                // continue
+                // 如果type为null，意味着我们继续解析其他字段
             } else {
-                // now move to the actual content, which is the start object
+                // 如果匹配，继续读取下一个token，这将是我们文档内容的开始
                 token = jp.nextToken();
                 if (token != JsonToken.START_OBJECT) {
-                    throw new MapperException("Malformed json, after type is must start with an object");
+                    throw new MapperException("Malformed json, after type must start with an object");
                 }
             }
 
+            // 如果源映射器（sourceFieldMapper）启用，解析源字段
             if (sourceFieldMapper.enabled()) {
                 sourceFieldMapper.parse(jsonContext);
             }
-            // set the id if we have it so we can validate it later on, also, add the uid if we can
+            // 如果提供了文档ID，则设置id并解析UID字段
             if (id != null) {
                 jsonContext.id(id);
                 uidFieldMapper.parse(jsonContext);
             }
+            // 解析类型（type）字段
             typeFieldMapper.parse(jsonContext);
 
+            // 解析根对象映射器
             rootObjectMapper.parse(jsonContext);
 
-            // if we did not get the id, we need to parse the uid into the document now, after it was added
+            // 如果没有提供文档ID，则在文档添加后解析UID字段
             if (id == null) {
                 uidFieldMapper.parse(jsonContext);
             }
+            // 如果文档ID尚未解析，则将其标记为外部ID并解析ID字段
             if (jsonContext.parsedIdState() != JsonParseContext.ParsedIdState.PARSED) {
-                // mark it as external, so we can parse it
                 jsonContext.parsedId(JsonParseContext.ParsedIdState.EXTERNAL);
                 idFieldMapper.parse(jsonContext);
             }
         } catch (IOException e) {
+            // 如果解析过程中发生IO异常，抛出映射解析异常
             throw new MapperParsingException("Failed to parse", e);
         }
+        // 返回解析后的文档对象
         return new ParsedDocument(jsonContext.uid(), jsonContext.id(), jsonContext.type(), jsonContext.doc(), source);
     }
 
