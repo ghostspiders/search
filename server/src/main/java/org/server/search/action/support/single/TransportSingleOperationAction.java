@@ -44,12 +44,28 @@ import java.util.Iterator;
  
 public abstract class TransportSingleOperationAction<Request extends SingleOperationRequest, Response extends ActionResponse> extends BaseAction<Request, Response> {
 
+    /**
+     * 集群服务（ClusterService），用于管理Elasticsearch集群的状态。
+     * 它允许节点了解集群的当前状态，包括哪些节点是主节点，以及集群的元数据和设置。
+     */
     protected final ClusterService clusterService;
 
+    /**
+     * 传输服务（TransportService），负责节点间的通信。
+     * 它处理节点之间的请求和响应，是Elasticsearch分布式操作的基石。
+     */
     protected final TransportService transportService;
 
+    /**
+     * 索引服务（IndicesService），管理所有索引的操作。
+     * 它负责创建和删除索引，以及管理与索引相关的各种操作，如映射、设置等。
+     */
     protected final IndicesService indicesService;
 
+    /**
+     * 线程池（ThreadPool），用于执行Elasticsearch中的并发任务。
+     * 它允许Elasticsearch以异步和多线程的方式处理各种操作，提高性能和响应能力。
+     */
     protected final ThreadPool threadPool;
 
     protected TransportSingleOperationAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, TransportService transportService, IndicesService indicesService) {
@@ -67,14 +83,42 @@ public abstract class TransportSingleOperationAction<Request extends SingleOpera
         new AsyncSingleAction(request, listener).start();
     }
 
+    /**
+     * 返回传输层操作的名称。
+     * 这个名称用于在节点间传输时标识特定的操作行为。
+     * @return 传输层操作的名称
+     */
     protected abstract String transportAction();
 
+    /**
+     * 返回针对分片的操作的传输层名称。
+     * 这通常用于在集群中的分片上执行操作时的通信。
+     * @return 分片操作的传输层名称
+     */
     protected abstract String transportShardAction();
 
+    /**
+     * 在指定的分片上执行操作，并返回响应。
+     * 这个方法需要子类具体实现，它定义了如何在一个分片上执行操作。
+     * @param request 请求对象，包含执行操作所需的信息
+     * @param shardId 分片的ID
+     * @return 执行操作后的响应对象
+     * @throws SearchException 如果在执行操作时发生搜索相关的异常
+     */
     protected abstract Response shardOperation(Request request, int shardId) throws SearchException;
 
+    /**
+     * 创建并返回一个新的请求对象。
+     * 子类需要实现这个方法，以便为特定的操作创建合适的请求对象。
+     * @return 新的请求对象
+     */
     protected abstract Request newRequest();
 
+    /**
+     * 创建并返回一个新的响应对象。
+     * 子类需要实现这个方法，以便为特定的操作创建合适的响应对象。
+     * @return 新的响应对象
+     */
     protected abstract Response newResponse();
 
     private class AsyncSingleAction {

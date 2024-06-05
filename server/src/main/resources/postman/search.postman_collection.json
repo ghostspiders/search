@@ -1,0 +1,391 @@
+{
+	"info": {
+		"_postman_id": "ccd91845-bf56-4d40-aacb-bc78ff6c453e",
+		"name": "search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "创建索引",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"settings\": {\n    \"number_of_shards\": 1,\n    \"number_of_replicas\": 0\n  },\n  \"mappings\": {\n    \"properties\": {\n      \"field1\": { \"type\": \"text\" },\n      \"field2\": { \"type\": \"keyword\" },\n      \"date\": { \"type\": \"date\" }\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index?index=my_index",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "索引_mapping修改",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \"mappings\": {\n    \"properties\": {\n      \"field1\": { \"type\": \"text\" },\n      \"field2\": { \"type\": \"keyword\" },\n      \"date\": { \"type\": \"date\" }\n    }\n  }}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/my_index/_mapping",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"my_index",
+						"_mapping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "索引刷盘",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9092/_flush",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"_flush"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "索引刷新",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "获取集群nodes信息",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9092/_cluster/nodes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"_cluster",
+						"nodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取集群状态",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9092/_cluster/state",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"_cluster",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "集群状态查询",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9092/_status",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"_status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "创建文档-自动创建ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"field1\": \"value1\",\n   \"field2\": \"value2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/type?index=my_index&type=mappings",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"type"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						},
+						{
+							"key": "type",
+							"value": "mappings"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "索引删除",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index?index=my_index",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "创建/修改文档-预设ID",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"field1\": \"value2321\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/type/19624?index=my_index&type=mappings",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"type",
+						"19624"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						},
+						{
+							"key": "type",
+							"value": "mappings"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "文档删除",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/type/19624?index=my_index&type=mappings",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"type",
+						"19624"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						},
+						{
+							"key": "type",
+							"value": "mappings"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "根据ID获取文档",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/type/id?index=my_index&type=mappings&id=19624",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"type",
+						"id"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						},
+						{
+							"key": "type",
+							"value": "mappings"
+						},
+						{
+							"key": "id",
+							"value": "19624"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
