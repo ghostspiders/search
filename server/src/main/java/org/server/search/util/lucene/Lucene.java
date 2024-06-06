@@ -25,11 +25,14 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.server.search.index.engine.Engine;
 import org.server.search.util.gnu.trove.TIntArrayList;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Lucene {
@@ -78,44 +81,15 @@ public class Lucene {
      * @return 如果找到匹配的文档，则返回该文档的ID；如果没有找到，则返回NO_DOC（-1）。
      * @throws IOException 如果读取索引时发生I/O错误。
      */
-    public static int docId(IndexReader reader, Term term) throws IOException {
-        // 创建TermDocs对象，用于迭代与术语匹配的文档
-        TermDocs termDocs = reader.termDocs(term);
-        try {
-            // 尝试找到第一个匹配的文档
-            if (termDocs.next()) {
-                return termDocs.doc(); // 返回当前匹配文档的ID
-            }
-            return NO_DOC; // 没有找到匹配的文档，返回-1
-        } finally {
-            termDocs.close(); // 确保在方法结束时关闭TermDocs资源
+    public static int docId(IndexSearcher searcher, Term term) throws IOException {
+        TermQuery termQuery = new TermQuery(term);
+        TopDocs topDocs = searcher.search(termQuery, 10);
+        ScoreDoc[] hits = topDocs.scoreDocs;
+        if(hits.length >0){
+            return hits[0].doc;
         }
+        return NO_DOC;
     }
-
-    /**
-     * 根据给定的术语（Term）在索引中查找所有匹配的文档ID列表。
-     *
-     * @param reader Lucene的IndexReader对象，用于读取索引数据。
-     * @param term 要搜索的术语。
-     * @param expectedSize 预期的文档数量，用于初始化返回列表的初始容量。
-     * @return 包含所有匹配文档ID的TIntArrayList列表。
-     * @throws IOException 如果读取索引时发生I/O错误。
-     */
-    public static TIntArrayList docIds(IndexReader reader, Term term, int expectedSize) throws IOException {
-        // 创建TermDocs对象，用于迭代与术语匹配的文档
-        TermDocs termDocs = reader.termDocs(term);
-        TIntArrayList list = new TIntArrayList(expectedSize); // 创建一个可扩展的整型数组列表
-        try {
-            // 迭代所有匹配的文档，并添加它们的ID到列表中
-            while (termDocs.next()) {
-                list.add(termDocs.doc());
-            }
-        } finally {
-            termDocs.close(); // 确保在方法结束时关闭TermDocs资源
-        }
-        return list; // 返回包含所有文档ID的列表
-    }
-
     /**
      * 安全关闭提供的IndexReader实例。
      * 如果IndexReader为null，则认为已经关闭，返回true。
@@ -185,7 +159,8 @@ public class Lucene {
                 String fieldname = in.readUTF();  // 读取字段名称
                 int type = in.readInt();         // 读取字段类型
                 boolean reverse = in.readBoolean();  // 读取是否逆序排序
-                fields[i] = new SortField(fieldname, type, reverse);
+                SortField.Type typeName = SortField.Type.values()[type];
+                fields[i] = new SortField(fieldname, typeName, reverse);
             }
 
             // 读取排序字段的文档信息
@@ -223,7 +198,7 @@ public class Lucene {
                 float score = in.readFloat();
                 fieldDocs[i] = new FieldDoc(docID, score, cFields);
             }
-            return new TopFieldDocs(totalHits, fieldDocs, fields, maxScore);
+            return new TopFieldDocs(new TotalHits(totalHits,TotalHits.Relation.EQUAL_TO), fieldDocs, fields);
         } else {
             // 如果不包含排序字段，则只读取得分和文档ID
             ScoreDoc[] scoreDocs = new ScoreDoc[totalHits];
@@ -232,7 +207,7 @@ public class Lucene {
                 float score = in.readFloat();
                 scoreDocs[i] = new ScoreDoc(docID, score);
             }
-            return new TopDocs(totalHits, scoreDocs, maxScore);
+            return new TopDocs(new TotalHits(totalHits,TotalHits.Relation.EQUAL_TO), scoreDocs);
         }
     }
 
@@ -258,14 +233,20 @@ public class Lucene {
             TopFieldDocs topFieldDocs = (TopFieldDocs) topDocs;
 
             // 写入总的命中数量和最高得分
-            out.writeInt(topDocs.totalHits);
-            out.writeFloat(topDocs.getMaxScore());
+            out.writeInt((int) topDocs.totalHits.value);
+            ScoreDoc[] hits = topDocs.scoreDocs;
+            if (hits.length > 0) {
+                ScoreDoc topHit = hits[0]; // 得分最高的文档
+                float maxScore = topHit.score; // 最高分数值
+                out.writeFloat(maxScore);
+            }
+
 
             // 写入排序字段信息
             out.writeInt(topFieldDocs.fields.length);
             for (SortField sortField : topFieldDocs.fields) {
                 out.writeUTF(sortField.getField()); // 排序字段名称
-                out.writeInt(sortField.getType()); // 排序字段类型
+                out.writeInt(sortField.getType().ordinal()); // 排序字段类型
                 out.writeBoolean(sortField.getReverse()); // 是否逆序排序
             }
 
@@ -279,7 +260,7 @@ public class Lucene {
                 FieldDoc fieldDoc = (FieldDoc) doc;
                 // 写入文档的排序字段值
                 out.writeInt(fieldDoc.fields.length);
-                for (Comparable field : fieldDoc.fields) {
+                for (Object field : fieldDoc.fields) {
                     // 根据字段值的类型写入不同的数据
                     Class type = field.getClass();
                     if (type == String.class) {
@@ -313,8 +294,13 @@ public class Lucene {
             // 如果不是TopFieldDocs类型，则不包含排序字段
             out.writeBoolean(false); // 标记不包含排序字段
             // 写入总的命中数量和最高得分
-            out.writeInt(topDocs.totalHits);
-            out.writeFloat(topDocs.getMaxScore());
+            out.writeInt((int) topDocs.totalHits.value);
+            ScoreDoc[] hits = topDocs.scoreDocs;
+            if (hits.length > 0) {
+                ScoreDoc topHit = hits[0]; // 得分最高的文档
+                float maxScore = topHit.score; // 最高分数值
+                out.writeFloat(maxScore);
+            }
 
             // 写入文档信息，但不包括from之前的结果
             out.writeInt(topDocs.scoreDocs.length - from);
@@ -333,18 +319,19 @@ public class Lucene {
     public static Explanation readExplanation(DataInput in) throws IOException {
         float value = in.readFloat();
         String description = in.readUTF();
-        Explanation explanation = new Explanation(value, description);
+        Explanation explanation = Explanation.match(value, description);
+        List<Explanation> list = new ArrayList<>();
         if (in.readBoolean()) {
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                explanation.addDetail(readExplanation(in));
+                list.add(Explanation.match(value, description));
             }
         }
-        return explanation;
+        return Explanation.match(value, description,list);
     }
 
     public static void writeExplanation(DataOutput out, Explanation explanation) throws IOException {
-        out.writeFloat(explanation.getValue());
+        out.writeFloat(explanation.getValue().floatValue());
         out.writeUTF(explanation.getDescription());
         Explanation[] subExplanations = explanation.getDetails();
         if (subExplanations == null) {
@@ -365,7 +352,7 @@ public class Lucene {
         // 得分的最小值，只有高于这个值的文档才会被计数
         private final float minScore;
         // 当前文档的得分，由Lucene在搜索时提供
-        private  Scorer scorer1;
+        private  Scorable scorer;
         // 计数器，用于记录满足条件的文档数量
         private long count;
 
@@ -391,14 +378,14 @@ public class Lucene {
         public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
             return new LeafCollector() {
                 @Override
-                public void setScorer(Scorable scorer) throws IOException {
-                    scorer1 = scorer.;
+                public void setScorer(Scorable scorer1) throws IOException {
+                    scorer = scorer1;
                 }
 
                 @Override
                 public void collect(int doc) throws IOException {
-                    if (scorer1.score() > minScore) {
-                        count++; // 如果文档得分高于最小值，则增加计数
+                    if (scorer.score() > minScore) {
+                        count++;
                     }
                 }
             };
@@ -406,7 +393,7 @@ public class Lucene {
 
         @Override
         public ScoreMode scoreMode() {
-            return null;
+            return ScoreMode.COMPLETE;
         }
     }
 

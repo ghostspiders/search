@@ -23,28 +23,25 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.LeafCollector;
+import org.apache.lucene.search.Scorable;
 import org.apache.lucene.search.ScoreMode;
-import org.apache.lucene.search.Scorer;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.BitSet;
 
  
 public class DocIdSetCollector implements Collector {
 
     private final Collector collector;
 
-    private final List<Object> docIdSet;
+    private final BitSet docIdSet;
 
     private int base;
 
     public DocIdSetCollector(Collector collector, IndexReader reader) {
         this.collector = collector;
-        this.docIdSet = new ArrayList(reader.maxDoc());
+        this.docIdSet = new BitSet(reader.maxDoc());
     }
 
-    public List<Object>  docIdSet() {
+    public BitSet  docIdSet() {
         return docIdSet;
     }
 
@@ -55,8 +52,17 @@ public class DocIdSetCollector implements Collector {
      * @param context next atomic reader context
      */
     @Override
-    public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
-        return null;
+    public LeafCollector getLeafCollector(LeafReaderContext context){
+        return new LeafCollector() {
+            @Override
+            public void setScorer(Scorable scorer){
+            }
+
+            @Override
+            public void collect(int doc)  {
+                docIdSet.nextSetBit(base + doc);
+            }
+        };
     }
 
     /**
@@ -64,6 +70,6 @@ public class DocIdSetCollector implements Collector {
      */
     @Override
     public ScoreMode scoreMode() {
-        return null;
+        return ScoreMode.COMPLETE;
     }
 }

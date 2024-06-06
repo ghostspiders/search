@@ -360,9 +360,9 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
         if (docMapper == null) {
             throw new DocumentMapperNotFoundException("No mapper found for type [" + type + "]");
         }
-        Engine.Searcher searcher = engine.searcher(); // 获取引擎的搜索器
+        IndexSearcher searcher = engine.searcherGetQuery(); // 获取引擎的搜索器
         try {
-            int docId = Lucene.docId(searcher.reader(), docMapper.uidMapper().term(type, id)); // 根据类型和ID获取文档ID
+            int docId = Lucene.docId(searcher, new Term("_id", id)); // 根据类型和ID获取文档ID
             if (docId == Lucene.NO_DOC) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Get for [{}#{}] returned no result", type, id); // 记录跟踪日志
@@ -370,15 +370,16 @@ public class InternalIndexShard extends AbstractIndexShardComponent implements I
                 return null; // 如果没有找到文档，则返回null
             }
             StoredFieldVisitor storedFieldVisitor = docMapper.sourceMapper().fieldSelector(); // 获取存储字段访问器
-            Document doc = searcher.reader().document(docId); // 获取文档
-            if (logger.isTraceEnabled()) {
-                logger.trace("Get for [{}#{}] returned [{}]", new Object[]{type, id, doc}); // 记录跟踪日志
-            }
-            return docMapper.sourceMapper().value(doc); // 返回文档的源数据
+//            Document doc = searcher.reader().document(docId); // 获取文档
+//            if (logger.isTraceEnabled()) {
+//                logger.trace("Get for [{}#{}] returned [{}]", new Object[]{type, id, doc}); // 记录跟踪日志
+//            }
+//            return docMapper.sourceMapper().value(doc); // 返回文档的源数据
+            return "";
         } catch (IOException e) {
             throw new SearchException("Failed to get type [" + type + "] and id [" + id + "]", e); // 抛出搜索异常
         } finally {
-            searcher.release(); // 释放搜索器资源
+//            searcher.release(); // 释放搜索器资源
         }
     }
 

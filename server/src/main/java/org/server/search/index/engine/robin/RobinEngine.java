@@ -398,6 +398,27 @@ public class RobinEngine extends AbstractIndexShardComponent implements Engine, 
         }
     }
 
+    @Override
+    public IndexSearcher searcherGetQuery() {
+            try {
+                indexWriter.commit();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            AcquirableResource<ReaderSearcherHolder> current = nrtResource;
+        IndexReader newReader = null;
+        try {
+            newReader = DirectoryReader.open(store.directory());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (newReader != current.resource().reader()) {
+            nrtResource = newAcquirableResource(new ReaderSearcherHolder(newReader));
+            current.markForClose();
+        }
+        return nrtResource.resource().searcher();
+    }
+
     private static class RobinSearchResult implements Searcher {
 
         private final AcquirableResource<ReaderSearcherHolder> nrtHolder;
