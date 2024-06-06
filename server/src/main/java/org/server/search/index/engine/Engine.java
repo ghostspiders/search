@@ -83,7 +83,6 @@ public interface Engine extends IndexShardComponent {
 
     void close() throws SearchException;
 
-    IndexSearcher searcherGetQuery();
 
     /**
      * Recovery allow to start the recovery process. It is built of three phases.

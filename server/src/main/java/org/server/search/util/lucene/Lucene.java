@@ -81,9 +81,9 @@ public class Lucene {
      * @return 如果找到匹配的文档，则返回该文档的ID；如果没有找到，则返回NO_DOC（-1）。
      * @throws IOException 如果读取索引时发生I/O错误。
      */
-    public static int docId(IndexSearcher searcher, Term term) throws IOException {
+    public static int docId(Engine.Searcher searcher, Term term) throws IOException {
         TermQuery termQuery = new TermQuery(term);
-        TopDocs topDocs = searcher.search(termQuery, 10);
+        TopDocs topDocs = searcher.searcher().search(termQuery, 1);
         ScoreDoc[] hits = topDocs.scoreDocs;
         if(hits.length >0){
             return hits[0].doc;
