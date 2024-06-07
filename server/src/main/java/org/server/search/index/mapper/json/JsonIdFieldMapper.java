@@ -19,10 +19,7 @@
 
 package org.server.search.index.mapper.json;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexableField;
 import org.server.search.index.mapper.FieldMapperListener;
 import org.server.search.index.mapper.IdFieldMapper;
@@ -99,7 +96,7 @@ public class JsonIdFieldMapper extends JsonFieldMapper<String> implements IdFiel
             }
             jsonContext.id(id);
             jsonContext.parsedId(JsonParseContext.ParsedIdState.PARSED);
-            return new Field(indexName, jsonContext.id(), index);
+            return new KeywordField(indexName, jsonContext.id(), store);
         } else if (jsonContext.parsedIdState() == JsonParseContext.ParsedIdState.EXTERNAL) {
             if (jsonContext.id() == null) {
                 throw new MapperParsingException("No id mapping with [" + name() + "] found in the json, and not explicitly set");

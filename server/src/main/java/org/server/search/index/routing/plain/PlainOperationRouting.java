@@ -91,11 +91,19 @@ public class PlainOperationRouting extends AbstractIndexComponent implements Ope
 
 
     protected IndexShardRoutingTable shards(ClusterState clusterState, String type, String id) {
+        // 使用hash函数计算文档ID和类型的哈希值，然后取绝对值
+        // 然后使用模运算确定分片ID
         int shardId = Math.abs(hash(type, id)) % indexMetaData(clusterState).numberOfShards();
+
+        // 根据集群状态获取索引的路由表
         IndexShardRoutingTable indexShard = indexRoutingTable(clusterState).shard(shardId);
+
+        // 如果没有找到对应的分片，抛出异常
         if (indexShard == null) {
             throw new IndexShardMissingException(new ShardId(index, shardId));
         }
+
+        // 返回找到的分片路由表
         return indexShard;
     }
 

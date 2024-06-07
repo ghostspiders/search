@@ -2,21 +2,18 @@ package org.server.search;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.StoredFields;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.IOUtils;
+import org.server.search.util.UUID;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,8 +37,8 @@ public class LuceneDemoTest {
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter iwriter = new IndexWriter(directory, config);
         Document doc = new Document();
-        String text = "This is the text to be indexed.";
-        doc.add(new Field("fieldname",text, TextField.TYPE_STORED));
+        String text = UUID.randomUUID().toString();
+        doc.add(new KeywordField("fieldname",text, Field.Store.YES));
         iwriter.addDocument(doc);
         iwriter.close();
 
@@ -49,8 +46,10 @@ public class LuceneDemoTest {
         DirectoryReader ireader = DirectoryReader.open(directory);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         // Parse a simple query that searches for "text":
-        QueryParser parser = new QueryParser("fieldname", analyzer);
-        Query query = parser.parse("text");
+//        QueryParser parser = new QueryParser("fieldname", analyzer);
+//        Query query = parser.parse("text");
+        Term term = new Term("fieldname", text);
+        TermQuery query = new TermQuery(term);
         ScoreDoc[] hits = isearcher.search(query, 10).scoreDocs;
         assertEquals(1, hits.length);
         // Iterate through the results:

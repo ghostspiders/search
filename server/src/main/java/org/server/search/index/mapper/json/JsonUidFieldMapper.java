@@ -21,6 +21,7 @@ package org.server.search.index.mapper.json;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.KeywordField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -82,7 +83,7 @@ public class JsonUidFieldMapper extends JsonFieldMapper<Uid> implements UidField
             throw new MapperParsingException("No id found while parsing the json source");
         }
         jsonContext.uid(Uid.createUid(jsonContext.stringBuilder(), jsonContext.type(), jsonContext.id()));
-        return new Field(name, jsonContext.uid(),index);
+        return new KeywordField(name, jsonContext.uid(),store);
     }
 
     @Override public Uid value(Field field) {
