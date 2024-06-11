@@ -355,7 +355,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:9092/index/type/id?index=my_index&type=mappings&id=19624",
+					"raw": "http://127.0.0.1:9092/index/type/id?index=my_index&type=mappings&id=469f5f7e-c4a2-4bea-a5db-ff94de1ae3fb",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -380,8 +380,78 @@
 						},
 						{
 							"key": "id",
-							"value": "19624"
+							"value": "469f5f7e-c4a2-4bea-a5db-ff94de1ae3fb"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除文档",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/type/id?index=my_index&type=mappings&id=8c575f7a-207c-4b88-93bd-995993da9077",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"type",
+						"id"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "my_index"
+						},
+						{
+							"key": "type",
+							"value": "mappings"
+						},
+						{
+							"key": "id",
+							"value": "8c575f7a-207c-4b88-93bd-995993da9077"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search搜索",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9092/index/_search",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9092",
+					"path": [
+						"index",
+						"_search"
 					]
 				}
 			},

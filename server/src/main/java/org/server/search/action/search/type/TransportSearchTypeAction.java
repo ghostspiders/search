@@ -49,16 +49,40 @@ import static org.server.search.action.search.type.TransportSearchHelper.*;
 
 public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest, SearchResponse> {
 
+    /**
+     * 线程池服务，用于管理Elasticsearch节点中的任务执行。
+     * 线程池允许定制不同任务类型的线程和队列配置。
+     */
     protected final ThreadPool threadPool;
 
+    /**
+     * 集群服务，提供集群级别的操作和管理。
+     * 负责维护集群状态和处理集群元数据变更。
+     */
     protected final ClusterService clusterService;
 
+    /**
+     * 索引服务，管理Elasticsearch中的索引生命周期。
+     * 负责索引的创建、删除以及分片分配等操作。
+     */
     protected final IndicesService indicesService;
 
+    /**
+     * 搜索服务传输动作，处理搜索请求的接收和转发。
+     * 它是Elasticsearch搜索功能的核心组件之一。
+     */
     protected final SearchServiceTransportAction searchService;
 
+    /**
+     * 搜索阶段控制器，管理搜索请求的执行流程。
+     * 控制包括查询、排序等在内的不同搜索阶段。
+     */
     protected final SearchPhaseController searchPhaseController;
 
+    /**
+     * 传输搜索缓存，可能用于缓存搜索结果以提高性能。
+     * 通过缓存可以减少重复搜索的计算量，加快响应速度。
+     */
     protected final TransportSearchCache transportSearchCache;
 
     public TransportSearchTypeAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, IndicesService indicesService,
@@ -74,22 +98,58 @@ public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest
 
     protected abstract class BaseAsyncAction<FirstResult> {
 
+        /**
+         * 用于接收搜索操作结果的监听器。
+         * 当搜索请求完成时，该监听器会被触发。
+         */
         protected final ActionListener<SearchResponse> listener;
 
+        /**
+         * 一个迭代器，用于遍历涉及的分片组。
+         * 它允许按需访问分片信息，用于搜索操作。
+         */
         protected final GroupShardsIterator shardsIts;
 
+        /**
+         * 封装了搜索请求的详细信息。
+         * 包括查询条件、搜索类型等。
+         */
         protected final SearchRequest request;
 
+        /**
+         * 节点服务，提供有关Elasticsearch集群节点的信息和管理。
+         * 可用于与集群中的节点进行通信。
+         */
         protected final Nodes nodes;
 
+        /**
+         * 预期成功的操作数量。
+         * 用于跟踪搜索请求中预期成功的操作总数。
+         */
         protected final int expectedSuccessfulOps;
 
+        /**
+         * 预期的总操作数量。
+         * 包括预期成功和可能失败的操作。
+         */
         protected final int expectedTotalOps;
 
+        /**
+         * 成功操作的原子计数器。
+         * 用于线程安全地跟踪成功的搜索操作数量。
+         */
         protected final AtomicInteger successulOps = new AtomicInteger();
 
+        /**
+         * 总操作的原子计数器。
+         * 用于线程安全地跟踪搜索请求的总操作数量。
+         */
         protected final AtomicInteger totalOps = new AtomicInteger();
 
+        /**
+         * 已排序的分片列表。
+         * 这个数组可能保存了排序后的分片信息，用于搜索过程中的负载均衡或优化。
+         */
         protected volatile ShardDoc[] sortedShardList;
 
         protected BaseAsyncAction(SearchRequest request, ActionListener<SearchResponse> listener) {

@@ -21,24 +21,22 @@ package org.server.search.action.search;
 
 import org.server.search.SearchIllegalArgumentException;
 
-/**
- * Controls the operation threading model for search operation that are performed
- * locally on the executing node.
- *
- * 
- */
+
 public enum SearchOperationThreading {
     /**
-     * No threads are used, all the local shards operations will be performed on the calling
-     * thread.
+     * 不使用线程。所有本地分片的操作都将在调用线程上同步执行。
+     * 适用于单线程环境或操作非常快速且不需要并行处理的场景。
      */
     NO_THREADS((byte) 0),
     /**
-     * The local shards operations will be performed in serial manner on a single forked thread.
+     * 单线程模型。所有本地分片的操作将在单个派生的线程上串行执行。
+     * 这种方式可以防止调用线程被阻塞，同时保持操作的顺序性。
      */
     SINGLE_THREAD((byte) 1),
     /**
-     * Each local shard operation will execute on its own thread.
+     * 每个分片一个线程模型。每个本地分片的操作都将在自己的线程上独立执行。
+     * 这种方式可以提高并行处理的性能，尤其是在多核处理器上。
+     * 但需要注意管理线程间的资源竞争和同步问题。
      */
     THREAD_PER_SHARD((byte) 2);
 
