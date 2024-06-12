@@ -71,39 +71,66 @@ public class TransportSearchAction extends BaseAction<SearchRequest, SearchRespo
         }
     }
 
+    /**
+     * 内部类，继承自BaseTransportRequestHandler，用于处理搜索请求。
+     */
     private class TransportHandler extends BaseTransportRequestHandler<SearchRequest> {
 
-        @Override public SearchRequest newInstance() {
+        /**
+         * 实现基类方法，创建一个新的搜索请求实例。
+         * @return 新的搜索请求实例。
+         */
+        @Override
+        public SearchRequest newInstance() {
             return new SearchRequest();
         }
 
-        @Override public void messageReceived(SearchRequest request, final TransportChannel channel) throws Exception {
-            // no need for a threaded listener
+        /**
+         * 当接收到搜索请求时调用的方法。
+         * @param request 接收到的搜索请求。
+         * @param channel 传输通道，用于发送响应或异常。
+         * @throws Exception 可能抛出的异常。
+         */
+        @Override
+        public void messageReceived(SearchRequest request, final TransportChannel channel) throws Exception {
+            // 设置请求不需要线程化的监听器。
             request.listenerThreaded(false);
-            // we don't spawn, so if we get a request with no threading, change it to single threaded
+            // 如果请求的操作线程模型是无线程(NO_THREADS)，则改为单线程(SINGLE_THREAD)。
             if (request.operationThreading() == SearchOperationThreading.NO_THREADS) {
                 request.operationThreading(SearchOperationThreading.SINGLE_THREAD);
             }
+            // 执行搜索请求，并使用ActionListener来处理响应或失败。
             execute(request, new ActionListener<SearchResponse>() {
-                @Override public void onResponse(SearchResponse result) {
+                @Override
+                public void onResponse(SearchResponse result) {
                     try {
+                        // 如果搜索成功，通过通道发送响应。
                         channel.sendResponse(result);
                     } catch (Exception e) {
+                        // 如果发送响应时出现异常，调用onFailure方法。
                         onFailure(e);
                     }
                 }
 
-                @Override public void onFailure(Throwable e) {
+                @Override
+                public void onFailure(Throwable e) {
                     try {
+                        // 如果执行搜索请求失败，通过通道发送异常。
                         channel.sendResponse(e);
                     } catch (Exception e1) {
+                        // 如果发送异常响应时再次出现异常，记录警告日志。
                         logger.warn("Failed to send response for search", e1);
                     }
                 }
             });
         }
 
-        @Override public boolean spawn() {
+        /**
+         * 实现基类方法，指示是否为请求生成新线程。
+         * @return 始终返回false，表示不生成新线程。
+         */
+        @Override
+        public boolean spawn() {
             return false;
         }
     }

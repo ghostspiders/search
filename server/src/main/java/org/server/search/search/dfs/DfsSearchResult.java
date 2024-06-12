@@ -32,20 +32,40 @@ import static org.server.search.search.SearchShardTarget.*;
  
 public class DfsSearchResult implements Streamable {
 
+    /**
+     * 一个空的Term数组，用作默认值或占位符。
+     */
     private static Term[] EMPTY_TERMS = new Term[0];
 
+    /**
+     * 一个空的整型数组，用作默认值或占位符，可能用于表示频率。
+     */
     private static int[] EMPTY_FREQS = new int[0];
 
+    /**
+     * 用于搜索操作的分片目标，可能包含分片的引用和目标节点的信息。
+     */
     private SearchShardTarget shardTarget;
 
+    /**
+     * 一个唯一标识符，可能用于标识搜索请求或搜索结果。
+     */
     private long id;
 
+    /**
+     * 一个Term数组，可能用于存储与搜索查询相关的词项。
+     */
     private Term[] terms;
 
+    /**
+     * 一个整型数组，可能用于存储与terms数组中每个词项对应的频率或统计信息。
+     */
     private int[] freqs;
 
+    /**
+     * 一个整数，表示文档的数量，可能用于统计或性能优化。
+     */
     private int numDocs;
-
     public DfsSearchResult() {
 
     }

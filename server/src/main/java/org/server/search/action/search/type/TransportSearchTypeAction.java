@@ -166,30 +166,36 @@ public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest
         }
 
         public void start() {
-            // count the local operations, and perform the non local ones
+            // 计算本地操作的数量，并执行非本地操作
             int localOperations = 0;
             for (final ShardsIterator shardIt : shardsIts) {
                 final ShardRouting shard = shardIt.next();
+                // 检查分片是否处于活跃状态
                 if (shard.active()) {
+                    // 如果分片在当前节点上，则增加本地操作计数
                     if (shard.currentNodeId().equals(nodes.localNodeId())) {
                         localOperations++;
                     } else {
-                        // do the remote operation here, the localAsync flag is not relevant
+                        // 如果分片不在当前节点上，执行远程操作
+                        // localAsync标志在此不相关
                         performFirstPhase(shardIt.reset());
                     }
                 } else {
-                    // as if we have a "problem", so we iterate to the next one and maintain counts
+                    // 如果分片不活跃，就像我们遇到了一个问题
+                    // 所以我们迭代到下一个分片并维护计数
                     onFirstPhaseResult(shard, shardIt, null);
                 }
             }
-            // we have local operations, perform them now
+            // 如果有本地操作，则现在执行它们
             if (localOperations > 0) {
+                // 如果请求的操作线程模型是单线程，则在线程池中执行所有本地操作
                 if (request.operationThreading() == SearchOperationThreading.SINGLE_THREAD) {
                     threadPool.execute(new Runnable() {
                         @Override public void run() {
                             for (final ShardsIterator shardIt : shardsIts) {
                                 final ShardRouting shard = shardIt.reset().next();
                                 if (shard.active()) {
+                                    // 如果分片在当前节点上，则执行第一阶段
                                     if (shard.currentNodeId().equals(nodes.localNodeId())) {
                                         performFirstPhase(shardIt.reset());
                                     }
@@ -198,18 +204,22 @@ public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest
                         }
                     });
                 } else {
+                    // 如果请求的操作线程模型是每个分片一个线程，则为每个本地分片创建一个新线程
                     boolean localAsync = request.operationThreading() == SearchOperationThreading.THREAD_PER_SHARD;
                     for (final ShardsIterator shardIt : shardsIts) {
                         final ShardRouting shard = shardIt.reset().next();
                         if (shard.active()) {
+                            // 如果分片在当前节点上
                             if (shard.currentNodeId().equals(nodes.localNodeId())) {
                                 if (localAsync) {
+                                    // 如果是每个分片一个线程的模型，则在线程池中执行
                                     threadPool.execute(new Runnable() {
                                         @Override public void run() {
                                             performFirstPhase(shardIt.reset());
                                         }
                                     });
                                 } else {
+                                    // 否则，直接执行第一阶段
                                     performFirstPhase(shardIt.reset());
                                 }
                             }
@@ -219,53 +229,119 @@ public abstract class TransportSearchTypeAction extends BaseAction<SearchRequest
             }
         }
 
+        /**
+         * 执行搜索请求第一阶段的方法，针对每个分片执行。
+         *
+         * @param shardIt 分片路由迭代器，用于获取当前分片的路由信息。
+         */
         private void performFirstPhase(final Iterator<ShardRouting> shardIt) {
+            // 检查迭代器是否还有更多的分片路由对象。
             if (!shardIt.hasNext()) {
+                // 如果没有更多分片，结束方法。
                 return;
             }
+
+            // 获取迭代器中的下一个分片路由。
             final ShardRouting shard = shardIt.next();
+
+            // 检查分片是否处于活跃状态。
             if (!shard.active()) {
-                // as if we have a "problem", so we iterate to the next one and maintain counts
+                // 如果分片不活跃，调用onFirstPhaseResult方法处理不活跃的分片情况。
+                // 这可能表示分片当前不可用或正在恢复。
                 onFirstPhaseResult(shard, shardIt, null);
             } else {
+                // 如果分片是活跃的，获取与分片关联的节点。
                 Node node = nodes.get(shard.currentNodeId());
+
+                // 发送执行第一阶段的请求到节点。
+                // 这里使用SearchServiceListener来处理执行结果或失败。
                 sendExecuteFirstPhase(node, internalSearchRequest(shard, request), new SearchServiceListener<FirstResult>() {
-                    @Override public void onResult(FirstResult result) {
+                    @Override
+                    public void onResult(FirstResult result) {
+                        // 如果第一阶段成功执行，调用onFirstPhaseResult方法，并传递结果。
                         onFirstPhaseResult(shard, result);
                     }
 
-                    @Override public void onFailure(Throwable t) {
+                    @Override
+                    public void onFailure(Throwable t) {
+                        // 如果执行失败，调用onFirstPhaseResult方法，并传递异常信息。
                         onFirstPhaseResult(shard, shardIt, t);
                     }
                 });
             }
         }
 
+        /**
+         * 处理搜索请求第一阶段的结果。
+         *
+         * @param shard 分片路由，包含分片的相关信息。
+         * @param result 第一阶段的结果，可能包含查询结果或状态信息。
+         */
         private void onFirstPhaseResult(ShardRouting shard, FirstResult result) {
+            // 处理第一阶段的结果。
+            // 这个方法可能包括合并结果、更新状态或其他必要的操作。
             processFirstPhaseResult(shard, result);
+
+            // 当当前成功操作数增加后等于预期的成功操作数，
+            // 或者总操作数增加后等于预期的总操作数时，
+            // 触发第二阶段的开始。
+            // successulOps 是成功操作的原子计数器，expectedSuccessfulOps 是预期的成功操作数。
+            // totalOps 是总操作的原子计数器，expectedTotalOps 是预期的总操作数。
             if (successulOps.incrementAndGet() == expectedSuccessfulOps ||
                     totalOps.incrementAndGet() == expectedTotalOps) {
+                // 调用 moveToSecondPhase 方法，准备进入搜索请求的第二阶段。
                 moveToSecondPhase();
             }
         }
 
+        /**
+         * 处理搜索请求第一阶段的结果，无论是成功还是失败。
+         *
+         * @param shard 当前处理的分片路由。
+         * @param shardIt 分片路由的迭代器，用于在需要时继续执行其他分片。
+         * @param t 可能发生的异常，如果第一阶段失败则不为null。
+         */
         private void onFirstPhaseResult(ShardRouting shard, final Iterator<ShardRouting> shardIt, Throwable t) {
+            // 如果日志记录器处于调试模式，并且有异常发生，则记录异常信息。
             if (logger.isDebugEnabled()) {
                 if (t != null) {
+                    // 记录分片的简短摘要、搜索请求的失败信息和异常堆栈跟踪。
                     logger.debug(shard.shortSummary() + ": Failed to search [" + request + "]", t);
                 }
             }
+
+            // 如果总操作数增加后等于预期的总操作数，则触发第二阶段的开始。
             if (totalOps.incrementAndGet() == expectedTotalOps) {
                 moveToSecondPhase();
             } else {
+                // 如果还有更多的分片需要处理，则继续执行第一阶段。
                 performFirstPhase(shardIt);
             }
         }
 
+        /**
+         * 发送执行搜索请求第一阶段的请求到指定节点。
+         * 这是一个抽象方法，需要在子类中具体实现。
+         *
+         * @param node 要发送请求的目标节点。
+         * @param request 内部搜索请求对象。
+         * @param listener 搜索服务监听器，用于接收结果或异常。
+         */
         protected abstract void sendExecuteFirstPhase(Node node, InternalSearchRequest request, SearchServiceListener<FirstResult> listener);
 
+        /**
+         * 处理搜索请求第一阶段的结果。
+         * 这是一个抽象方法，需要在子类中具体实现。
+         *
+         * @param shard 分片路由，包含分片的相关信息。
+         * @param result 第一阶段的结果。
+         */
         protected abstract void processFirstPhaseResult(ShardRouting shard, FirstResult result);
 
+        /**
+         * 触发搜索请求的第二阶段。
+         * 这是一个抽象方法，需要在子类中具体实现。
+         */
         protected abstract void moveToSecondPhase();
     }
 }
