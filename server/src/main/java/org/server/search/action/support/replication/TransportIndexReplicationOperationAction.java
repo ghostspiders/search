@@ -52,53 +52,74 @@ public abstract class TransportIndexReplicationOperationAction<Request extends I
         transportService.registerHandler(transportAction(), new TransportHandler());
     }
 
-    @Override protected void doExecute(final Request request, final ActionListener<Response> listener) {
+    @Override
+    protected void doExecute(final Request request, final ActionListener<Response> listener) {
         GroupShardsIterator groups;
         try {
+            // 尝试获取请求涉及的分片迭代器。
             groups = shards(request);
         } catch (Exception e) {
+            // 如果获取分片迭代器时出现异常，使用监听器的onFailure方法通知失败。
             listener.onFailure(e);
             return;
         }
+        // 创建原子整数计数器，用于跟踪每个分片请求的完成情况。
         final AtomicInteger indexCounter = new AtomicInteger();
+        // 创建原子整数计数器，用于跟踪所有分片请求的完成情况。
         final AtomicInteger completionCounter = new AtomicInteger(groups.size());
+        // 创建原子引用数组，用于存储每个分片的响应或异常。
         final AtomicReferenceArray<Object> shardsResponses = new AtomicReferenceArray<Object>(groups.size());
 
+        // 遍历所有分片迭代器。
         for (final ShardsIterator shards : groups) {
+            // 为每个分片创建一个新的分片请求实例。
             ShardRequest shardRequest = newShardRequestInstance(request, shards.shardId().id());
-            // TODO for now, we fork operations on shards of the index
+            // 目前，我们对每个索引的分片操作进行分叉处理。
             shardRequest.operationThreaded(true);
-            // no need for threaded listener, we will fork when its done based on the index request
+            // 不需要线程化的监听器，我们将在完成后基于索引请求进行分叉。
             shardRequest.listenerThreaded(false);
+            // 执行分片请求。
             shardAction.execute(shardRequest, new ActionListener<ShardResponse>() {
-                @Override public void onResponse(ShardResponse result) {
+                @Override
+                public void onResponse(ShardResponse result) {
+                    // 存储当前分片的响应结果。
                     shardsResponses.set(indexCounter.getAndIncrement(), result);
+                    // 如果所有分片请求都已完成，调用监听器的onResponse方法。
                     if (completionCounter.decrementAndGet() == 0) {
                         if (request.listenerThreaded()) {
+                            // 如果请求需要线程化监听器，使用线程池执行。
                             threadPool.execute(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     listener.onResponse(newResponseInstance(request, shardsResponses));
                                 }
                             });
                         } else {
+                            // 否则，直接调用onResponse方法。
                             listener.onResponse(newResponseInstance(request, shardsResponses));
                         }
                     }
                 }
 
-                @Override public void onFailure(Throwable e) {
+                @Override
+                public void onFailure(Throwable e) {
+                    // 存储当前分片的异常。
                     int index = indexCounter.getAndIncrement();
                     if (accumulateExceptions()) {
                         shardsResponses.set(index, e);
                     }
+                    // 如果所有分片请求都已完成，调用监听器的onResponse方法。
                     if (completionCounter.decrementAndGet() == 0) {
                         if (request.listenerThreaded()) {
+                            // 如果请求需要线程化监听器，使用线程池执行。
                             threadPool.execute(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     listener.onResponse(newResponseInstance(request, shardsResponses));
                                 }
                             });
                         } else {
+                            // 否则，直接调用onResponse方法。
                             listener.onResponse(newResponseInstance(request, shardsResponses));
                         }
                     }

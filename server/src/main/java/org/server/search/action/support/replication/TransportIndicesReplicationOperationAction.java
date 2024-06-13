@@ -54,46 +54,66 @@ public abstract class TransportIndicesReplicationOperationAction<Request extends
         transportService.registerHandler(transportAction(), new TransportHandler());
     }
 
-    @Override protected void doExecute(final Request request, final ActionListener<Response> listener) {
+    @Override
+    protected void doExecute(final Request request, final ActionListener<Response> listener) {
+        // 处理请求中指定的索引，获取有效的索引名称数组。
         String[] indices = Actions.processIndices(clusterService.state(), request.indices());
+        // 创建一个原子整数计数器，用于跟踪每个索引请求的完成情况。
         final AtomicInteger indexCounter = new AtomicInteger();
+        // 创建一个原子整数计数器，用于跟踪所有索引请求的完成情况。
         final AtomicInteger completionCounter = new AtomicInteger(indices.length);
+        // 创建一个原子引用数组，用于存储每个索引的响应或异常。
         final AtomicReferenceArray<Object> indexResponses = new AtomicReferenceArray<Object>(indices.length);
 
+        // 遍历所有索引。
         for (final String index : indices) {
+            // 为每个索引创建一个新的索引请求实例。
             IndexRequest indexRequest = newIndexRequestInstance(request, index);
-            // no threading needed, all is done on the index replication one
+            // 设置索引请求不需要线程化的监听器。
             indexRequest.listenerThreaded(false);
+            // 执行索引请求。
             indexAction.execute(indexRequest, new ActionListener<IndexResponse>() {
-                @Override public void onResponse(IndexResponse result) {
+                @Override
+                public void onResponse(IndexResponse result) {
+                    // 存储当前索引的响应结果。
                     indexResponses.set(indexCounter.getAndIncrement(), result);
+                    // 如果所有索引请求都已完成，调用监听器的onResponse方法。
                     if (completionCounter.decrementAndGet() == 0) {
                         if (request.listenerThreaded()) {
+                            // 如果请求需要线程化监听器，使用线程池执行。
                             threadPool.execute(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     listener.onResponse(newResponseInstance(request, indexResponses));
                                 }
                             });
                         } else {
+                            // 否则，直接调用onResponse方法。
                             listener.onResponse(newResponseInstance(request, indexResponses));
                         }
                     }
                 }
 
-                @Override public void onFailure(Throwable e) {
+                @Override
+                public void onFailure(Throwable e) {
                     e.printStackTrace();
+                    // 存储当前索引的异常。
                     int index = indexCounter.getAndIncrement();
                     if (accumulateExceptions()) {
                         indexResponses.set(index, e);
                     }
+                    // 如果所有索引请求都已完成，调用监听器的onResponse方法。
                     if (completionCounter.decrementAndGet() == 0) {
                         if (request.listenerThreaded()) {
+                            // 如果请求需要线程化监听器，使用线程池执行。
                             threadPool.execute(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     listener.onResponse(newResponseInstance(request, indexResponses));
                                 }
                             });
                         } else {
+                            // 否则，直接调用onResponse方法。
                             listener.onResponse(newResponseInstance(request, indexResponses));
                         }
                     }
