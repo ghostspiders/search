@@ -118,30 +118,39 @@ public abstract class TransportBroadcastOperationAction<Request extends Broadcas
         }
 
         public void start() {
-            // count the local operations, and perform the non local ones
+            // 计数本地操作的数量
             int localOperations = 0;
+            // 遍历所有的分片迭代器
             for (final ShardsIterator shardIt : shardsIts) {
+                // 获取下一个分片路由
                 final ShardRouting shard = shardIt.next();
+                // 检查分片是否处于活跃状态
                 if (shard.active()) {
+                    // 如果分片在当前节点上，则增加本地操作计数
                     if (shard.currentNodeId().equals(nodes.localNodeId())) {
                         localOperations++;
                     } else {
-                        // do the remote operation here, the localAsync flag is not relevant
+                        // 如果分片不在当前节点上，执行远程操作
+                        // localAsync标志在此不相关
                         performOperation(shardIt.reset(), true);
                     }
                 } else {
-                    // as if we have a "problem", so we iterate to the next one and maintain counts
+                    // 如果分片不活跃，就像遇到了问题一样，继续迭代到下一个分片并维护计数
                     onOperation(shard, shardIt, null, false);
                 }
             }
-            // we have local operations, perform them now
+            // 如果有本地操作，现在执行它们
             if (localOperations > 0) {
+                // 根据请求的操作线程模式决定如何执行
                 if (request.operationThreading() == BroadcastOperationThreading.SINGLE_THREAD) {
+                    // 如果是单线程模式，在线程池中执行
                     threadPool.execute(new Runnable() {
                         @Override public void run() {
+                            // 再次遍历分片迭代器
                             for (final ShardsIterator shardIt : shardsIts) {
                                 final ShardRouting shard = shardIt.reset().next();
                                 if (shard.active()) {
+                                    // 如果分片在当前节点上，执行本地操作
                                     if (shard.currentNodeId().equals(nodes.localNodeId())) {
                                         performOperation(shardIt.reset(), false);
                                     }
@@ -150,7 +159,9 @@ public abstract class TransportBroadcastOperationAction<Request extends Broadcas
                         }
                     });
                 } else {
+                    // 如果是每个分片一个线程或不使用线程的模式
                     boolean localAsync = request.operationThreading() == BroadcastOperationThreading.THREAD_PER_SHARD;
+                    // 遍历分片迭代器，执行本地异步操作
                     for (final ShardsIterator shardIt : shardsIts) {
                         final ShardRouting shard = shardIt.reset().next();
                         if (shard.active()) {
@@ -163,48 +174,62 @@ public abstract class TransportBroadcastOperationAction<Request extends Broadcas
             }
         }
 
+        // 执行分片操作的方法
         private void performOperation(final Iterator<ShardRouting> shardIt, boolean localAsync) {
+            // 获取迭代器中的下一个分片路由对象
             final ShardRouting shard = shardIt.next();
+            // 如果分片不处于激活状态，就当作有问题，迭代到下一个分片并维护计数
             if (!shard.active()) {
-                // as if we have a "problem", so we iterate to the next one and maintain counts
                 onOperation(shard, shardIt, null, false);
             } else {
+                // 为当前分片创建一个分片请求
                 final ShardRequest shardRequest = newShardRequest(shard, request);
+                // 如果分片的当前节点ID与本地节点ID相同
                 if (shard.currentNodeId().equals(nodes.localNodeId())) {
+                    // 如果是本地异步执行
                     if (localAsync) {
                         threadPool.execute(new Runnable() {
                             @Override public void run() {
                                 try {
+                                    // 执行分片操作并处理结果
                                     onOperation(shard, shardOperation(shardRequest), true);
                                 } catch (Exception e) {
+                                    // 如果执行过程中出现异常，处理异常
                                     onOperation(shard, shardIt, e, true);
                                 }
                             }
                         });
                     } else {
                         try {
+                            // 同步执行分片操作并处理结果
                             onOperation(shard, shardOperation(shardRequest), false);
                         } catch (Exception e) {
+                            // 如果执行过程中出现异常，处理异常
                             onOperation(shard, shardIt, e, false);
                         }
                     }
                 } else {
+                    // 获取分片当前节点对象
                     Node node = nodes.get(shard.currentNodeId());
+                    // 向分片所在节点发送请求
                     transportService.sendRequest(node, transportShardAction(), shardRequest, new BaseTransportResponseHandler<ShardResponse>() {
                         @Override public ShardResponse newInstance() {
+                            // 创建一个新的分片响应实例
                             return newShardResponse();
                         }
 
                         @Override public void handleResponse(ShardResponse response) {
+                            // 处理来自远程节点的响应
                             onOperation(shard, response, false);
                         }
 
                         @Override public void handleException(RemoteTransportException exp) {
+                            // 处理远程传输过程中的异常
                             onOperation(shard, shardIt, exp, false);
                         }
 
                         @Override public boolean spawn() {
-                            // we never spawn here, we will span if needed in onOperation
+                            // 这里我们不进行额外的线程分叉，如果需要在onOperation中处理
                             return false;
                         }
                     });
