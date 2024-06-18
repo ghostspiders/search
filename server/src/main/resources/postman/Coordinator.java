@@ -74,124 +74,221 @@ import static org.elasticsearch.gateway.GatewayService.STATE_NOT_RECOVERED_BLOCK
 
 public class Coordinator extends AbstractLifecycleComponent implements Discovery {
 
+    // Elasticsearch 6.x版本之前使用的Zen发现算法的初始任期值
     public static final long ZEN1_BWC_TERM = 0;
 
+    // 日志记录器，用于记录Coordinator类的日志信息
     private static final Logger logger = LogManager.getLogger(Coordinator.class);
 
-    // the timeout for the publication of each value
+    // 集群状态发布操作的超时设置
     public static final Setting<TimeValue> PUBLISH_TIMEOUT_SETTING =
         Setting.timeSetting("cluster.publish.timeout",
             TimeValue.timeValueMillis(30000), TimeValue.timeValueMillis(1), Setting.Property.NodeScope);
 
+    // 当前节点的设置
     private final Settings settings;
+    // 是否使用单节点发现模式
     private final boolean singleNodeDiscovery;
+    // 传输服务，用于节点间的通信
     private final TransportService transportService;
+    // 主节点服务，用于管理主节点的生命周期和选举
     private final MasterService masterService;
+    // 资源分配服务，用于管理集群中资源的分配
     private final AllocationService allocationService;
+    // 节点加入帮助类，用于处理节点加入集群的逻辑
     private final JoinHelper joinHelper;
+    // 节点移除执行器，用于处理从集群状态中移除节点的任务
     private final NodeRemovalClusterStateTaskExecutor nodeRemovalExecutor;
+    // 持久化协调状态供应者，用于获取持久化的协调状态
     private final Supplier<CoordinationState.PersistedState> persistedStateSupplier;
+    // 无主节点阻塞服务，用于在没有主节点时阻塞某些操作
     private final NoMasterBlockService noMasterBlockService;
-    // TODO: the following field is package-private as some tests require access to it
-    // These tests can be rewritten to use public methods once Coordinator is more feature-complete
-    final Object mutex = new Object();
-    private final SetOnce<CoordinationState> coordinationState = new SetOnce<>(); // initialized on start-up (see doStart)
-    private volatile ClusterState applierState; // the state that should be exposed to the cluster state applier
 
+    // 互斥锁，用于同步对共享资源的访问
+    final Object mutex = new Object();
+    // 集群协调状态，初始化在启动时
+    private final SetOnce<CoordinationState> coordinationState = new SetOnce<>();
+    // 应用者状态，暴露给集群状态应用者的当前状态
+    private volatile ClusterState applierState;
+
+    // 对等发现器，用于发现集群中的其他节点
     private final PeerFinder peerFinder;
+    // 预投票收集器，用于在选举过程中收集预投票
     private final PreVoteCollector preVoteCollector;
+    // 随机数生成器，用于选举过程中的随机延迟等
     private final Random random;
+    // 选举调度工厂，用于创建选举调度器
     private final ElectionSchedulerFactory electionSchedulerFactory;
+    // 配置的种子主机解析器，用于解析配置的种子主机地址
     private final SeedHostsResolver configuredHostsResolver;
+    // 发布超时时间
     private final TimeValue publishTimeout;
+    // 状态发布传输处理器，用于处理集群状态的发布
     private final PublicationTransportHandler publicationHandler;
+    // 主节点检查器，用于检查主节点的健康状态
     private final LeaderChecker leaderChecker;
+    // 跟随者检查器，用于检查跟随者节点的状态
     private final FollowersChecker followersChecker;
+    // 集群应用者，用于应用集群状态变更
     private final ClusterApplier clusterApplier;
+    // 节点加入验证器集合，用于在节点加入时进行验证
     private final Collection<BiConsumer<DiscoveryNode, ClusterState>> onJoinValidators;
+
+    // 选举调度器，用于控制选举过程的计时
     @Nullable
     private Releasable electionScheduler;
+    // 预投票阶段的资源释放器
     @Nullable
     private Releasable prevotingRound;
+    // 已看到的最大的任期值
     private long maxTermSeen;
+    // 重新配置器，用于处理集群配置的变更
     private final Reconfigurator reconfigurator;
+    // 集群引导服务，用于处理集群启动和引导逻辑
     private final ClusterBootstrapService clusterBootstrapService;
+    // 发现升级服务，用于处理集群升级过程中的发现逻辑
     private final DiscoveryUpgradeService discoveryUpgradeService;
+    // 延迟检测器，用于检测和处理节点的延迟问题
     private final LagDetector lagDetector;
+    // 集群形成失败帮助器，用于处理集群无法形成时的逻辑
     private final ClusterFormationFailureHelper clusterFormationFailureHelper;
 
+    // 当前模式，如跟随者、候选者或领导者
     private Mode mode;
+    // 上一个已知的主节点
     private Optional<DiscoveryNode> lastKnownLeader;
+    // 上一次加入信息
     private Optional<Join> lastJoin;
+    // 节点加入累加器，用于跟踪节点加入请求
     private JoinHelper.JoinAccumulator joinAccumulator;
+    // 当前正在进行的发布操作
     private Optional<CoordinatorPublication> currentPublication = Optional.empty();
 
     public Coordinator(String nodeName, Settings settings, ClusterSettings clusterSettings, TransportService transportService,
                        NamedWriteableRegistry namedWriteableRegistry, AllocationService allocationService, MasterService masterService,
                        Supplier<CoordinationState.PersistedState> persistedStateSupplier, SeedHostsProvider seedHostsProvider,
-                       ClusterApplier clusterApplier, Collection<BiConsumer<DiscoveryNode, ClusterState>> onJoinValidators, Random random) {
+                       ClusterApplier clusterApplier,
+                       Collection<BiConsumer<DiscoveryNode, ClusterState>> onJoinValidators, Random random) {
+        // 节点名称
         this.settings = settings;
+        // 传输服务，用于节点间的通信
         this.transportService = transportService;
+        // 主服务，处理主节点相关逻辑
         this.masterService = masterService;
+        // 资源分配服务，处理集群中资源的分配
         this.allocationService = allocationService;
+        // 注册加入验证器，包括内置和自定义验证器
         this.onJoinValidators = JoinTaskExecutor.addBuiltInJoinValidators(onJoinValidators);
-        this.singleNodeDiscovery = DiscoveryModule.SINGLE_NODE_DISCOVERY_TYPE.equals(DiscoveryModule.DISCOVERY_TYPE_SETTING.get(settings));
+        // 是否启用单节点发现模式
+        this.singleNodeDiscovery = DiscoveryModule.SINGLE_NODE_DISCOVERY_TYPE.equals(
+            DiscoveryModule.DISCOVERY_TYPE_SETTING.get(settings));
+        // 初始化节点加入帮助类
         this.joinHelper = new JoinHelper(settings, allocationService, masterService, transportService,
             this::getCurrentTerm, this::getStateForMasterService, this::handleJoinRequest, this::joinLeaderInTerm, this.onJoinValidators);
+        // 持久化状态供应器
         this.persistedStateSupplier = persistedStateSupplier;
+        // 无主节点阻塞服务
         this.noMasterBlockService = new NoMasterBlockService(settings, clusterSettings);
+        // 上一个已知的主节点
         this.lastKnownLeader = Optional.empty();
+        // 上一次加入信息
         this.lastJoin = Optional.empty();
+        // 节点加入累加器
         this.joinAccumulator = new InitialJoinAccumulator();
+        // 集群状态发布超时设置
         this.publishTimeout = PUBLISH_TIMEOUT_SETTING.get(settings);
+        // 随机数生成器
         this.random = random;
+        // 选举调度工厂
         this.electionSchedulerFactory = new ElectionSchedulerFactory(settings, random, transportService.getThreadPool());
+        // 预投票收集器
         this.preVoteCollector = new PreVoteCollector(transportService, this::startElection, this::updateMaxTermSeen);
-        configuredHostsResolver = new SeedHostsResolver(nodeName, settings, transportService, seedHostsProvider);
+        // 配置的种子主机解析器
+        this.configuredHostsResolver = new SeedHostsResolver(nodeName, settings, transportService, seedHostsProvider);
+        // 对等发现器
         this.peerFinder = new CoordinatorPeerFinder(settings, transportService,
             new HandshakingTransportAddressConnector(settings, transportService), configuredHostsResolver);
+        // 状态发布传输处理器
         this.publicationHandler = new PublicationTransportHandler(transportService, namedWriteableRegistry,
             this::handlePublishRequest, this::handleApplyCommit);
+        // 主节点检查器
         this.leaderChecker = new LeaderChecker(settings, transportService, getOnLeaderFailure());
+        // 跟随者节点检查器
         this.followersChecker = new FollowersChecker(settings, transportService, this::onFollowerCheckRequest, this::removeNode);
+        // 节点移除执行器
         this.nodeRemovalExecutor = new NodeRemovalClusterStateTaskExecutor(allocationService, logger);
+        // 集群应用者
         this.clusterApplier = clusterApplier;
+        // 设置集群状态供应器
         masterService.setClusterStateSupplier(this::getStateForMasterService);
+        // 重新配置器
         this.reconfigurator = new Reconfigurator(settings, clusterSettings);
+        // 集群引导服务
         this.clusterBootstrapService = new ClusterBootstrapService(settings, transportService, this::getFoundPeers,
             this::isInitialConfigurationSet, this::setInitialConfiguration);
+        // 发现升级服务
         this.discoveryUpgradeService = new DiscoveryUpgradeService(settings, transportService,
             this::isInitialConfigurationSet, joinHelper, peerFinder::getFoundPeers, this::setInitialConfiguration);
+        // 延迟检测器
         this.lagDetector = new LagDetector(settings, transportService.getThreadPool(), n -> removeNode(n, "lagging"),
             transportService::getLocalNode);
+        // 集群形成失败帮助器
         this.clusterFormationFailureHelper = new ClusterFormationFailureHelper(settings, this::getClusterFormationState,
             transportService.getThreadPool(), joinHelper::logLastFailedJoinAttempt);
     }
 
+    /**
+     * 获取集群形成状态。
+     * <p>
+     * 这个方法创建并返回一个包含当前集群形成状态的ClusterFormationState对象。
+     * 它包括设置、主节点服务获取的集群状态、最近解析的地址、已发现的节点列表和当前任期。
+     *
+     * @return 集群形成状态对象
+     */
     private ClusterFormationState getClusterFormationState() {
         return new ClusterFormationState(settings, getStateForMasterService(), peerFinder.getLastResolvedAddresses(),
             StreamSupport.stream(peerFinder.getFoundPeers().spliterator(), false).collect(Collectors.toList()), getCurrentTerm());
     }
 
+    /**
+     * 获取主节点失败时的回调任务。
+     * <p>
+     * 这个方法返回一个Runnable对象，当主节点失败时会被执行。
+     * 它将当前节点状态设置为候选人（Candidate）状态，准备进行新的选举。
+     *
+     * @return 主节点失败时执行的Runnable对象
+     */
     private Runnable getOnLeaderFailure() {
         return new Runnable() {
             @Override
             public void run() {
                 synchronized (mutex) {
+                    // 当主节点失败时，变成候选人准备新的选举
                     becomeCandidate("onLeaderFailure");
                 }
             }
 
             @Override
             public String toString() {
+                // 返回这个Runnable对象的描述
                 return "notification of leader failure";
             }
         };
     }
 
+    /**
+     * 移除节点。
+     * <p>
+     * 这个方法从集群状态中移除指定的节点。
+     * 它在领导者模式下，通过主节点服务提交一个状态更新任务来执行节点的移除。
+     *
+     * @param discoveryNode 要移除的节点
+     * @param reason 移除节点的原因
+     */
     private void removeNode(DiscoveryNode discoveryNode, String reason) {
         synchronized (mutex) {
             if (mode == Mode.LEADER) {
+                // 如果当前是领导者，提交状态更新任务以移除节点
                 masterService.submitStateUpdateTask("node-left",
                     new NodeRemovalClusterStateTaskExecutor.Task(discoveryNode, reason),
                     ClusterStateTaskConfig.build(Priority.IMMEDIATE),
@@ -201,27 +298,39 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
         }
     }
 
+    /**
+     * 处理来自跟随者节点的检查请求。
+     * <p>
+     * 当一个跟随者节点发送FollowerCheckRequest来检查当前节点的状态时，这个方法会被调用。
+     * 它用于确保当前节点的状态与跟随者节点的期望保持一致。
+     *
+     * @param followerCheckRequest 跟随者节点发送的检查请求
+     */
     void onFollowerCheckRequest(FollowerCheckRequest followerCheckRequest) {
         synchronized (mutex) {
+            // 确保当前任期至少与请求的任期一致
             ensureTermAtLeast(followerCheckRequest.getSender(), followerCheckRequest.getTerm());
 
+            // 如果当前任期与请求的任期不一致，则拒绝请求
             if (getCurrentTerm() != followerCheckRequest.getTerm()) {
                 logger.trace("onFollowerCheckRequest: current term is [{}], rejecting {}", getCurrentTerm(), followerCheckRequest);
                 throw new CoordinationStateRejectedException("onFollowerCheckRequest: current term is ["
                     + getCurrentTerm() + "], rejecting " + followerCheckRequest);
             }
 
-            // check if node has accepted a state in this term already. If not, this node has never committed a cluster state in this
-            // term and therefore never removed the NO_MASTER_BLOCK for this term. This logic ensures that we quickly turn a node
-            // into follower, even before receiving the first cluster state update, but also don't have to deal with the situation
-            // where we would possibly have to remove the NO_MASTER_BLOCK from the applierState when turning a candidate back to follower.
+            // 检查节点是否已经接受了当前任期的状态。如果没有，说明节点在当前任期中从未提交过集群状态，
+            // 因此也从未移除过NO_MASTER_BLOCK。这个逻辑确保了我们即使在接收到第一个集群状态更新之前，
+            // 也能迅速将节点转换为跟随者状态，同时不必处理在将候选人转换回跟随者时可能需要从applierState中移除NO_MASTER_BLOCK的情况。
             if (getLastAcceptedState().term() < getCurrentTerm()) {
                 becomeFollower("onFollowerCheckRequest", followerCheckRequest.getSender());
             } else if (mode == Mode.FOLLOWER) {
+                // 如果已经是跟随者模式，则成功响应检查请求
                 logger.trace("onFollowerCheckRequest: responding successfully to {}", followerCheckRequest);
             } else if (joinHelper.isJoinPending()) {
+                // 如果有加入请求待处理，重新加入主节点，并成功响应检查请求
                 logger.trace("onFollowerCheckRequest: rejoining master, responding successfully to {}", followerCheckRequest);
             } else {
+                // 如果收到的检查请求来自一个有问题的主节点，则拒绝请求
                 logger.trace("onFollowerCheckRequest: received check from faulty master, rejecting {}", followerCheckRequest);
                 throw new CoordinationStateRejectedException(
                     "onFollowerCheckRequest: received check from faulty master, rejecting " + followerCheckRequest);
@@ -229,27 +338,41 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
         }
     }
 
+    /**
+     * 处理提交应用请求。
+     * <p>
+     * 当集群中的一个节点接收到来自主节点的ApplyCommitRequest时，这个方法会被调用。
+     * 它负责更新集群状态并将更改应用到集群状态应用者（ClusterApplier）。
+     *
+     * @param applyCommitRequest 提交应用请求对象，包含要应用的集群状态信息
+     * @param applyListener 应用结果的监听器，用于接收操作成功或失败的回调
+     */
     private void handleApplyCommit(ApplyCommitRequest applyCommitRequest, ActionListener<Void> applyListener) {
         synchronized (mutex) {
             logger.trace("handleApplyCommit: applying commit {}", applyCommitRequest);
 
+            // 获取当前协调状态并处理提交请求
             coordinationState.get().handleCommit(applyCommitRequest);
+            // 获取最后一次成功提交的集群状态，并根据集群是否已恢复隐藏相应状态
             final ClusterState committedState = hideStateIfNotRecovered(coordinationState.get().getLastAcceptedState());
+            // 更新应用者状态，如果是候选人模式，则添加无主节点阻塞
             applierState = mode == Mode.CANDIDATE ? clusterStateWithNoMasterBlock(committedState) : committedState;
             if (applyCommitRequest.getSourceNode().equals(getLocalNode())) {
-                // master node applies the committed state at the end of the publication process, not here.
+                // 如果请求来自本地主节点，则在发布过程的最后应用提交状态，而不是在这里
                 applyListener.onResponse(null);
             } else {
+                // 如果请求来自其他节点，则通过集群应用者应用新状态
                 clusterApplier.onNewClusterState(applyCommitRequest.toString(), () -> applierState,
                     new ClusterApplyListener() {
-
                         @Override
                         public void onFailure(String source, Exception e) {
+                            // 如果应用失败，通知监听器
                             applyListener.onFailure(e);
                         }
 
                         @Override
                         public void onSuccess(String source) {
+                            // 如果应用成功，通知监听器
                             applyListener.onResponse(null);
                         }
                     });
@@ -258,116 +381,114 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
     }
 
     /**
-     * 处理发布请求的方法。
+     * 处理发布请求。
+     * <p>
+     * 当节点接收到来自其他节点的发布请求时，这个方法会被调用。它负责验证请求的有效性，
+     * 更新集群状态，并决定是否需要加入其他节点的集群。
      *
-     * @param publishRequest 要处理的发布请求。
-     * @return 返回一个包含发布响应和加入信息的对象。
+     * @param publishRequest 包含要发布的集群状态的发布请求
+     * @return 包含发布结果和可能的加入信息的响应
      */
     PublishWithJoinResponse handlePublishRequest(PublishRequest publishRequest) {
-        // 断言当前节点是请求中接受状态的本地节点，如果不是，则抛出异常。
+        // 断言请求中接受的集群状态的本地节点与当前节点相等
         assert publishRequest.getAcceptedState().nodes().getLocalNode().equals(getLocalNode()) :
-            "Local node in accepted state does not match current local node.";
+            publishRequest.getAcceptedState().nodes().getLocalNode() + " != " + getLocalNode();
 
-        // 进入同步块，确保线程安全。
         synchronized (mutex) {
-            // 获取发布请求中接受状态的源节点。
+            // 获取发布请求中源节点，即发送发布请求的主节点
             final DiscoveryNode sourceNode = publishRequest.getAcceptedState().nodes().getMasterNode();
-
-            // 记录当前正在处理的请求和源节点。
+            // 记录日志，说明正在处理来自特定节点的发布请求
             logger.trace("handlePublishRequest: handling [{}] from [{}]", publishRequest, sourceNode);
 
-            // 如果源节点是本地节点，并且当前模式不是领导者，抛出异常。
+            // 如果请求来自本地节点，但当前模式不是领导者，则抛出异常
             if (sourceNode.equals(getLocalNode()) && mode != Mode.LEADER) {
                 throw new CoordinationStateRejectedException("no longer leading this publication's term: " + publishRequest);
             }
 
-            // 如果当前是跟随者模式，并且请求的集群状态版本与当前集群状态版本不匹配，拒绝请求。
-            if (publishRequest.getAcceptedState().term() == ZEN1_BWC_TERM &&
-                getCurrentTerm() == ZEN1_BWC_TERM &&
-                mode == Mode.FOLLOWER &&
-                !Optional.of(sourceNode).equals(lastKnownLeader)) {
-
+            // 如果当前节点不是跟随者lastKnownLeader，且集群状态来自非预期的主节点，则拒绝请求
+            if (publishRequest.getAcceptedState().term() == ZEN1_BWC_TERM && getCurrentTerm() == ZEN1_BWC_TERM
+                && mode == Mode.FOLLOWER && Optional.of(sourceNode).equals(lastKnownLeader) == false) {
                 logger.debug("received cluster state from {} but currently following {}, rejecting", sourceNode, lastKnownLeader);
-                throw new CoordinationStateRejectedException("received cluster state from " + sourceNode +
-                    " but currently following " + lastKnownLeader + ", rejecting");
+                throw new CoordinationStateRejectedException("received cluster state from " + sourceNode + " but currently following "
+                    + lastKnownLeader + ", rejecting");
             }
 
-            // 获取本地集群状态。
+            // 如果本地集群状态的元数据已提交，但集群UUID与请求中的集群UUID不匹配，则拒绝请求
             final ClusterState localState = coordinationState.get().getLastAcceptedState();
-
-            // 如果请求中的集群UUID与本地集群UUID不匹配，拒绝请求。
             if (localState.metaData().clusterUUIDCommitted() &&
-                !localState.metaData().clusterUUID().equals(publishRequest.getAcceptedState().metaData().clusterUUID())) {
+                localState.metaData().clusterUUID().equals(publishRequest.getAcceptedState().metaData().clusterUUID()) == false) {
                 logger.warn("received cluster state from {} with a different cluster uuid {} than local cluster uuid {}, rejecting",
                     sourceNode, publishRequest.getAcceptedState().metaData().clusterUUID(), localState.metaData().clusterUUID());
-                throw new CoordinationStateRejectedException("received cluster state from " + sourceNode + " with a different cluster uuid " +
-                    publishRequest.getAcceptedState().metaData().clusterUUID() + " than local cluster uuid " + localState.metaData().clusterUUID() + ", rejecting");
+                throw new CoordinationStateRejectedException("received cluster state from " + sourceNode +
+                    " with a different cluster uuid " + publishRequest.getAcceptedState().metaData().clusterUUID() +
+                    " than local cluster uuid " + localState.metaData().clusterUUID() + ", rejecting");
             }
 
-            // 如果请求的任期大于本地状态的任期，执行加入验证。
+            // 如果请求的集群状态任期大于本地状态任期，则执行加入验证
             if (publishRequest.getAcceptedState().term() > localState.term()) {
                 onJoinValidators.forEach(a -> a.accept(getLocalNode(), publishRequest.getAcceptedState()));
             }
 
-            // 确保本地节点的任期至少与请求中的任期一致。
+            // 确保当前任期至少与发布请求中的任期一致
             ensureTermAtLeast(sourceNode, publishRequest.getAcceptedState().term());
-
-            // 处理发布请求并获取响应。
+            // 处理发布请求并获取发布响应
             final PublishResponse publishResponse = coordinationState.get().handlePublishRequest(publishRequest);
 
-            // 如果源节点是本地节点，则更新预投票收集器。
+            // 如果请求来自本地节点，则更新预投票收集器；否则，将当前节点设置为跟随者
             if (sourceNode.equals(getLocalNode())) {
                 preVoteCollector.update(getPreVoteResponse(), getLocalNode());
             } else {
-                // 否则，将当前节点设置为跟随者状态，并更新预投票收集器。
-                becomeFollower("handlePublishRequest", sourceNode);
+                becomeFollower("handlePublishRequest", sourceNode); // also updates preVoteCollector
             }
 
-            // 构建并返回包含发布响应和加入信息的响应对象。
+            // 创建并返回包含发布响应和可能的加入信息的响应对象
             return new PublishWithJoinResponse(publishResponse,
                 joinWithDestination(lastJoin, sourceNode, publishRequest.getAcceptedState().term()));
         }
     }
 
     /**
-     * 检查并返回是否应该加入集群。
-     * 如果上次的加入请求仍然有效且目标节点和任期与当前请求匹配，则返回上次的加入请求。
-     * 否则，返回一个空的Optional，表示不需要加入。
+     * 根据目标和任期检查是否可以重新使用上一次的加入请求。
+     * <p>
+     * 如果上一次的加入请求存在，并且目标节点与当前领导者匹配，同时任期也相同，
+     * 则返回上一次的加入请求；否则返回空。
      *
-     * @param lastJoin 上次的加入请求。
-     * @param leader 当前集群的领导者节点。
-     * @param term 当前请求的任期。
-     * @return 返回一个Optional对象，如果应该加入则包含上次的加入请求，否则为空。
+     * @param lastJoin 上一次的加入请求
+     * @param leader 当前的领导者节点
+     * @param term 当前任期
+     * @return 如果条件满足，返回上一次的加入请求；否则返回空
      */
     private static Optional<Join> joinWithDestination(Optional<Join> lastJoin, DiscoveryNode leader, long term) {
-        // 如果上次的加入请求存在，目标节点匹配，并且任期相同，则返回上次的加入请求。
+        // 检查上一次的加入请求是否存在，目标节点是否匹配，任期是否相同
         if (lastJoin.isPresent()
             && lastJoin.get().targetMatches(leader)
             && lastJoin.get().getTerm() == term) {
             return lastJoin;
         }
-
-        // 如果不满足上述条件，则不需要加入，返回空的Optional。
+        // 如果不满足条件，返回空
         return Optional.empty();
     }
 
     /**
-     * 关闭与预投票和选举相关的调度器。
-     * 此方法确保在不再需要时，释放相关资源。
+     * 关闭预投票和选举调度器。
+     * <p>
+     * 这个方法用于关闭当前的预投票轮次和选举调度器，释放相关资源。
+     * 通常在选举过程结束或需要清理资源时调用。
      */
     private void closePrevotingAndElectionScheduler() {
-        // 如果存在预投票轮次，则关闭它并设置为null。
+        // 如果存在预投票轮次，关闭并清理
         if (prevotingRound != null) {
             prevotingRound.close();
             prevotingRound = null;
         }
 
-        // 如果存在选举调度器，则关闭它并设置为null。
+        // 如果存在选举调度器，关闭并清理
         if (electionScheduler != null) {
             electionScheduler.close();
             electionScheduler = null;
         }
     }
+
 
     /**
      * 更新节点所看到的任期的最大值。
