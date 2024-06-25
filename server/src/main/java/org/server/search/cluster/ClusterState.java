@@ -24,6 +24,7 @@ import org.server.search.cluster.node.Node;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.cluster.routing.RoutingNodes;
 import org.server.search.cluster.routing.RoutingTable;
+import org.server.search.discovery.coordination.CoordinationMetaData;
 import org.server.search.util.Nullable;
 import org.server.search.util.io.ByteArrayDataInputStream;
 import org.server.search.util.io.ByteArrayDataOutputStream;
@@ -32,6 +33,7 @@ import org.server.search.util.settings.Settings;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Set;
 
 
 public class ClusterState {
@@ -53,7 +55,9 @@ public class ClusterState {
         this.routingTable = routingTable;
         this.nodes = nodes;
     }
-
+    public long term() {
+        return coordinationMetaData().term();
+    }
     public long version() {
         return this.version;
     }
@@ -80,7 +84,23 @@ public class ClusterState {
         routingNodes = routingTable.routingNodes(metaData);
         return routingNodes;
     }
+    public CoordinationMetaData coordinationMetaData() {
+        return metaData.coordinationMetaData();
+    }
+    public CoordinationMetaData.VotingConfiguration getLastAcceptedConfiguration() {
+        return coordinationMetaData().getLastAcceptedConfiguration();
+    }
 
+    public CoordinationMetaData.VotingConfiguration getLastCommittedConfiguration() {
+        return coordinationMetaData().getLastCommittedConfiguration();
+    }
+
+    public Set<CoordinationMetaData.VotingConfigExclusion> getVotingConfigExclusions() {
+        return coordinationMetaData().getVotingConfigExclusions();
+    }
+    public static Builder builder(ClusterState state) {
+        return new Builder(state);
+    }
     public static Builder newClusterStateBuilder() {
         return new Builder();
     }
@@ -94,7 +114,15 @@ public class ClusterState {
         private RoutingTable routingTable = RoutingTable.EMPTY_ROUTING_TABLE;
 
         private Nodes nodes = Nodes.EMPTY_NODES;
+        public Builder() {
 
+        }
+        public Builder(ClusterState state) {
+            this.version = state.version();
+            this.nodes = state.nodes();
+            this.routingTable = state.routingTable();
+            this.metaData = state.metaData();
+        }
         public Builder nodes(Nodes.Builder nodesBuilder) {
             return nodes(nodesBuilder.build());
         }

@@ -31,6 +31,8 @@ import org.server.search.util.settings.Settings;
 import org.server.search.util.transport.BoundTransportAddress;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -182,5 +184,11 @@ public class TransportService extends AbstractComponent implements LifecycleComp
 
     public void removeHandler(String action) {
         serverHandlers.remove(action);
+    }
+
+    public List<String> getLocalAddresses() {
+        List<String> local = new ArrayList<>();
+        local.add("127.0.0.1");
+        return local;
     }
 }

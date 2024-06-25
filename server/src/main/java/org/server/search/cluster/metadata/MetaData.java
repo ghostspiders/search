@@ -21,6 +21,8 @@ package org.server.search.cluster.metadata;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
+import org.server.search.cluster.ClusterState;
+import org.server.search.discovery.coordination.CoordinationMetaData;
 import org.server.search.util.MapBuilder;
 import org.server.search.util.Nullable;
 import org.server.search.util.concurrent.Immutable;
@@ -38,6 +40,7 @@ public class MetaData implements Iterable<IndexMetaData> {
 
     // 定义一个空的元数据对象，作为静态常量
     public static MetaData EMPTY_META_DATA = newMetaDataBuilder().build();
+    public static final String UNKNOWN_CLUSTER_UUID = "_na_";
 
     // 存储索引名称和对应的IndexMetaData对象的不可变Map
     private final ImmutableMap<String, IndexMetaData> indices;
@@ -47,9 +50,11 @@ public class MetaData implements Iterable<IndexMetaData> {
 
     // 所有索引的总分片数，是一个瞬时变量，不会被序列化
     private final transient int totalNumberOfShards;
-
+    private final CoordinationMetaData coordinationMetaData;
+    private final String clusterUUID;
+    private final boolean clusterUUIDCommitted;
     // MetaData类的构造函数
-    private MetaData(ImmutableMap<String, IndexMetaData> indices, int maxNumberOfShardsPerNode) {
+    private MetaData(ImmutableMap<String, IndexMetaData> indices, int maxNumberOfShardsPerNode, String clusterUUID, boolean clusterUUIDCommitted, CoordinationMetaData coordinationMetaData) {
         // 使用ImmutableMap的copyOf方法来创建一个不可变副本
         this.indices = ImmutableMap.copyOf(indices);
         this.maxNumberOfShardsPerNode = maxNumberOfShardsPerNode;
@@ -59,6 +64,9 @@ public class MetaData implements Iterable<IndexMetaData> {
             totalNumberOfShards += indexMetaData.totalNumberOfShards();
         }
         this.totalNumberOfShards = totalNumberOfShards;
+        this.coordinationMetaData = coordinationMetaData;
+        this.clusterUUID = clusterUUID;
+        this.clusterUUIDCommitted = clusterUUIDCommitted;
     }
 
     // 检查是否存在指定名称的索引
@@ -97,15 +105,50 @@ public class MetaData implements Iterable<IndexMetaData> {
         return new Builder();
     }
 
+    public CoordinationMetaData coordinationMetaData() {
+        return this.coordinationMetaData;
+    }
+    public String clusterUUID() {
+        return this.clusterUUID;
+    }
+    public boolean clusterUUIDCommitted() {
+        return this.clusterUUIDCommitted;
+    }
+    public static Builder builder(MetaData metaData) {
+        return new Builder(metaData);
+    }
+
     // MetaData的构建器内部类
     public static class Builder {
 
         // 每个节点上分片的最大数量，默认值为100
         private int maxNumberOfShardsPerNode = 100;
-
+        private String clusterUUID;
+        private boolean clusterUUIDCommitted;
+        private CoordinationMetaData coordinationMetaData = CoordinationMetaData.EMPTY_META_DATA;
         // 用于构建索引Map的构建器
         private MapBuilder<String, IndexMetaData> indices = newMapBuilder();
+        public Builder() {
+            clusterUUID = UNKNOWN_CLUSTER_UUID;
+        }
+        public Builder(MetaData metaData) {
+            this.clusterUUID = metaData.clusterUUID;
+            this.clusterUUIDCommitted = metaData.clusterUUIDCommitted;
+            this.coordinationMetaData = metaData.coordinationMetaData;
+        }
+        public Builder coordinationMetaData(CoordinationMetaData coordinationMetaData) {
+            this.coordinationMetaData = coordinationMetaData;
+            return this;
+        }
+        public Builder clusterUUID(String clusterUUID) {
+            this.clusterUUID = clusterUUID;
+            return this;
+        }
 
+        public Builder clusterUUIDCommitted(boolean clusterUUIDCommitted) {
+            this.clusterUUIDCommitted = clusterUUIDCommitted;
+            return this;
+        }
         // 向构建器添加一个IndexMetaData对象
         public Builder put(IndexMetaData.Builder indexMetaDataBuilder) {
             return put(indexMetaDataBuilder.build());
@@ -137,7 +180,7 @@ public class MetaData implements Iterable<IndexMetaData> {
 
         // 构建并返回MetaData对象
         public MetaData build() {
-            return new MetaData(indices.immutableMap(), maxNumberOfShardsPerNode);
+            return new MetaData(indices.immutableMap(), maxNumberOfShardsPerNode,clusterUUID, clusterUUIDCommitted,coordinationMetaData);
         }
 
         // 从DataInput读取数据并构建MetaData对象
