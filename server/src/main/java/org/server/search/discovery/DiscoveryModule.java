@@ -20,11 +20,8 @@
 package org.server.search.discovery;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
-import org.server.search.util.Classes;
+import org.server.search.discovery.coordination.Coordinator;
 import org.server.search.util.settings.Settings;
-
-import static org.server.search.util.guice.ModulesFactory.*;
 
  
 public class DiscoveryModule extends AbstractModule {
@@ -37,17 +34,7 @@ public class DiscoveryModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        Class<? extends Module> defaultDiscoveryModule = null;
-        try {
-            Classes.getDefaultClassLoader().loadClass("org.server.search.discovery.jgroups.JgroupsDiscovery");
-            defaultDiscoveryModule = (Class<? extends Module>) Classes.getDefaultClassLoader().loadClass("org.server.search.discovery.jgroups.JgroupsDiscoveryModule");
-        } catch (ClassNotFoundException e) {
-            // TODO default to the local one
-        }
-
-        Class<? extends Module> moduleClass = settings.getAsClass("discovery.type", defaultDiscoveryModule, "org.server.search.discovery.", "DiscoveryModule");
-        createModule(moduleClass, settings).configure(binder());
-
+        bind(Discovery.class).to(Coordinator.class).asEagerSingleton();
         bind(DiscoveryService.class).asEagerSingleton();
     }
 }

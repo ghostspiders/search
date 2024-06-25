@@ -23,6 +23,7 @@ import org.server.search.util.SizeValue;
 import org.server.search.util.TimeValue;
 import org.server.search.util.concurrent.ThreadSafe;
 
+import java.util.List;
 import java.util.Map;
 
  
@@ -64,6 +65,8 @@ public interface Settings {
     <T> Class<? extends T> getAsClass(String setting, Class<? extends T> defaultClazz, String prefixPackage, String suffixClassName) throws SettingsException;
 
     String[] getAsArray(String settingPrefix) throws SettingsException;
+
+    List<String> getListStr(String setting, List<String> objects);
 
     interface Builder {
         Settings build();

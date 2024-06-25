@@ -20,6 +20,7 @@
 package org.server.search.discovery;
 
 import org.server.search.cluster.ClusterState;
+import org.server.search.discovery.coordination.ClusterStatePublisher;
 import org.server.search.util.component.LifecycleComponent;
 
 
@@ -28,44 +29,16 @@ import org.server.search.util.component.LifecycleComponent;
  * <p>
  * 实现此接口的类必须实现LifecycleComponent接口，以管理组件的生命周期。
  */
-public interface Discovery extends LifecycleComponent<Discovery> {
+public interface Discovery extends LifecycleComponent<Discovery>, ClusterStatePublisher {
 
     /**
-     * 添加一个初始状态发现监听器。
-     * 这个监听器在节点发现过程的初始阶段被调用，用于处理节点加入集群的逻辑。
-     *
-     * @param listener 要添加的初始状态发现监听器
+     * 触发初始的加入周期。
+     * <p>
+     * 这个方法启动节点加入集群的初始过程，通常用于节点启动时寻找并加入现有的集群。
+     * <p>
+     * 在这个过程中，节点会尝试与集群中的其他节点建立连接，并参与到主节点选举和集群状态同步中。
+     * <p>
+     * 这个方法通常在节点启动时被调用一次，但在某些情况下，如集群分裂恢复后，可能会再次触发。
      */
-    void addListener(InitialStateDiscoveryListener listener);
-
-    /**
-     * 移除一个初始状态发现监听器。
-     *
-     * @param listener 要移除的初始状态发现监听器
-     */
-    void removeListener(InitialStateDiscoveryListener listener);
-
-    /**
-     * 返回当前节点的描述信息。
-     * 这个描述信息通常包含了节点的基本信息，如节点名称、地址等。
-     *
-     * @return 当前节点的描述信息
-     */
-    String nodeDescription();
-
-    /**
-     * 判断当前节点是否是集群中的首个主节点。
-     * 如果集群中还没有主节点，这个方法会返回true，表示当前节点可以开始选举过程。
-     *
-     * @return 如果当前节点是首个主节点，则返回true
-     */
-    boolean firstMaster();
-
-    /**
-     * 发布集群状态到集群中的其他节点。
-     * 当集群状态发生变化时，需要通过这个方法将新的状态发布给集群中的其他节点。
-     *
-     * @param clusterState 要发布的集群状态
-     */
-    void publish(ClusterState clusterState);
+    void startInitialJoin();
 }

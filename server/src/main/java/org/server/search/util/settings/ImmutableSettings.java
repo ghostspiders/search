@@ -19,6 +19,7 @@
 
 package org.server.search.util.settings;
 
+import cn.hutool.core.util.StrUtil;
 import org.server.search.util.*;
 import org.server.search.util.concurrent.Immutable;
 import org.server.search.util.concurrent.ThreadSafe;
@@ -30,6 +31,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.*;
 
@@ -212,6 +214,18 @@ public class ImmutableSettings implements Settings {
             result.add(value);
         }
         return result.toArray(new String[result.size()]);
+    }
+
+    @Override
+    public List<String> getListStr(String setting, List<String> objects) {
+        String str = get(setting);
+        if(StrUtil.isNotBlank(str)){
+            return Arrays.asList(str.split(","))
+                    .stream()
+                    .map(word -> word.trim())
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     @Override public Map<String, Settings> getGroups(String settingPrefix) throws SettingsException {
