@@ -18,6 +18,8 @@
  */
 package org.server.search.discovery.coordination;
 
+import org.server.search.cluster.node.DiscoveryNode;
+
 import java.util.Optional;
 
 public class JoinRequest{

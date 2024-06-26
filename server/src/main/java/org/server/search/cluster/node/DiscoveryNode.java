@@ -17,13 +17,19 @@
  * under the License.
  */
 
-package org.server.search.discovery.coordination;
+package org.server.search.cluster.node;
 
 import cn.hutool.core.util.StrUtil;
 import org.server.search.Version;
+import org.server.search.util.io.Streamable;
 import org.server.search.util.settings.Settings;
 import org.server.search.util.transport.InetSocketTransportAddress;
-import org.server.search.util.transport.TransportAddress;
+import org.server.search.util.transport.TransportAddressSerializers;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -39,6 +45,10 @@ public class DiscoveryNode{
      */
     static final String COORDINATING_ONLY = "coordinating_only";
     private String version;
+
+    public DiscoveryNode() {
+
+    }
 
     /**
      * 判断节点是否需要本地存储。
@@ -105,7 +115,7 @@ public class DiscoveryNode{
     /**
      * 节点的传输地址，用于节点间的通信。
      */
-    private  TransportAddress address;
+    private  InetSocketTransportAddress address;
 
     /**
      * 节点的属性映射，包含节点特定的配置信息。
@@ -267,7 +277,7 @@ public class DiscoveryNode{
     /**
      * The address that the node can be communicated with.
      */
-    public TransportAddress getAddress() {
+    public InetSocketTransportAddress getAddress() {
         return address;
     }
 
@@ -381,7 +391,11 @@ public class DiscoveryNode{
         }
         return sb.toString();
     }
-
+    public static DiscoveryNode readNode(DataInput in) throws IOException, ClassNotFoundException {
+        DiscoveryNode node = new DiscoveryNode();
+        node.readFrom(in);
+        return node;
+    }
 
     /**
      * Enum that holds all the possible roles that that a node can fulfill in a cluster.

@@ -43,6 +43,7 @@ public class Node implements Streamable, Serializable {
     private boolean dataNode = true;
 
     private Node() {
+
     }
 
     public Node(String nodeId, TransportAddress address) {

@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.metadata.MetaData;
+import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.util.settings.Settings;
 
 import java.util.*;

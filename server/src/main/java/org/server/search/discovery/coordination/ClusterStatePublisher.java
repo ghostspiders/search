@@ -20,6 +20,7 @@ package org.server.search.discovery.coordination;
 
 import org.server.search.action.ActionListener;
 import org.server.search.cluster.ClusterChangedEvent;
+import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.util.TimeValue;
 
 public interface ClusterStatePublisher {

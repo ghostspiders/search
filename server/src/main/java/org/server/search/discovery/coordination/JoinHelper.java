@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.server.search.cluster.DefaultClusterService;
+import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.transport.TransportService;
 import org.server.search.util.TimeValue;
 

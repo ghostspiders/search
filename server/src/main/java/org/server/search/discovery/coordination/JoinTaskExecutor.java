@@ -22,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 import org.server.search.NotMasterException;
 import org.server.search.Version;
 import org.server.search.cluster.ClusterState;
+import org.server.search.cluster.node.DiscoveryNode;
+import org.server.search.cluster.node.DiscoveryNodes;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.util.settings.Settings;

@@ -18,7 +18,7 @@
  */
 package org.server.search.discovery.coordination;
 
-import java.io.IOException;
+import org.server.search.cluster.node.DiscoveryNode;
 
 /**
  * Triggered by a {@link StartJoinRequest}, instances of this class represent join votes,
