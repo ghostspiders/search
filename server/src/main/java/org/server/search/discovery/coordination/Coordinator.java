@@ -18,8 +18,6 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.lucene.util.SetOnce;
 import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
@@ -27,6 +25,7 @@ import org.server.search.client.transport.TransportClient;
 import org.server.search.cluster.ClusterChangedEvent;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.DefaultClusterService;
+import org.server.search.cluster.node.Nodes;
 import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.discovery.Discovery;
 import org.server.search.gateway.GatewayService;
@@ -35,9 +34,7 @@ import org.server.search.transport.TransportService;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.component.Lifecycle;
 import org.server.search.util.settings.Settings;
-
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Coordinator extends AbstractComponent implements Discovery {
@@ -209,22 +206,60 @@ public class Coordinator extends AbstractComponent implements Discovery {
         // 检查原始集群状态是否包含主节点ID。
         if (clusterState.nodes().getMasterNodeId() != null) {
             // 如果存在主节点ID，则添加没有主节点的全局块。
-            // 断言确保在添加之前没有NO_MASTER_BLOCK。
-            assert clusterState.blocks().hasGlobalBlockWithId(NO_MASTER_BLOCK_ID) == false :
-                    "NO_MASTER_BLOCK should only be added by Coordinator";
-
-            // 创建一个新的ClusterBlocks，包含原始blocks并添加NO_MASTER_BLOCK。
-            final ClusterBlocks clusterBlocks = ClusterBlocks.builder().blocks(clusterState.blocks())
-                    .addGlobalBlock(noMasterBlockService.getNoMasterBlock()).build();
-
-            // 创建一个新的DiscoveryNodes，没有设置主节点ID。
-            final DiscoveryNodes discoveryNodes = new DiscoveryNodes.Builder(clusterState.nodes()).masterNodeId(null).build();
-
+            String masterNodeId = clusterState.nodes().getMasterNodeId();
+            final Nodes build = Nodes.newNodesBuilder().putAll(clusterState.nodes()).remove(masterNodeId).build();
             // 构建并返回一个新的ClusterState，包含更新后的blocks和nodes。
-            return ClusterState.builder(clusterState).blocks(clusterBlocks).nodes(discoveryNodes).build();
+            return ClusterState.builder(clusterState).nodes(build).build();
         } else {
             // 如果原始集群状态中没有主节点ID，直接返回原始状态。
             return clusterState;
+        }
+    }
+    /**
+     * 处理来自其他节点的加入请求。
+     *
+     * @param joinRequest 加入请求，包含请求节点和相关信息。
+     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
+     */
+    private void handleJoinRequest(JoinRequest joinRequest, JoinHelper.JoinCallback joinCallback) {
+        // 断言当前线程不持有互斥锁。
+        assert Thread.holdsLock(mutex) == false;
+        // 断言本地节点具有成为主节点的资格。
+        assert getLocalNode().isMasterNode() : getLocalNode() + " received a join but is not master-eligible";
+
+        // 记录日志，显示当前模式和正在处理的加入请求。
+        logger.trace("handleJoinRequest: as {}, handling {}", mode, joinRequest);
+
+        // 如果是单节点发现模式并且请求节点不是本地节点，则调用回调的onFailure方法。
+        if (singleNodeDiscovery && joinRequest.getSourceNode().equals(getLocalNode()) == false) {
+            joinCallback.onFailure(new IllegalStateException("cannot join node with [" + DiscoveryModule.DISCOVERY_TYPE_SETTING.getKey() +
+                    "] set to [" + DiscoveryModule.SINGLE_NODE_DISCOVERY_TYPE  + "] discovery"));
+            return;
+        }
+
+        // 连接到请求节点。
+        transportService.connectToNode(joinRequest.getSourceNode());
+
+        // 获取当前集群状态，用于加入验证。
+        final ClusterState stateForJoinValidation = getStateForMasterService();
+
+        // 如果本地节点已被选举为主节点，则进行一系列验证。
+        if (stateForJoinValidation.nodes().isLocalNodeElectedMaster()) {
+            // 遍历onJoinValidators并接受验证。
+            onJoinValidators.forEach(a -> a.accept(joinRequest.getSourceNode(), stateForJoinValidation));
+            // 检查集群状态是否有全局未恢复的块。
+            if (stateForJoinValidation.getBlocks().hasGlobalBlock(STATE_NOT_RECOVERED_BLOCK) == false) {
+                // 确保请求节点的版本至少与集群中最小节点版本一致。
+                // 这在多个地方执行，这里主要是为了尽快失败。
+                JoinTaskExecutor.ensureMajorVersionBarrier(joinRequest.getSourceNode().getVersion(),
+                        stateForJoinValidation.getNodes().getMinNodeVersion());
+            }
+            // 发送验证加入请求。
+            sendValidateJoinRequest(stateForJoinValidation, joinRequest, joinCallback);
+
+        } else {
+            // 如果本地节点未被选举为主节点，则处理加入请求。
+            processJoinRequest(joinRequest, joinCallback);
         }
     }
 }

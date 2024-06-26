@@ -64,7 +64,22 @@ public class Nodes implements Iterable<Node> {
     public boolean localNodeMaster() {
         return localNodeId.equals(masterNodeId);
     }
-
+    public Node getMasterNode() {
+        if (masterNodeId != null) {
+            return nodes.get(masterNodeId);
+        }
+        return null;
+    }
+    public boolean isLocalNodeElectedMaster() {
+        if (localNodeId == null) {
+            // we don't know yet the local node id, return false
+            return false;
+        }
+        return localNodeId.equals(masterNodeId);
+    }
+    public Node getLocalNode() {
+        return nodes.get(localNodeId);
+    }
     public int size() {
         return nodes.size();
     }
@@ -161,7 +176,9 @@ public class Nodes implements Iterable<Node> {
     public Delta emptyDelta() {
         return new Delta(null, null, localNodeId, Node.EMPTY_LIST, Node.EMPTY_LIST);
     }
-
+    public String getMasterNodeId() {
+        return this.masterNodeId;
+    }
     public static class Delta {
 
         private final String localNodeId;
