@@ -22,10 +22,15 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.server.search.action.ActionListener;
+import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.DefaultClusterService;
 import org.server.search.cluster.node.DiscoveryNode;
+import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.transport.TransportService;
 import org.server.search.util.TimeValue;
+import org.server.search.util.Tuple;
+import org.server.search.util.settings.Settings;
 
 import java.io.IOException;
 import java.util.*;
@@ -98,7 +103,7 @@ public class JoinHelper {
      * 这可以用于记录和分析加入过程中的失败原因。
      */
     private AtomicReference<FailedJoinAttempt> lastFailedJoinAttempt = new AtomicReference<>();
-    public JoinHelper(Settings settings, AllocationService allocationService, MasterService masterService,
+    public JoinHelper(Settings settings, ShardsRoutingStrategy allocationService, DefaultClusterService masterService,
                       TransportService transportService, LongSupplier currentTermSupplier, Supplier<ClusterState> currentStateSupplier,
                       BiConsumer<JoinRequest, JoinCallback> joinHandler, Function<StartJoinRequest, Join> joinLeaderInTerm,
                       Collection<BiConsumer<DiscoveryNode, ClusterState>> joinValidators) {
@@ -435,7 +440,7 @@ public class JoinHelper {
      * @param state 当前的集群状态。
      * @param listener 响应或失败的监听器回调。
      */
-    public void sendValidateJoinRequest(DiscoveryNode node, ClusterState state, ActionListener<TransportResponse.Empty> listener) {
+    public void sendValidateJoinRequest(DiscoveryNode node, ClusterState state, ActionListener<Empty> listener) {
         // 根据节点类型选择不同的动作名称
         final String actionName;
         if (Coordinator.isZen1Node(node)) {

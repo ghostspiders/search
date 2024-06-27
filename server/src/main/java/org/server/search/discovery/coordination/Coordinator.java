@@ -18,6 +18,7 @@
  */
 package org.server.search.discovery.coordination;
 
+import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.lucene.util.SetOnce;
 import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
@@ -25,6 +26,8 @@ import org.server.search.client.transport.TransportClient;
 import org.server.search.cluster.ClusterChangedEvent;
 import org.server.search.cluster.ClusterState;
 import org.server.search.cluster.DefaultClusterService;
+import org.server.search.cluster.node.DiscoveryNode;
+import org.server.search.cluster.node.Node;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
 import org.server.search.discovery.Discovery;
@@ -59,6 +62,12 @@ public class Coordinator extends AbstractComponent implements Discovery {
     private final SetOnce<CoordinationState> coordinationState = new SetOnce<>();
     // 当前模式，如跟随者、候选者或领导者
     private Mode mode;
+    private  JoinHelper joinHelper;
+    private JoinHelper.JoinAccumulator joinAccumulator;
+    // 对等发现器，用于发现集群中的其他节点
+    private final PeerFinder peerFinder;
+    // 上一次加入信息
+    private Optional<Join> lastJoin;
     public Coordinator(Settings settings, ThreadPool threadPool, TransportService transportService, TransportClient networkService, DefaultClusterService masterService,
                        ShardsRoutingStrategy allocationService, GatewayService gatewayMetaState) {
         super(settings);
@@ -232,8 +241,8 @@ public class Coordinator extends AbstractComponent implements Discovery {
 
         // 如果是单节点发现模式并且请求节点不是本地节点，则调用回调的onFailure方法。
         if (singleNodeDiscovery && joinRequest.getSourceNode().equals(getLocalNode()) == false) {
-            joinCallback.onFailure(new IllegalStateException("cannot join node with [" + DiscoveryModule.DISCOVERY_TYPE_SETTING.getKey() +
-                    "] set to [" + DiscoveryModule.SINGLE_NODE_DISCOVERY_TYPE  + "] discovery"));
+            joinCallback.onFailure(new IllegalStateException("cannot join node with [" + "discovery.type" +
+                    "] set to [" + "single-node"  + "] discovery"));
             return;
         }
 
@@ -245,15 +254,6 @@ public class Coordinator extends AbstractComponent implements Discovery {
 
         // 如果本地节点已被选举为主节点，则进行一系列验证。
         if (stateForJoinValidation.nodes().isLocalNodeElectedMaster()) {
-            // 遍历onJoinValidators并接受验证。
-            onJoinValidators.forEach(a -> a.accept(joinRequest.getSourceNode(), stateForJoinValidation));
-            // 检查集群状态是否有全局未恢复的块。
-            if (stateForJoinValidation.getBlocks().hasGlobalBlock(STATE_NOT_RECOVERED_BLOCK) == false) {
-                // 确保请求节点的版本至少与集群中最小节点版本一致。
-                // 这在多个地方执行，这里主要是为了尽快失败。
-                JoinTaskExecutor.ensureMajorVersionBarrier(joinRequest.getSourceNode().getVersion(),
-                        stateForJoinValidation.getNodes().getMinNodeVersion());
-            }
             // 发送验证加入请求。
             sendValidateJoinRequest(stateForJoinValidation, joinRequest, joinCallback);
 
@@ -261,5 +261,276 @@ public class Coordinator extends AbstractComponent implements Discovery {
             // 如果本地节点未被选举为主节点，则处理加入请求。
             processJoinRequest(joinRequest, joinCallback);
         }
+    }
+    /**
+     * 发送验证加入请求。
+     * 此方法在接收到一个节点的加入请求时调用，用于验证该节点是否可以加入当前集群。
+     *
+     * @param stateForJoinValidation 用于验证的集群状态。
+     * @param joinRequest 加入请求，包含请求节点和相关信息。
+     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
+     */
+    void sendValidateJoinRequest(ClusterState stateForJoinValidation, JoinRequest joinRequest,
+                                 JoinHelper.JoinCallback joinCallback) {
+        // 使用joinHelper发送验证请求到请求加入的节点。
+        // 这个操作会异步执行，结果通过ActionListener<Empty>回调处理。
+        joinHelper.sendValidateJoinRequest(joinRequest.getSourceNode(), stateForJoinValidation, new ActionListener<Empty>() {
+            // 当验证请求成功响应时调用此方法。
+            @Override
+            public void onResponse(Empty empty) {
+                try {
+                    // 如果验证成功，进一步处理加入请求。
+                    processJoinRequest(joinRequest, joinCallback);
+                } catch (Exception e) {
+                    // 如果处理加入请求时出现异常，通过回调通知失败。
+                    joinCallback.onFailure(e);
+                }
+            }
+
+            // 如果验证请求失败或超时，调用此方法。
+            @Override
+            public void onFailure(Throwable e) {
+                // 记录警告日志，显示验证失败的节点和异常信息。
+                logger.debug("failed to validate incoming join request from node [{}]",joinRequest.getSourceNode()), e);
+
+                // 通过回调通知验证请求失败，并提供异常信息。
+                joinCallback.onFailure(new IllegalStateException("failure when sending a validation request to node", e));
+            }
+        });
+    }
+    /**
+     * 处理加入请求。
+     * 当一个节点请求加入集群时，此方法会被调用以处理该请求。
+     *
+     * @param joinRequest 加入请求，包含请求节点和相关信息。
+     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
+     */
+    private void processJoinRequest(JoinRequest joinRequest, JoinHelper.JoinCallback joinCallback) {
+        // 获取加入请求中可能包含的可选Join对象。
+        final Optional<Join> optionalJoin = joinRequest.getOptionalJoin();
+
+        // 进入同步块以确保线程安全。
+        synchronized (mutex) {
+            // 获取当前协调状态。
+            final CoordinationState coordState = coordinationState.get();
+
+            // 记录之前是否赢得了选举。
+            final boolean prevElectionWon = coordState.electionWon();
+
+            // 如果存在Join对象，则处理它。
+            optionalJoin.ifPresent(this::handleJoin);
+
+            // 处理加入请求累积器的逻辑。
+            joinAccumulator.handleJoinRequest(joinRequest.getSourceNode(), joinCallback);
+
+            // 如果之前没有赢得选举，但现在赢得了，则变为领导者。
+            if (prevElectionWon == false && coordState.electionWon()) {
+                becomeLeader("handleJoinRequest");
+            }
+        }
+    }
+    /**
+     * 将当前节点状态设置为领导者。
+     *
+     * @param method 触发成为领导者状态的方法名称，用于日志记录。
+     */
+    void becomeLeader(String method) {
+        // 断言当前线程持有协调器的互斥锁。
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        // 断言当前模式应为候选人模式。
+        assert mode == Mode.CANDIDATE : "expected candidate but was " + mode;
+        // 断言本地节点应具有成为主节点的资格。
+        assert getLocalNode().isMasterNode() : getLocalNode() + " became a leader but is not master-eligible";
+
+        // 记录日志，显示当前方法、任期、之前和最后已知的领导者模式。
+        logger.debug("{}: coordinator becoming LEADER in term {} (was {}, lastKnownLeader was [{}])",
+                method, getCurrentTerm(), mode, lastKnownLeader);
+
+        // 设置当前模式为领导者。
+        mode = Mode.LEADER;
+
+        // 关闭现有的加入累加器并创建一个新的领导者加入累加器。
+        joinAccumulator.close(mode);
+        joinAccumulator = joinHelper.new LeaderJoinAccumulator();
+
+        // 更新最后已知的领导者为本地节点。
+        lastKnownLeader = Optional.of(getLocalNode());
+
+        // 停用peerFinder，因为当前节点已成为领导者。
+        peerFinder.deactivate(getLocalNode());
+
+        // 停用发现服务升级。
+        discoveryUpgradeService.deactivate();
+
+        // 停止集群形成失败帮助器。
+        clusterFormationFailureHelper.stop();
+
+        // 关闭预投票和选举调度器。
+        closePrevotingAndElectionScheduler();
+
+        // 更新预投票收集器，将当前节点设置为领导者。
+        preVoteCollector.update(getPreVoteResponse(), getLocalNode());
+
+        // 断言当前没有其他领导者。
+        assert leaderChecker.leader() == null : leaderChecker.leader();
+
+        // 更新追随者检查器的快速响应状态。
+        followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+    }
+
+    /**
+     * 处理节点加入请求。
+     * 此方法在接收到节点的加入请求时被调用。
+     *
+     * @param join 加入请求。
+     */
+    private void handleJoin(Join join) throws Exception {
+        // 进入同步块以确保线程安全。
+        synchronized (mutex) {
+            // 确保当前任期至少与加入请求中的任期一致，如果有更新，则处理加入请求。
+            ensureTermAtLeast(getLocalNode(), join.getTerm()).ifPresent(this::handleJoin);
+
+            // 如果我们已经赢得了选举，则实际的加入请求对选举结果没有影响，因此可以忽略任何异常。
+            if (coordinationState.get().electionWon()) {
+                // 处理加入请求，忽略可能的异常。
+                final boolean isNewJoin = handleJoinIgnoringExceptions(join);
+
+                // 如果我们已经完全成为主节点，并且没有发布操作正在进行，则根据需要安排重配置任务。
+                final boolean establishedAsMaster = mode == Mode.LEADER && getLastAcceptedState().term() == getCurrentTerm();
+                if (isNewJoin && establishedAsMaster && publicationInProgress() == false) {
+                    scheduleReconfigurationIfNeeded();
+                }
+            } else {
+                // 处理加入请求，这可能会失败并抛出异常。
+                coordinationState.get().handleJoin(join);
+            }
+        }
+    }
+    /**
+     * 检查是否有发布操作正在进行。
+     * 需要同步互斥锁来确保线程安全。
+     *
+     * @return 如果有发布操作正在进行返回true，否则返回false。
+     */
+    boolean publicationInProgress() {
+        synchronized (mutex) {
+            return currentPublication.isPresent();
+        }
+    }
+    private void scheduleReconfigurationIfNeeded() {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        assert mode == Mode.LEADER : mode;
+        assert currentPublication.isPresent() == false : "Expected no publication in progress";
+
+        final ClusterState state = getLastAcceptedState();
+        if (improveConfiguration(state) != state && reconfigurationTaskScheduled.compareAndSet(false, true)) {
+            logger.trace("scheduling reconfiguration");
+            masterService.submitStateUpdateTask("reconfigure", new ClusterStateUpdateTask(Priority.URGENT) {
+                @Override
+                public ClusterState execute(ClusterState currentState) {
+                    reconfigurationTaskScheduled.set(false);
+                    synchronized (mutex) {
+                        return improveConfiguration(currentState);
+                    }
+                }
+
+                @Override
+                public void onFailure(String source, Exception e) {
+                    reconfigurationTaskScheduled.set(false);
+                    logger.debug("reconfiguration failed", e);
+                }
+            });
+        }
+    }
+    /**
+     * 获取最后被接受的集群状态。
+     * 此方法返回协调状态中最后被接受的集群状态。
+     *
+     * @return 最后被接受的集群状态。
+     */
+    public ClusterState getLastAcceptedState() {
+        // 进入同步块以确保线程安全。
+        synchronized (mutex) {
+            return coordinationState.get().getLastAcceptedState();
+        }
+    }
+
+    /**
+     * 处理节点加入请求，忽略可能的异常。
+     *
+     * @param join 加入请求。
+     * @return 如果加入请求来自新节点，并且已成功添加，则返回true。
+     */
+    private boolean handleJoinIgnoringExceptions(Join join) {
+        try {
+            // 处理加入请求。
+            return coordinationState.get().handleJoin(join);
+        } catch (Exception e) {
+            // 如果处理加入请求失败，记录调试日志并忽略。
+            logger.debug("failed to add {} - ignoring", join, e);
+            return false;
+        }
+    }
+    /**
+     * 确保当前任期至少达到目标任期，如果不是，则加入领导者。
+     *
+     * @param sourceNode 触发任期更新的源节点。
+     * @param targetTerm 目标任期。
+     * @return 如果任期更新导致加入领导者，则返回包含Join对象的Optional；如果当前任期已满足或更高，则返回空的Optional。
+     */
+    private Optional<Join> ensureTermAtLeast(DiscoveryNode sourceNode, long targetTerm) {
+        // 断言当前线程持有协调器的互斥锁。
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        // 如果当前任期小于目标任期，则创建一个新的StartJoinRequest并加入领导者。
+        if (getCurrentTerm() < targetTerm) {
+            return Optional.of(joinLeaderInTerm(new StartJoinRequest(sourceNode, targetTerm)));
+        }
+        // 如果当前任期已经满足或高于目标任期，则返回空的Optional。
+        return Optional.empty();
+    }
+    /**
+     * 加入指定任期中的领导者。
+     * 此方法处理加入请求，并更新节点状态以反映新的任期和加入信息。
+     *
+     * @param startJoinRequest 包含领导者节点和目标任期的开始加入请求。
+     * @return 返回一个Join对象，包含加入操作的结果。
+     */
+    private Join joinLeaderInTerm(StartJoinRequest startJoinRequest) {
+        // 进入同步块以确保线程安全。
+        synchronized (mutex) {
+            // 记录日志，显示正在加入的领导者节点和任期。
+            logger.debug("joinLeaderInTerm: for [{}] with term {}", startJoinRequest.getSourceNode(), startJoinRequest.getTerm());
+
+            // 处理开始加入请求，并获取Join对象。
+            final Join join = coordinationState.get().handleStartJoin(startJoinRequest);
+
+            // 更新lastJoin为当前的Join对象。
+            lastJoin = Optional.of(join);
+
+            // 将peerFinder中的当前任期设置为最新的任期。
+            peerFinder.setCurrentTerm(getCurrentTerm());
+
+            // 检查当前模式是否不是候选人模式，如果不是，则变为候选人模式。
+            if (mode != Mode.CANDIDATE) {
+                becomeCandidate("joinLeaderInTerm"); // 这会更新followersChecker和preVoteCollector
+            } else {
+                // 如果已经是候选人模式，则更新快速响应状态和预投票收集器。
+                followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+                preVoteCollector.update(getPreVoteResponse(), null);
+            }
+
+            // 返回Join对象，包含加入领导者的结果。
+            return join;
+        }
+    }
+    /**
+     * 获取本地节点信息。
+     * 此方法不要求同步，因为假设transportService的本地节点获取是线程安全的。
+     *
+     * @return 本地节点信息。
+     */
+    DiscoveryNode getLocalNode() {
+        Node localNode = masterService.state().nodes().getLocalNode();
+        return new DiscoveryNode(localNode.id(),localNode.address());
     }
 }

@@ -21,6 +21,7 @@ package org.server.search.transport;
 
 import com.google.inject.Inject;
 import org.server.search.SearchException;
+import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.cluster.node.Node;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.component.Lifecycle;
@@ -190,5 +191,8 @@ public class TransportService extends AbstractComponent implements LifecycleComp
         List<String> local = new ArrayList<>();
         local.add("127.0.0.1");
         return local;
+    }
+    public void connectToNode(DiscoveryNode node) throws ConnectTransportException {
+
     }
 }

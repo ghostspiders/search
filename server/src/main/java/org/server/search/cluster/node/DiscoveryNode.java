@@ -40,10 +40,6 @@ public class DiscoveryNode{
     static final String COORDINATING_ONLY = "coordinating_only";
     private String version;
 
-    public DiscoveryNode() {
-
-    }
-
     /**
      * 判断节点是否需要本地存储。
      * @param settings 节点的设置。
@@ -133,8 +129,8 @@ public class DiscoveryNode{
      * @param address          the nodes transport address
      * @param version          the version of the node
      */
-    public DiscoveryNode(final String id, TransportAddress address, String version) {
-        this(id, address, Collections.emptyMap(), EnumSet.allOf(Role.class), version);
+    public DiscoveryNode(final String id, TransportAddress address) {
+        this(id, address, Collections.emptyMap(), EnumSet.allOf(Role.class), Version.full());
     }
 
     /**
