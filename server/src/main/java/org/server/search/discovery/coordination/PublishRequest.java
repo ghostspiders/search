@@ -18,10 +18,14 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.server.search.cluster.ClusterState;
+import org.elasticsearch.cluster.ClusterState;
 
 import java.util.Objects;
 
+/**
+ * Request which is used by the master node to publish cluster state changes.
+ * Actual serialization of this request is done by {@link PublicationTransportHandler}
+ */
 public class PublishRequest {
 
     private final ClusterState acceptedState;

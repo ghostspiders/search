@@ -18,15 +18,36 @@
  */
 package org.server.search.discovery.coordination;
 
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.transport.TransportResponse;
+
+import java.io.IOException;
 import java.util.Optional;
 
-public class PublishWithJoinResponse {
+/**
+ * Response to a {@link PublishRequest}. Encapsulates both a {@link PublishResponse}
+ * and an optional {@link Join}.
+ */
+public class PublishWithJoinResponse extends TransportResponse {
     private final PublishResponse publishResponse;
     private final Optional<Join> optionalJoin;
 
     public PublishWithJoinResponse(PublishResponse publishResponse, Optional<Join> optionalJoin) {
         this.publishResponse = publishResponse;
         this.optionalJoin = optionalJoin;
+    }
+
+    public PublishWithJoinResponse(StreamInput in) throws IOException {
+        this.publishResponse = new PublishResponse(in);
+        this.optionalJoin = Optional.ofNullable(in.readOptionalWriteable(Join::new));
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        super.writeTo(out);
+        publishResponse.writeTo(out);
+        out.writeOptionalWriteable(optionalJoin.orElse(null));
     }
 
     public PublishResponse getPublishResponse() {

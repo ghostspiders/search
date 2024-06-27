@@ -18,11 +18,15 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.server.search.cluster.node.DiscoveryNode;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.transport.TransportRequest;
 
+import java.io.IOException;
 import java.util.Optional;
 
-public class JoinRequest{
+public class JoinRequest extends TransportRequest {
 
     private final DiscoveryNode sourceNode;
 
@@ -34,6 +38,18 @@ public class JoinRequest{
         this.optionalJoin = optionalJoin;
     }
 
+    public JoinRequest(StreamInput in) throws IOException {
+        super(in);
+        sourceNode = new DiscoveryNode(in);
+        optionalJoin = Optional.ofNullable(in.readOptionalWriteable(Join::new));
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        super.writeTo(out);
+        sourceNode.writeTo(out);
+        out.writeOptionalWriteable(optionalJoin.orElse(null));
+    }
 
     public DiscoveryNode getSourceNode() {
         return sourceNode;

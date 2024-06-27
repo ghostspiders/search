@@ -24,7 +24,6 @@ import org.server.search.cluster.node.Node;
 import org.server.search.cluster.node.Nodes;
 import org.server.search.cluster.routing.RoutingNodes;
 import org.server.search.cluster.routing.RoutingTable;
-import org.server.search.discovery.coordination.CoordinationMetaData;
 import org.server.search.util.Nullable;
 import org.server.search.util.io.ByteArrayDataInputStream;
 import org.server.search.util.io.ByteArrayDataOutputStream;

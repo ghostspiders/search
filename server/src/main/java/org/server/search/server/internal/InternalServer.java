@@ -31,8 +31,6 @@ import org.server.search.cluster.ClusterModule;
 import org.server.search.cluster.ClusterNameModule;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.routing.RoutingService;
-import org.server.search.discovery.DiscoveryModule;
-import org.server.search.discovery.DiscoveryService;
 import org.server.search.env.Environment;
 import org.server.search.env.EnvironmentModule;
 import org.server.search.gateway.GatewayModule;
@@ -67,9 +65,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static org.server.search.util.settings.ImmutableSettings.*;
 
- 
 public final class InternalServer implements Server {
 
     private final Lifecycle lifecycle = new Lifecycle();

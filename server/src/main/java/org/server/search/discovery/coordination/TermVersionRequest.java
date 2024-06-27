@@ -21,29 +21,30 @@ package org.server.search.discovery.coordination;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.transport.TransportRequest;
 
 import java.io.IOException;
 
-/**
- * Represents the action of requesting a join vote (see {@link Join}) from a node.
- * The source node represents the node that is asking for join votes.
- */
-public class StartJoinRequest extends TransportRequest {
+abstract class TermVersionRequest extends TransportRequest implements Writeable {
+    protected final DiscoveryNode sourceNode;
+    protected final long term;
+    protected final long version;
 
-    private final DiscoveryNode sourceNode;
+    TermVersionRequest(DiscoveryNode sourceNode, long term, long version) {
+        assert term >= 0;
+        assert version >= 0;
 
-    private final long term;
-
-    public StartJoinRequest(DiscoveryNode sourceNode, long term) {
         this.sourceNode = sourceNode;
         this.term = term;
+        this.version = version;
     }
 
-    public StartJoinRequest(StreamInput input) throws IOException {
-        super(input);
-        this.sourceNode = new DiscoveryNode(input);
-        this.term = input.readLong();
+    TermVersionRequest(StreamInput in) throws IOException {
+        super(in);
+        sourceNode = new DiscoveryNode(in);
+        term = in.readLong();
+        version = in.readLong();
     }
 
     @Override
@@ -51,6 +52,7 @@ public class StartJoinRequest extends TransportRequest {
         super.writeTo(out);
         sourceNode.writeTo(out);
         out.writeLong(term);
+        out.writeLong(version);
     }
 
     public DiscoveryNode getSourceNode() {
@@ -61,28 +63,36 @@ public class StartJoinRequest extends TransportRequest {
         return term;
     }
 
-    @Override
-    public String toString() {
-        return "StartJoinRequest{" +
-            "term=" + term +
-            ",node=" + sourceNode + "}";
+    public long getVersion() {
+        return version;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StartJoinRequest)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        StartJoinRequest that = (StartJoinRequest) o;
+        TermVersionRequest versionTerm = (TermVersionRequest) o;
 
-        if (term != that.term) return false;
-        return sourceNode.equals(that.sourceNode);
+        if (term != versionTerm.term) return false;
+        if (version != versionTerm.version) return false;
+        return sourceNode.equals(versionTerm.sourceNode);
     }
 
     @Override
     public int hashCode() {
-        int result = sourceNode.hashCode();
-        result = 31 * result + (int) (term ^ (term >>> 32));
+        int result = (int) (term ^ (term >>> 32));
+        result = 31 * result + (int) (version ^ (version >>> 32));
+        result = 31 * result + sourceNode.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TermVersionRequest{" +
+            "term=" + term +
+            ", version=" + version +
+            ", sourceNode=" + sourceNode +
+            '}';
     }
 }

@@ -21,7 +21,6 @@ package org.server.search.client.transport;
 
 import com.google.inject.Inject;
 import org.server.search.cluster.ClusterService;
-import org.server.search.discovery.DiscoveryService;
 import org.server.search.util.component.AbstractComponent;
 import org.server.search.util.settings.Settings;
 

@@ -21,8 +21,6 @@ package org.server.search.cluster.metadata;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
-import org.server.search.cluster.ClusterState;
-import org.server.search.discovery.coordination.CoordinationMetaData;
 import org.server.search.util.MapBuilder;
 import org.server.search.util.Nullable;
 import org.server.search.util.concurrent.Immutable;

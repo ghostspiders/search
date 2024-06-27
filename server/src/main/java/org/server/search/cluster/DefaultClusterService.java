@@ -22,7 +22,6 @@ package org.server.search.cluster;
 import com.google.inject.Inject;
 import org.server.search.SearchException;
 import org.server.search.cluster.node.Nodes;
-import org.server.search.discovery.DiscoveryService;
 import org.server.search.threadpool.ThreadPool;
 import org.server.search.transport.TransportService;
 import org.server.search.util.TimeValue;

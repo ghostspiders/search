@@ -18,40 +18,35 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.server.search.action.ActionListener;
-import org.server.search.cluster.ClusterChangedEvent;
-import org.server.search.cluster.node.DiscoveryNode;
-import org.server.search.util.TimeValue;
-
 public interface ClusterStatePublisher {
     /**
-     * 这个方法由主节点调用，用于将所有变更发布到集群中（只能由主节点调用）。发布过程也应该将这个状态应用到主节点上！
+     * Publish all the changes to the cluster from the master (can be called just by the master). The publish
+     * process should apply this state to the master as well!
      *
-     * publishListener 允许等待发布过程完成，这可以是成功完成、超时或失败。
-     * 如果变更没有被提交并且应该被拒绝，该方法保证会通过 publishListener 传递一个 FailedToCommitClusterStateException。
-     * 任何其他异常表示发生了某些问题，但变更已经被提交。
+     * The publishListener allows to wait for the publication to complete, which can be either successful completion, timing out or failing.
+     * The method is guaranteed to pass back a {@link FailedToCommitClusterStateException} to the publishListener if the change is not
+     * committed and should be rejected. Any other exception signals that something bad happened but the change is committed.
      *
-     * AckListener 允许跟踪从节点收到的确认，并验证它们是否更新了自己的集群状态。
+     * The {@link AckListener} allows to keep track of the ack received from nodes, and verify whether
+     * they updated their own cluster state or not.
      */
     void publish(ClusterChangedEvent clusterChangedEvent, ActionListener<Void> publishListener, AckListener ackListener);
 
-    /**
-     * AckListener 接口
-     */
     interface AckListener {
         /**
-         * 当集群协调层提交了集群状态时调用（即使这次发布失败，也保证这个变更会出现在未来的发布中）。
-         * @param commitTime 提交集群状态所花费的时间
+         * Should be called when the cluster coordination layer has committed the cluster state (i.e. even if this publication fails,
+         * it is guaranteed to appear in future publications).
+         * @param commitTime the time it took to commit the cluster state
          */
         void onCommit(TimeValue commitTime);
 
         /**
-         * 每当集群协调层从节点接收到确认，该节点已成功应用集群状态时调用。
-         * 如果发生失败，应该提供一个异常作为参数。
-         * @param node 确认的节点
-         * @param e 可选的异常对象
+         * Should be called whenever the cluster coordination layer receives confirmation from a node that it has successfully applied
+         * the cluster state. In case of failures, an exception should be provided as parameter.
+         * @param node the node
+         * @param e the optional exception
          */
-        void onNodeAck(DiscoveryNode node, Exception e);
+        void onNodeAck(DiscoveryNode node, @Nullable Exception e);
     }
 
 }

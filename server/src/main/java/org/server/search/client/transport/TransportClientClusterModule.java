@@ -22,7 +22,6 @@ package org.server.search.client.transport;
 import com.google.inject.AbstractModule;
 import org.server.search.cluster.ClusterService;
 import org.server.search.cluster.DefaultClusterService;
-import org.server.search.discovery.DiscoveryModule;
 import org.server.search.util.logging.Loggers;
 import org.server.search.util.settings.NoClassSettingsException;
 import org.server.search.util.settings.Settings;

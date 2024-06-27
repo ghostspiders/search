@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.server.search.discovery.coordination;
+
+package org.server.search.discovery;
 
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.io.stream.StreamInput;
@@ -24,65 +25,59 @@ import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.transport.TransportRequest;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
-/**
- * Represents the action of requesting a join vote (see {@link Join}) from a node.
- * The source node represents the node that is asking for join votes.
- */
-public class StartJoinRequest extends TransportRequest {
-
+public class PeersRequest extends TransportRequest {
     private final DiscoveryNode sourceNode;
+    private final List<DiscoveryNode> knownPeers;
 
-    private final long term;
-
-    public StartJoinRequest(DiscoveryNode sourceNode, long term) {
+    public PeersRequest(DiscoveryNode sourceNode, List<DiscoveryNode> knownPeers) {
+        assert knownPeers.contains(sourceNode) == false : "local node is not a peer";
         this.sourceNode = sourceNode;
-        this.term = term;
+        this.knownPeers = knownPeers;
     }
 
-    public StartJoinRequest(StreamInput input) throws IOException {
-        super(input);
-        this.sourceNode = new DiscoveryNode(input);
-        this.term = input.readLong();
+    public PeersRequest(StreamInput in) throws IOException {
+        super(in);
+        sourceNode = new DiscoveryNode(in);
+        knownPeers = in.readList(DiscoveryNode::new);
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         super.writeTo(out);
         sourceNode.writeTo(out);
-        out.writeLong(term);
+        out.writeList(knownPeers);
+    }
+
+    public List<DiscoveryNode> getKnownPeers() {
+        return knownPeers;
     }
 
     public DiscoveryNode getSourceNode() {
         return sourceNode;
     }
 
-    public long getTerm() {
-        return term;
-    }
-
     @Override
     public String toString() {
-        return "StartJoinRequest{" +
-            "term=" + term +
-            ",node=" + sourceNode + "}";
+        return "PeersRequest{" +
+            "sourceNode=" + sourceNode +
+            ", knownPeers=" + knownPeers +
+            '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StartJoinRequest)) return false;
-
-        StartJoinRequest that = (StartJoinRequest) o;
-
-        if (term != that.term) return false;
-        return sourceNode.equals(that.sourceNode);
+        if (o == null || getClass() != o.getClass()) return false;
+        PeersRequest that = (PeersRequest) o;
+        return Objects.equals(sourceNode, that.sourceNode) &&
+            Objects.equals(knownPeers, that.knownPeers);
     }
 
     @Override
     public int hashCode() {
-        int result = sourceNode.hashCode();
-        result = 31 * result + (int) (term ^ (term >>> 32));
-        return result;
+        return Objects.hash(sourceNode, knownPeers);
     }
 }

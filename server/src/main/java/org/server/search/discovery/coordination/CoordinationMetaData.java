@@ -18,12 +18,22 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.server.search.cluster.node.DiscoveryNode;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.common.ParseField;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.io.stream.Writeable;
+import org.elasticsearch.common.util.set.Sets;
+import org.elasticsearch.common.xcontent.ConstructingObjectParser;
+import org.elasticsearch.common.xcontent.ToXContentFragment;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentParser;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CoordinationMetaData {
+public class CoordinationMetaData implements Writeable, ToXContentFragment {
 
     public static final CoordinationMetaData EMPTY_META_DATA = builder().build();
 
@@ -34,6 +44,11 @@ public class CoordinationMetaData {
     private final VotingConfiguration lastAcceptedConfiguration;
 
     private final Set<VotingConfigExclusion> votingConfigExclusions;
+
+    private static final ParseField TERM_PARSE_FIELD = new ParseField("term");
+    private static final ParseField LAST_COMMITTED_CONFIGURATION_FIELD = new ParseField("last_committed_config");
+    private static final ParseField LAST_ACCEPTED_CONFIGURATION_FIELD = new ParseField("last_accepted_config");
+    private static final ParseField VOTING_CONFIG_EXCLUSIONS_FIELD = new ParseField("voting_config_exclusions");
 
     private static long term(Object[] termAndConfigs) {
         return (long)termAndConfigs[0];
@@ -57,6 +72,16 @@ public class CoordinationMetaData {
         return votingTombstones;
     }
 
+    private static final ConstructingObjectParser<CoordinationMetaData, Void> PARSER = new ConstructingObjectParser<>(
+            "coordination_metadata",
+            fields -> new CoordinationMetaData(term(fields), lastCommittedConfig(fields),
+                    lastAcceptedConfig(fields), votingConfigExclusions(fields)));
+    static {
+        PARSER.declareLong(ConstructingObjectParser.constructorArg(), TERM_PARSE_FIELD);
+        PARSER.declareStringArray(ConstructingObjectParser.constructorArg(), LAST_COMMITTED_CONFIGURATION_FIELD);
+        PARSER.declareStringArray(ConstructingObjectParser.constructorArg(), LAST_ACCEPTED_CONFIGURATION_FIELD);
+        PARSER.declareObjectArray(ConstructingObjectParser.constructorArg(), VotingConfigExclusion.PARSER, VOTING_CONFIG_EXCLUSIONS_FIELD);
+    }
 
     public CoordinationMetaData(long term, VotingConfiguration lastCommittedConfiguration, VotingConfiguration lastAcceptedConfiguration,
                                 Set<VotingConfigExclusion> votingConfigExclusions) {
@@ -66,6 +91,12 @@ public class CoordinationMetaData {
         this.votingConfigExclusions = Collections.unmodifiableSet(new HashSet<>(votingConfigExclusions));
     }
 
+    public CoordinationMetaData(StreamInput in) throws IOException {
+        term = in.readLong();
+        lastCommittedConfiguration = new VotingConfiguration(in);
+        lastAcceptedConfiguration = new VotingConfiguration(in);
+        votingConfigExclusions = Collections.unmodifiableSet(in.readSet(VotingConfigExclusion::new));
+    }
 
     public static Builder builder() {
         return new Builder();
@@ -75,6 +106,26 @@ public class CoordinationMetaData {
         return new Builder(coordinationMetaData);
     }
 
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeLong(term);
+        lastCommittedConfiguration.writeTo(out);
+        lastAcceptedConfiguration.writeTo(out);
+        out.writeCollection(votingConfigExclusions, (o, v) -> v.writeTo(o));
+    }
+
+    @Override
+    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+        return builder
+            .field(TERM_PARSE_FIELD.getPreferredName(), term)
+            .field(LAST_COMMITTED_CONFIGURATION_FIELD.getPreferredName(), lastCommittedConfiguration)
+            .field(LAST_ACCEPTED_CONFIGURATION_FIELD.getPreferredName(), lastAcceptedConfiguration)
+            .field(VOTING_CONFIG_EXCLUSIONS_FIELD.getPreferredName(), votingConfigExclusions);
+    }
+
+    public static CoordinationMetaData fromXContent(XContentParser parser) throws IOException {
+        return PARSER.parse(parser, null);
+    }
 
     public long term() {
         return term;
@@ -133,7 +184,7 @@ public class CoordinationMetaData {
         public Builder() {
 
         }
-
+        
         public Builder(CoordinationMetaData state) {
             this.term = state.term;
             this.lastCommittedConfiguration = state.lastCommittedConfiguration;
@@ -171,7 +222,7 @@ public class CoordinationMetaData {
         }
     }
 
-    public static class VotingConfigExclusion {
+    public static class VotingConfigExclusion implements Writeable, ToXContentFragment {
         private final String nodeId;
         private final String nodeName;
 
@@ -179,10 +230,20 @@ public class CoordinationMetaData {
             this(node.getId(), node.getName());
         }
 
+        public VotingConfigExclusion(StreamInput in) throws IOException {
+            this.nodeId = in.readString();
+            this.nodeName = in.readString();
+        }
 
         public VotingConfigExclusion(String nodeId, String nodeName) {
             this.nodeId = nodeId;
             this.nodeName = nodeName;
+        }
+
+        @Override
+        public void writeTo(StreamOutput out) throws IOException {
+            out.writeString(nodeId);
+            out.writeString(nodeName);
         }
 
         public String getNodeId() {
@@ -193,12 +254,37 @@ public class CoordinationMetaData {
             return nodeName;
         }
 
+        private static final ParseField NODE_ID_PARSE_FIELD = new ParseField("node_id");
+        private static final ParseField NODE_NAME_PARSE_FIELD = new ParseField("node_name");
+
         private static String nodeId(Object[] nodeIdAndName) {
             return (String) nodeIdAndName[0];
         }
 
         private static String nodeName(Object[] nodeIdAndName) {
             return (String) nodeIdAndName[1];
+        }
+
+        private static final ConstructingObjectParser<VotingConfigExclusion, Void> PARSER = new ConstructingObjectParser<>(
+                "voting_config_exclusion",
+                nodeIdAndName -> new VotingConfigExclusion(nodeId(nodeIdAndName), nodeName(nodeIdAndName))
+        );
+
+        static {
+            PARSER.declareString(ConstructingObjectParser.constructorArg(), NODE_ID_PARSE_FIELD);
+            PARSER.declareString(ConstructingObjectParser.constructorArg(), NODE_NAME_PARSE_FIELD);
+        }
+
+        public static VotingConfigExclusion fromXContent(XContentParser parser) throws IOException {
+            return PARSER.parse(parser, null);
+        }
+
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            return builder.startObject()
+                    .field(NODE_ID_PARSE_FIELD.getPreferredName(), nodeId)
+                    .field(NODE_NAME_PARSE_FIELD.getPreferredName(), nodeName)
+                    .endObject();
         }
 
         @Override
@@ -228,32 +314,27 @@ public class CoordinationMetaData {
     }
 
     /**
-     * 表示集群状态变更的投票配置，包含一组持久化的节点ID集合。
+     * A collection of persistent node ids, denoting the voting configuration for cluster state changes.
      */
-    public static class VotingConfiguration {
+    public static class VotingConfiguration implements Writeable, ToXContentFragment {
 
-        /**
-         * 空的投票配置。
-         */
         public static final VotingConfiguration EMPTY_CONFIG = new VotingConfiguration(Collections.emptySet());
-        /**
-         * 一个特殊的投票配置，表示节点必须加入选举出的主节点。
-         */
-        public static final VotingConfiguration MUST_JOIN_ELECTED_MASTER = new VotingConfiguration(Collections.singleton(
-            "_must_join_elected_master_"));
 
-        private final Set<String> nodeIds; // 存储节点ID的集合
+        private final Set<String> nodeIds;
 
         public VotingConfiguration(Set<String> nodeIds) {
-            // 构造函数，使用不可修改的集合包装传入的节点ID集合
             this.nodeIds = Collections.unmodifiableSet(new HashSet<>(nodeIds));
         }
 
-        /**
-         * 检查是否有足够的投票达到法定人数。
-         * @param votes 投票的集合
-         * @return 如果达到法定人数返回true，否则返回false
-         */
+        public VotingConfiguration(StreamInput in) throws IOException {
+            nodeIds = Collections.unmodifiableSet(Sets.newHashSet(in.readStringArray()));
+        }
+
+        @Override
+        public void writeTo(StreamOutput out) throws IOException {
+            out.writeStringArray(nodeIds.toArray(new String[nodeIds.size()]));
+        }
+
         public boolean hasQuorum(Collection<String> votes) {
             final HashSet<String> intersection = new HashSet<>(nodeIds);
             intersection.retainAll(votes);
@@ -261,33 +342,42 @@ public class CoordinationMetaData {
         }
 
         public Set<String> getNodeIds() {
-            // 返回节点ID集合
             return nodeIds;
         }
 
         @Override
         public String toString() {
-            // 返回节点ID集合的字符串表示
             return "VotingConfiguration{" + String.join(",", nodeIds) + "}";
         }
 
-        // equals, hashCode 方法的实现，基于节点ID集合
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            VotingConfiguration that = (VotingConfiguration) o;
+            return Objects.equals(nodeIds, that.nodeIds);
+        }
 
-        /**
-         * 判断投票配置是否为空。
-         * @return 如果节点ID集合为空返回true，否则返回false
-         */
+        @Override
+        public int hashCode() {
+            return Objects.hash(nodeIds);
+        }
+
         public boolean isEmpty() {
             return nodeIds.isEmpty();
         }
 
-        /**
-         * 根据一组DiscoveryNode对象创建VotingConfiguration实例。
-         * @param nodes DiscoveryNode数组
-         * @return VotingConfiguration实例
-         */
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            builder.startArray();
+            for (String nodeId : nodeIds) {
+                builder.value(nodeId);
+            }
+            return builder.endArray();
+        }
+
         public static VotingConfiguration of(DiscoveryNode... nodes) {
-            // 从DiscoveryNode数组中提取节点ID，并创建VotingConfiguration实例
+            // this could be used in many more places - TODO use this where appropriate
             return new VotingConfiguration(Arrays.stream(nodes).map(DiscoveryNode::getId).collect(Collectors.toSet()));
         }
     }

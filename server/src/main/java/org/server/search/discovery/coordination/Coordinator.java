@@ -18,408 +18,715 @@
  */
 package org.server.search.discovery.coordination;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.lucene.util.SetOnce;
-import org.server.search.SearchException;
-import org.server.search.action.ActionListener;
-import org.server.search.client.transport.TransportClient;
-import org.server.search.cluster.ClusterChangedEvent;
-import org.server.search.cluster.ClusterState;
-import org.server.search.cluster.DefaultClusterService;
-import org.server.search.cluster.node.DiscoveryNode;
-import org.server.search.cluster.node.Node;
-import org.server.search.cluster.node.Nodes;
-import org.server.search.cluster.routing.strategy.ShardsRoutingStrategy;
-import org.server.search.discovery.Discovery;
-import org.server.search.gateway.GatewayService;
-import org.server.search.threadpool.ThreadPool;
-import org.server.search.transport.TransportService;
-import org.server.search.util.component.AbstractComponent;
-import org.server.search.util.component.Lifecycle;
-import org.server.search.util.settings.Settings;
+import org.elasticsearch.Version;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.cluster.bootstrap.BootstrapConfiguration;
+import org.elasticsearch.cluster.*;
+import org.elasticsearch.cluster.block.ClusterBlocks;
+import org.elasticsearch.cluster.coordination.ClusterFormationFailureHelper.ClusterFormationState;
+import org.elasticsearch.cluster.coordination.CoordinationMetaData.VotingConfigExclusion;
+import org.elasticsearch.cluster.coordination.CoordinationMetaData.VotingConfiguration;
+import org.elasticsearch.cluster.coordination.FollowersChecker.FollowerCheckRequest;
+import org.elasticsearch.cluster.coordination.JoinHelper.InitialJoinAccumulator;
+import org.elasticsearch.cluster.metadata.MetaData;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
+import org.elasticsearch.cluster.routing.allocation.AllocationService;
+import org.elasticsearch.cluster.service.ClusterApplier;
+import org.elasticsearch.cluster.service.ClusterApplier.ClusterApplyListener;
+import org.elasticsearch.cluster.service.MasterService;
+import org.elasticsearch.common.Booleans;
+import org.elasticsearch.common.Nullable;
+import org.elasticsearch.common.Priority;
+import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.component.AbstractLifecycleComponent;
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
+import org.elasticsearch.common.lease.Releasable;
+import org.elasticsearch.common.settings.ClusterSettings;
+import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.util.concurrent.EsExecutors;
+import org.elasticsearch.common.util.concurrent.ListenableFuture;
+import org.elasticsearch.discovery.*;
+import org.elasticsearch.discovery.zen.PendingClusterStateStats;
+import org.elasticsearch.discovery.zen.UnicastHostsProvider;
+import org.elasticsearch.threadpool.ThreadPool.Names;
+import org.elasticsearch.transport.TransportResponse.Empty;
+import org.elasticsearch.transport.TransportService;
+
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-public class Coordinator extends AbstractComponent implements Discovery {
+import static org.elasticsearch.common.util.concurrent.ConcurrentCollections.newConcurrentSet;
+import static org.elasticsearch.discovery.DiscoverySettings.NO_MASTER_BLOCK_ID;
+import static org.elasticsearch.gateway.ClusterStateUpdaters.hideStateIfNotRecovered;
+import static org.elasticsearch.gateway.GatewayService.STATE_NOT_RECOVERED_BLOCK;
 
-    // 定义了使用新版Zen2发现机制的字符串常量
-    public static final String ZEN2_DISCOVERY_TYPE = "zen";
-    // 定义了单节点发现机制的字符串常量，用于单一节点运行Elasticsearch时
-    public static final String SINGLE_NODE_DISCOVERY_TYPE = "single-node";
-    // 发现类型设置，指定了默认值为ZEN2_DISCOVERY_TYPE，并且设置了作用域为节点级别
-    public static final String DISCOVERY_TYPE_SETTING = ZEN2_DISCOVERY_TYPE;
-    // 种子节点提供者设置，用于配置新版Zen2发现的种子节点
-    private Map<String, Supplier<SettingsBasedSeedHostsProvider>> hostProviders = new HashMap<>();
-    private List<String> seedProviderNames;
-    private TransportService transportService;
-    private DefaultClusterService masterService;
-    private ShardsRoutingStrategy allocationService;
-    // 是否使用单节点发现模式
-    private final boolean singleNodeDiscovery;
-    // 互斥锁，用于同步对共享资源的访问
+public class Coordinator extends AbstractLifecycleComponent implements Discovery {
+
+    public static final long ZEN1_BWC_TERM = 0;
+
+    private static final Logger logger = LogManager.getLogger(Coordinator.class);
+
+    // the timeout for the publication of each value
+    public static final Setting<TimeValue> PUBLISH_TIMEOUT_SETTING =
+        Setting.timeSetting("cluster.publish.timeout",
+            TimeValue.timeValueMillis(30000), TimeValue.timeValueMillis(1), Setting.Property.NodeScope);
+
+    private final Settings settings;
+    private final TransportService transportService;
+    private final MasterService masterService;
+    private final JoinHelper joinHelper;
+    private final NodeRemovalClusterStateTaskExecutor nodeRemovalExecutor;
+    private final Supplier<CoordinationState.PersistedState> persistedStateSupplier;
+    private final DiscoverySettings discoverySettings;
+    // TODO: the following field is package-private as some tests require access to it
+    // These tests can be rewritten to use public methods once Coordinator is more feature-complete
     final Object mutex = new Object();
-    // 集群协调状态，初始化在启动时
-    private final SetOnce<CoordinationState> coordinationState = new SetOnce<>();
-    // 当前模式，如跟随者、候选者或领导者
-    private Mode mode;
-    private  JoinHelper joinHelper;
-    private JoinHelper.JoinAccumulator joinAccumulator;
-    // 对等发现器，用于发现集群中的其他节点
+    private final SetOnce<CoordinationState> coordinationState = new SetOnce<>(); // initialized on start-up (see doStart)
+    private volatile ClusterState applierState; // the state that should be exposed to the cluster state applier
+
     private final PeerFinder peerFinder;
-    // 上一次加入信息
+    private final PreVoteCollector preVoteCollector;
+    private final ElectionSchedulerFactory electionSchedulerFactory;
+    private final UnicastConfiguredHostsResolver configuredHostsResolver;
+    private final TimeValue publishTimeout;
+    private final PublicationTransportHandler publicationHandler;
+    private final LeaderChecker leaderChecker;
+    private final FollowersChecker followersChecker;
+    private final ClusterApplier clusterApplier;
+    @Nullable
+    private Releasable electionScheduler;
+    @Nullable
+    private Releasable prevotingRound;
+    private long maxTermSeen;
+    private final Reconfigurator reconfigurator;
+    private final ClusterBootstrapService clusterBootstrapService;
+    private final DiscoveryUpgradeService discoveryUpgradeService;
+    private final LagDetector lagDetector;
+    private final ClusterFormationFailureHelper clusterFormationFailureHelper;
+
+    private Mode mode;
+    private Optional<DiscoveryNode> lastKnownLeader;
     private Optional<Join> lastJoin;
+    private JoinHelper.JoinAccumulator joinAccumulator;
     private Optional<CoordinatorPublication> currentPublication = Optional.empty();
-    private  FollowersChecker followersChecker;
 
-    public Coordinator(Settings settings, ThreadPool threadPool, TransportService transportService, TransportClient networkService, DefaultClusterService masterService,
-                       ShardsRoutingStrategy allocationService, GatewayService gatewayMetaState) {
+    private final Set<ActionListener<Iterable<DiscoveryNode>>> discoveredNodesListeners = newConcurrentSet();
+
+    public Coordinator(String nodeName, Settings settings, ClusterSettings clusterSettings, TransportService transportService,
+                       NamedWriteableRegistry namedWriteableRegistry, AllocationService allocationService, MasterService masterService,
+                       Supplier<CoordinationState.PersistedState> persistedStateSupplier, UnicastHostsProvider unicastHostsProvider,
+                       ClusterApplier clusterApplier, Random random) {
         super(settings);
-        this.seedProviderNames = componentSettings.getListStr("discovery.seed_providers",Collections.emptyList());
-        // 初始化种子主机提供者的映射
-        hostProviders.put("settings", () -> new SettingsBasedSeedHostsProvider(settings, transportService));
+        this.settings = settings;
         this.transportService = transportService;
-        // 主服务，处理主节点相关逻辑
         this.masterService = masterService;
-        // 资源分配服务，处理集群中资源的分配
-        this.allocationService = allocationService;
-        // 注册加入验证器，包括内置和自定义验证器
-        // 是否启用单节点发现模式
-        this.singleNodeDiscovery = SINGLE_NODE_DISCOVERY_TYPE.equals(componentSettings.get("discovery.type"));
-        // 初始化节点加入帮助类
         this.joinHelper = new JoinHelper(settings, allocationService, masterService, transportService,
-                this::getCurrentTerm, this::getStateForMasterService, this::handleJoinRequest, this::joinLeaderInTerm, this.onJoinValidators);
-        // 持久化状态供应器
+            this::getCurrentTerm, this::handleJoinRequest, this::joinLeaderInTerm);
         this.persistedStateSupplier = persistedStateSupplier;
-        // 无主节点阻塞服务
-        this.noMasterBlockService = new NoMasterBlockService(settings, clusterSettings);
-        // 上一个已知的主节点
+        this.discoverySettings = new DiscoverySettings(settings, clusterSettings);
         this.lastKnownLeader = Optional.empty();
-        // 上一次加入信息
         this.lastJoin = Optional.empty();
-        // 节点加入累加器
         this.joinAccumulator = new InitialJoinAccumulator();
-        // 集群状态发布超时设置
         this.publishTimeout = PUBLISH_TIMEOUT_SETTING.get(settings);
-        // 随机数生成器
-        this.random = random;
-        // 选举调度工厂
         this.electionSchedulerFactory = new ElectionSchedulerFactory(settings, random, transportService.getThreadPool());
-        // 预投票收集器
         this.preVoteCollector = new PreVoteCollector(transportService, this::startElection, this::updateMaxTermSeen);
-        // 配置的种子主机解析器
-        this.configuredHostsResolver = new SeedHostsResolver(nodeName, settings, transportService, seedHostsProvider);
-        // 对等发现器
+        configuredHostsResolver = new UnicastConfiguredHostsResolver(nodeName, settings, transportService, unicastHostsProvider);
         this.peerFinder = new CoordinatorPeerFinder(settings, transportService,
-                new HandshakingTransportAddressConnector(settings, transportService), configuredHostsResolver);
-        // 状态发布传输处理器
+            new HandshakingTransportAddressConnector(settings, transportService), configuredHostsResolver);
         this.publicationHandler = new PublicationTransportHandler(transportService, namedWriteableRegistry,
-                this::handlePublishRequest, this::handleApplyCommit);
-        // 主节点检查器
+            this::handlePublishRequest, this::handleApplyCommit);
         this.leaderChecker = new LeaderChecker(settings, transportService, getOnLeaderFailure());
-        // 跟随者节点检查器
         this.followersChecker = new FollowersChecker(settings, transportService, this::onFollowerCheckRequest, this::removeNode);
-        // 节点移除执行器
         this.nodeRemovalExecutor = new NodeRemovalClusterStateTaskExecutor(allocationService, logger);
-        // 集群应用者
         this.clusterApplier = clusterApplier;
-        // 设置集群状态供应器
         masterService.setClusterStateSupplier(this::getStateForMasterService);
-        // 重新配置器
         this.reconfigurator = new Reconfigurator(settings, clusterSettings);
-        // 集群引导服务
-        this.clusterBootstrapService = new ClusterBootstrapService(settings, transportService, this::getFoundPeers,
-                this::isInitialConfigurationSet, this::setInitialConfiguration);
-        // 发现升级服务
-        this.discoveryUpgradeService = new DiscoveryUpgradeService(settings, transportService,
-                this::isInitialConfigurationSet, joinHelper, peerFinder::getFoundPeers, this::setInitialConfiguration);
-        // 延迟检测器
+        this.clusterBootstrapService = new ClusterBootstrapService(settings, transportService);
+        this.discoveryUpgradeService = new DiscoveryUpgradeService(settings, clusterSettings, transportService,
+            this::isInitialConfigurationSet, joinHelper, peerFinder::getFoundPeers, this::setInitialConfiguration);
         this.lagDetector = new LagDetector(settings, transportService.getThreadPool(), n -> removeNode(n, "lagging"),
-                transportService::getLocalNode);
-        // 集群形成失败帮助器
+            transportService::getLocalNode);
         this.clusterFormationFailureHelper = new ClusterFormationFailureHelper(settings, this::getClusterFormationState,
-                transportService.getThreadPool(), joinHelper::logLastFailedJoinAttempt);
+            transportService.getThreadPool());
     }
 
-    @Override
-    public void startInitialJoin() {
-
+    private ClusterFormationState getClusterFormationState() {
+        return new ClusterFormationState(settings, getStateForMasterService(), peerFinder.getLastResolvedAddresses(),
+            StreamSupport.stream(peerFinder.getFoundPeers().spliterator(), false).collect(Collectors.toList()));
     }
 
-    @Override
-    public void publish(ClusterChangedEvent clusterChangedEvent, ActionListener<Void> publishListener, AckListener ackListener) {
-
-    }
-
-    @Override
-    public Lifecycle.State lifecycleState() {
-        return null;
-    }
-
-    @Override
-    public Coordinator start() throws Exception {
-        return this;
-    }
-
-    @Override
-    public Discovery stop() throws SearchException, InterruptedException {
-        return null;
-    }
-
-    @Override
-    public void close() throws SearchException, InterruptedException {
-
-    }
-    /**
-     * 定义节点在分布式系统中可能处于的模式。
-     */
-    public enum Mode {
-        CANDIDATE, // 候选人模式，表示节点可以参与领导者选举。
-        LEADER,   // 领导者模式，表示节点是集群的领导者。
-        FOLLOWER   // 跟随者模式，表示节点遵循领导者的指令。
-    }
-    /**
-     * 获取当前任期。
-     * 需要同步互斥锁来确保线程安全。
-     *
-     * @return 当前任期。
-     */
-    long getCurrentTerm() {
-        synchronized (mutex) {
-            return coordinationState.get().getCurrentTerm();
-        }
-    }
-    /**
-     * 获取用于主服务的集群状态。
-     * 此方法返回协调状态中最后被接受的集群状态，作为主服务计算下一个集群状态更新的基础。
-     *
-     * @return 用于主服务的集群状态。
-     */
-    ClusterState getStateForMasterService() {
-        // 进入同步块以确保线程安全。
-        synchronized (mutex) {
-            final ClusterState clusterState = coordinationState.get().getLastAcceptedState();
-            // 如果当前模式不是领导者，或者集群状态的任期与当前任期不一致，
-            // 则返回带有无主节点块的集群状态。
-            if (mode != Mode.LEADER || clusterState.term() != getCurrentTerm()) {
-                return clusterStateWithNoMasterBlock(clusterState);
-            }
-            // 如果是领导者并且任期匹配，则直接返回集群状态。
-            return clusterState;
-        }
-    }
-    /**
-     * 创建一个没有主节点的集群状态。
-     * 如果原始集群状态包含主节点ID，则此方法会移除主节点ID并添加一个没有主节点的全局块。
-     *
-     * @param clusterState 原始集群状态。
-     * @return 包含没有主节点块的新集群状态，或者如果原始状态中没有主节点ID，则返回原始状态。
-     */
-    private ClusterState clusterStateWithNoMasterBlock(ClusterState clusterState) {
-        // 检查原始集群状态是否包含主节点ID。
-        if (clusterState.nodes().getMasterNodeId() != null) {
-            // 如果存在主节点ID，则添加没有主节点的全局块。
-            String masterNodeId = clusterState.nodes().getMasterNodeId();
-            final Nodes build = Nodes.newNodesBuilder().putAll(clusterState.nodes()).remove(masterNodeId).build();
-            // 构建并返回一个新的ClusterState，包含更新后的blocks和nodes。
-            return ClusterState.builder(clusterState).nodes(build).build();
-        } else {
-            // 如果原始集群状态中没有主节点ID，直接返回原始状态。
-            return clusterState;
-        }
-    }
-    /**
-     * 处理来自其他节点的加入请求。
-     *
-     * @param joinRequest 加入请求，包含请求节点和相关信息。
-     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
-     */
-    private void handleJoinRequest(JoinRequest joinRequest, JoinHelper.JoinCallback joinCallback) {
-        // 断言当前线程不持有互斥锁。
-        assert Thread.holdsLock(mutex) == false;
-        // 断言本地节点具有成为主节点的资格。
-        assert getLocalNode().isMasterNode() : getLocalNode() + " received a join but is not master-eligible";
-
-        // 记录日志，显示当前模式和正在处理的加入请求。
-        logger.trace("handleJoinRequest: as {}, handling {}", mode, joinRequest);
-
-        // 如果是单节点发现模式并且请求节点不是本地节点，则调用回调的onFailure方法。
-        if (singleNodeDiscovery && joinRequest.getSourceNode().equals(getLocalNode()) == false) {
-            joinCallback.onFailure(new IllegalStateException("cannot join node with [" + "discovery.type" +
-                    "] set to [" + "single-node"  + "] discovery"));
-            return;
-        }
-
-        // 连接到请求节点。
-        transportService.connectToNode(joinRequest.getSourceNode());
-
-        // 获取当前集群状态，用于加入验证。
-        final ClusterState stateForJoinValidation = getStateForMasterService();
-
-        // 如果本地节点已被选举为主节点，则进行一系列验证。
-        if (stateForJoinValidation.nodes().isLocalNodeElectedMaster()) {
-            // 发送验证加入请求。
-            sendValidateJoinRequest(stateForJoinValidation, joinRequest, joinCallback);
-
-        } else {
-            // 如果本地节点未被选举为主节点，则处理加入请求。
-            processJoinRequest(joinRequest, joinCallback);
-        }
-    }
-    /**
-     * 发送验证加入请求。
-     * 此方法在接收到一个节点的加入请求时调用，用于验证该节点是否可以加入当前集群。
-     *
-     * @param stateForJoinValidation 用于验证的集群状态。
-     * @param joinRequest 加入请求，包含请求节点和相关信息。
-     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
-     */
-    void sendValidateJoinRequest(ClusterState stateForJoinValidation, JoinRequest joinRequest,
-                                 JoinHelper.JoinCallback joinCallback) {
-        // 使用joinHelper发送验证请求到请求加入的节点。
-        // 这个操作会异步执行，结果通过ActionListener<Empty>回调处理。
-        joinHelper.sendValidateJoinRequest(joinRequest.getSourceNode(), stateForJoinValidation, new ActionListener<Empty>() {
-            // 当验证请求成功响应时调用此方法。
+    private Runnable getOnLeaderFailure() {
+        return new Runnable() {
             @Override
-            public void onResponse(Empty empty) {
-                try {
-                    // 如果验证成功，进一步处理加入请求。
-                    processJoinRequest(joinRequest, joinCallback);
-                } catch (Exception e) {
-                    // 如果处理加入请求时出现异常，通过回调通知失败。
-                    joinCallback.onFailure(e);
+            public void run() {
+                synchronized (mutex) {
+                    becomeCandidate("onLeaderFailure");
                 }
             }
 
-            // 如果验证请求失败或超时，调用此方法。
             @Override
-            public void onFailure(Throwable e) {
-                // 记录警告日志，显示验证失败的节点和异常信息。
-                logger.debug("failed to validate incoming join request from node [{}]",joinRequest.getSourceNode()), e);
-
-                // 通过回调通知验证请求失败，并提供异常信息。
-                joinCallback.onFailure(new IllegalStateException("failure when sending a validation request to node", e));
+            public String toString() {
+                return "notification of leader failure";
             }
-        });
+        };
     }
-    /**
-     * 处理加入请求。
-     * 当一个节点请求加入集群时，此方法会被调用以处理该请求。
-     *
-     * @param joinRequest 加入请求，包含请求节点和相关信息。
-     * @param joinCallback 回调接口，用于在处理完成后发送响应或失败通知。
-     */
-    private void processJoinRequest(JoinRequest joinRequest, JoinHelper.JoinCallback joinCallback) {
-        // 获取加入请求中可能包含的可选Join对象。
-        final Optional<Join> optionalJoin = joinRequest.getOptionalJoin();
 
-        // 进入同步块以确保线程安全。
+    private void removeNode(DiscoveryNode discoveryNode, String reason) {
         synchronized (mutex) {
-            // 获取当前协调状态。
-            final CoordinationState coordState = coordinationState.get();
+            if (mode == Mode.LEADER) {
+                masterService.submitStateUpdateTask("node-left",
+                    new NodeRemovalClusterStateTaskExecutor.Task(discoveryNode, reason),
+                    ClusterStateTaskConfig.build(Priority.IMMEDIATE),
+                    nodeRemovalExecutor,
+                    nodeRemovalExecutor);
+            }
+        }
+    }
 
-            // 记录之前是否赢得了选举。
+    void onFollowerCheckRequest(FollowerCheckRequest followerCheckRequest) {
+        synchronized (mutex) {
+            ensureTermAtLeast(followerCheckRequest.getSender(), followerCheckRequest.getTerm());
+
+            if (getCurrentTerm() != followerCheckRequest.getTerm()) {
+                logger.trace("onFollowerCheckRequest: current term is [{}], rejecting {}", getCurrentTerm(), followerCheckRequest);
+                throw new CoordinationStateRejectedException("onFollowerCheckRequest: current term is ["
+                    + getCurrentTerm() + "], rejecting " + followerCheckRequest);
+            }
+
+            // check if node has accepted a state in this term already. If not, this node has never committed a cluster state in this
+            // term and therefore never removed the NO_MASTER_BLOCK for this term. This logic ensures that we quickly turn a node
+            // into follower, even before receiving the first cluster state update, but also don't have to deal with the situation
+            // where we would possibly have to remove the NO_MASTER_BLOCK from the applierState when turning a candidate back to follower.
+            if (getLastAcceptedState().term() < getCurrentTerm()) {
+                becomeFollower("onFollowerCheckRequest", followerCheckRequest.getSender());
+            }
+        }
+    }
+
+    private void handleApplyCommit(ApplyCommitRequest applyCommitRequest, ActionListener<Void> applyListener) {
+        synchronized (mutex) {
+            logger.trace("handleApplyCommit: applying commit {}", applyCommitRequest);
+
+            coordinationState.get().handleCommit(applyCommitRequest);
+            final ClusterState committedState = hideStateIfNotRecovered(coordinationState.get().getLastAcceptedState());
+            applierState = mode == Mode.CANDIDATE ? clusterStateWithNoMasterBlock(committedState) : committedState;
+            if (applyCommitRequest.getSourceNode().equals(getLocalNode())) {
+                // master node applies the committed state at the end of the publication process, not here.
+                applyListener.onResponse(null);
+            } else {
+                clusterApplier.onNewClusterState(applyCommitRequest.toString(), () -> applierState,
+                    new ClusterApplyListener() {
+
+                        @Override
+                        public void onFailure(String source, Exception e) {
+                            applyListener.onFailure(e);
+                        }
+
+                        @Override
+                        public void onSuccess(String source) {
+                            applyListener.onResponse(null);
+                        }
+                    });
+            }
+        }
+    }
+
+    PublishWithJoinResponse handlePublishRequest(PublishRequest publishRequest) {
+        assert publishRequest.getAcceptedState().nodes().getLocalNode().equals(getLocalNode()) :
+            publishRequest.getAcceptedState().nodes().getLocalNode() + " != " + getLocalNode();
+
+        synchronized (mutex) {
+            final DiscoveryNode sourceNode = publishRequest.getAcceptedState().nodes().getMasterNode();
+            logger.trace("handlePublishRequest: handling [{}] from [{}]", publishRequest, sourceNode);
+
+            if (sourceNode.equals(getLocalNode()) && mode != Mode.LEADER) {
+                // Rare case in which we stood down as leader between starting this publication and receiving it ourselves. The publication
+                // is already failed so there is no point in proceeding.
+                throw new CoordinationStateRejectedException("no longer leading this publication's term: " + publishRequest);
+            }
+
+            if (publishRequest.getAcceptedState().term() == ZEN1_BWC_TERM && getCurrentTerm() == ZEN1_BWC_TERM
+                && mode == Mode.FOLLOWER && Optional.of(sourceNode).equals(lastKnownLeader) == false) {
+
+                logger.debug("received cluster state from {} but currently following {}, rejecting", sourceNode, lastKnownLeader);
+                throw new CoordinationStateRejectedException("received cluster state from " + sourceNode + " but currently following "
+                    + lastKnownLeader + ", rejecting");
+            }
+
+            ensureTermAtLeast(sourceNode, publishRequest.getAcceptedState().term());
+            final PublishResponse publishResponse = coordinationState.get().handlePublishRequest(publishRequest);
+
+            if (sourceNode.equals(getLocalNode())) {
+                preVoteCollector.update(getPreVoteResponse(), getLocalNode());
+            } else {
+                becomeFollower("handlePublishRequest", sourceNode); // also updates preVoteCollector
+            }
+
+            if (isInitialConfigurationSet()) {
+                for (final ActionListener<Iterable<DiscoveryNode>> discoveredNodesListener : discoveredNodesListeners) {
+                    discoveredNodesListener.onFailure(new ClusterAlreadyBootstrappedException());
+                }
+            }
+
+            return new PublishWithJoinResponse(publishResponse,
+                joinWithDestination(lastJoin, sourceNode, publishRequest.getAcceptedState().term()));
+        }
+    }
+
+    private static Optional<Join> joinWithDestination(Optional<Join> lastJoin, DiscoveryNode leader, long term) {
+        if (lastJoin.isPresent()
+            && lastJoin.get().getTargetNode().getId().equals(leader.getId())
+            && lastJoin.get().getTerm() == term) {
+            return lastJoin;
+        }
+
+        return Optional.empty();
+    }
+
+    private void closePrevotingAndElectionScheduler() {
+        if (prevotingRound != null) {
+            prevotingRound.close();
+            prevotingRound = null;
+        }
+
+        if (electionScheduler != null) {
+            electionScheduler.close();
+            electionScheduler = null;
+        }
+    }
+
+    private void updateMaxTermSeen(final long term) {
+        synchronized (mutex) {
+            maxTermSeen = Math.max(maxTermSeen, term);
+            final long currentTerm = getCurrentTerm();
+            if (mode == Mode.LEADER && maxTermSeen > currentTerm) {
+                // Bump our term. However if there is a publication in flight then doing so would cancel the publication, so don't do that
+                // since we check whether a term bump is needed at the end of the publication too.
+                if (publicationInProgress()) {
+                    logger.debug("updateMaxTermSeen: maxTermSeen = {} > currentTerm = {}, enqueueing term bump",
+                        maxTermSeen, currentTerm);
+                } else {
+                    try {
+                        ensureTermAtLeast(getLocalNode(), maxTermSeen);
+                        startElection();
+                    } catch (Exception e) {
+                        logger.warn(new ParameterizedMessage("failed to bump term to {}", maxTermSeen), e);
+                        becomeCandidate("updateMaxTermSeen");
+                    }
+                }
+            }
+        }
+    }
+
+    private void startElection() {
+        synchronized (mutex) {
+            // The preVoteCollector is only active while we are candidate, but it does not call this method with synchronisation, so we have
+            // to check our mode again here.
+            if (mode == Mode.CANDIDATE) {
+                final StartJoinRequest startJoinRequest
+                    = new StartJoinRequest(getLocalNode(), Math.max(getCurrentTerm(), maxTermSeen) + 1);
+                logger.debug("starting election with {}", startJoinRequest);
+                getDiscoveredNodes().forEach(node -> {
+                    if (isZen1Node(node) == false) {
+                        joinHelper.sendStartJoinRequest(startJoinRequest, node);
+                    }
+                });
+            }
+        }
+    }
+
+    private Optional<Join> ensureTermAtLeast(DiscoveryNode sourceNode, long targetTerm) {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        if (getCurrentTerm() < targetTerm) {
+            return Optional.of(joinLeaderInTerm(new StartJoinRequest(sourceNode, targetTerm)));
+        }
+        return Optional.empty();
+    }
+
+    private Join joinLeaderInTerm(StartJoinRequest startJoinRequest) {
+        synchronized (mutex) {
+            logger.debug("joinLeaderInTerm: for [{}] with term {}", startJoinRequest.getSourceNode(), startJoinRequest.getTerm());
+            final Join join = coordinationState.get().handleStartJoin(startJoinRequest);
+            lastJoin = Optional.of(join);
+            peerFinder.setCurrentTerm(getCurrentTerm());
+            if (mode != Mode.CANDIDATE) {
+                becomeCandidate("joinLeaderInTerm"); // updates followersChecker and preVoteCollector
+            } else {
+                followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+                preVoteCollector.update(getPreVoteResponse(), null);
+            }
+            return join;
+        }
+    }
+
+    private void handleJoinRequest(JoinRequest joinRequest, JoinHelper.JoinCallback joinCallback) {
+        assert Thread.holdsLock(mutex) == false;
+        assert getLocalNode().isMasterNode() : getLocalNode() + " received a join but is not master-eligible";
+        logger.trace("handleJoinRequest: as {}, handling {}", mode, joinRequest);
+        transportService.connectToNode(joinRequest.getSourceNode());
+
+        final Optional<Join> optionalJoin = joinRequest.getOptionalJoin();
+        synchronized (mutex) {
+            final CoordinationState coordState = coordinationState.get();
             final boolean prevElectionWon = coordState.electionWon();
 
-            // 如果存在Join对象，则处理它。
             optionalJoin.ifPresent(this::handleJoin);
-
-            // 处理加入请求累积器的逻辑。
             joinAccumulator.handleJoinRequest(joinRequest.getSourceNode(), joinCallback);
 
-            // 如果之前没有赢得选举，但现在赢得了，则变为领导者。
             if (prevElectionWon == false && coordState.electionWon()) {
                 becomeLeader("handleJoinRequest");
             }
         }
     }
-    /**
-     * 将当前节点状态设置为领导者。
-     *
-     * @param method 触发成为领导者状态的方法名称，用于日志记录。
-     */
-    void becomeLeader(String method) {
-        // 断言当前线程持有协调器的互斥锁。
+
+    void becomeCandidate(String method) {
         assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
-        // 断言当前模式应为候选人模式。
+        logger.debug("{}: coordinator becoming CANDIDATE in term {} (was {}, lastKnownLeader was [{}])",
+            method, getCurrentTerm(), mode, lastKnownLeader);
+
+        if (mode != Mode.CANDIDATE) {
+            mode = Mode.CANDIDATE;
+            cancelActivePublication();
+            joinAccumulator.close(mode);
+            joinAccumulator = joinHelper.new CandidateJoinAccumulator();
+
+            peerFinder.activate(coordinationState.get().getLastAcceptedState().nodes());
+            clusterFormationFailureHelper.start();
+
+            if (getCurrentTerm() == ZEN1_BWC_TERM) {
+                discoveryUpgradeService.activate(lastKnownLeader);
+            }
+
+            leaderChecker.setCurrentNodes(DiscoveryNodes.EMPTY_NODES);
+            leaderChecker.updateLeader(null);
+
+            followersChecker.clearCurrentNodes();
+            followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+            lagDetector.clearTrackedNodes();
+
+            if (applierState.nodes().getMasterNodeId() != null) {
+                applierState = clusterStateWithNoMasterBlock(applierState);
+                clusterApplier.onNewClusterState("becoming candidate: " + method, () -> applierState, (source, e) -> {
+                });
+            }
+        }
+
+        preVoteCollector.update(getPreVoteResponse(), null);
+    }
+
+    void becomeLeader(String method) {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
         assert mode == Mode.CANDIDATE : "expected candidate but was " + mode;
-        // 断言本地节点应具有成为主节点的资格。
         assert getLocalNode().isMasterNode() : getLocalNode() + " became a leader but is not master-eligible";
 
-        // 记录日志，显示当前方法、任期、之前和最后已知的领导者模式。
         logger.debug("{}: coordinator becoming LEADER in term {} (was {}, lastKnownLeader was [{}])",
-                method, getCurrentTerm(), mode, lastKnownLeader);
+            method, getCurrentTerm(), mode, lastKnownLeader);
 
-        // 设置当前模式为领导者。
         mode = Mode.LEADER;
-
-        // 关闭现有的加入累加器并创建一个新的领导者加入累加器。
         joinAccumulator.close(mode);
         joinAccumulator = joinHelper.new LeaderJoinAccumulator();
 
-        // 更新最后已知的领导者为本地节点。
         lastKnownLeader = Optional.of(getLocalNode());
-
-        // 停用peerFinder，因为当前节点已成为领导者。
         peerFinder.deactivate(getLocalNode());
-
-        // 停用发现服务升级。
         discoveryUpgradeService.deactivate();
-
-        // 停止集群形成失败帮助器。
         clusterFormationFailureHelper.stop();
-
-        // 关闭预投票和选举调度器。
         closePrevotingAndElectionScheduler();
-
-        // 更新预投票收集器，将当前节点设置为领导者。
         preVoteCollector.update(getPreVoteResponse(), getLocalNode());
 
-        // 断言当前没有其他领导者。
         assert leaderChecker.leader() == null : leaderChecker.leader();
-
-        // 更新追随者检查器的快速响应状态。
         followersChecker.updateFastResponseState(getCurrentTerm(), mode);
     }
 
-    /**
-     * 处理节点加入请求。
-     * 此方法在接收到节点的加入请求时被调用。
-     *
-     * @param join 加入请求。
-     */
-    private void handleJoin(Join join) throws Exception {
-        // 进入同步块以确保线程安全。
+    void becomeFollower(String method, DiscoveryNode leaderNode) {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        assert leaderNode.isMasterNode() : leaderNode + " became a leader but is not master-eligible";
+
+        logger.debug("{}: coordinator becoming FOLLOWER of [{}] in term {} (was {}, lastKnownLeader was [{}])",
+            method, leaderNode, getCurrentTerm(), mode, lastKnownLeader);
+
+        final boolean restartLeaderChecker = (mode == Mode.FOLLOWER && Optional.of(leaderNode).equals(lastKnownLeader)) == false;
+
+        if (mode != Mode.FOLLOWER) {
+            mode = Mode.FOLLOWER;
+            joinAccumulator.close(mode);
+            joinAccumulator = new JoinHelper.FollowerJoinAccumulator();
+            leaderChecker.setCurrentNodes(DiscoveryNodes.EMPTY_NODES);
+        }
+
+        lastKnownLeader = Optional.of(leaderNode);
+        peerFinder.deactivate(leaderNode);
+        discoveryUpgradeService.deactivate();
+        clusterFormationFailureHelper.stop();
+        closePrevotingAndElectionScheduler();
+        cancelActivePublication();
+        preVoteCollector.update(getPreVoteResponse(), leaderNode);
+
+        if (restartLeaderChecker) {
+            leaderChecker.updateLeader(leaderNode);
+        }
+
+        followersChecker.clearCurrentNodes();
+        followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+        lagDetector.clearTrackedNodes();
+    }
+
+    private PreVoteResponse getPreVoteResponse() {
+        return new PreVoteResponse(getCurrentTerm(), coordinationState.get().getLastAcceptedTerm(),
+            coordinationState.get().getLastAcceptedState().getVersionOrMetaDataVersion());
+    }
+
+    // package-visible for testing
+    long getCurrentTerm() {
         synchronized (mutex) {
-            // 确保当前任期至少与加入请求中的任期一致，如果有更新，则处理加入请求。
-            ensureTermAtLeast(getLocalNode(), join.getTerm()).ifPresent(this::handleJoin);
-
-            // 如果我们已经赢得了选举，则实际的加入请求对选举结果没有影响，因此可以忽略任何异常。
-            if (coordinationState.get().electionWon()) {
-                // 处理加入请求，忽略可能的异常。
-                final boolean isNewJoin = handleJoinIgnoringExceptions(join);
-
-                // 如果我们已经完全成为主节点，并且没有发布操作正在进行，则根据需要安排重配置任务。
-                final boolean establishedAsMaster = mode == Mode.LEADER && getLastAcceptedState().term() == getCurrentTerm();
-                if (isNewJoin && establishedAsMaster && publicationInProgress() == false) {
-                    scheduleReconfigurationIfNeeded();
-                }
-            } else {
-                // 处理加入请求，这可能会失败并抛出异常。
-                coordinationState.get().handleJoin(join);
-            }
+            return coordinationState.get().getCurrentTerm();
         }
     }
-    /**
-     * 检查是否有发布操作正在进行。
-     * 需要同步互斥锁来确保线程安全。
-     * @return 如果有发布操作正在进行返回true，否则返回false。
-     */
+
+    // package-visible for testing
+    Mode getMode() {
+        synchronized (mutex) {
+            return mode;
+        }
+    }
+
+    // visible for testing
+    public DiscoveryNode getLocalNode() {
+        return transportService.getLocalNode();
+    }
+
+    // package-visible for testing
     boolean publicationInProgress() {
         synchronized (mutex) {
             return currentPublication.isPresent();
         }
     }
+
+    @Override
+    protected void doStart() {
+        synchronized (mutex) {
+            CoordinationState.PersistedState persistedState = persistedStateSupplier.get();
+            coordinationState.set(new CoordinationState(settings, getLocalNode(), persistedState));
+            peerFinder.setCurrentTerm(getCurrentTerm());
+            configuredHostsResolver.start();
+            ClusterState initialState = ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.get(settings))
+                .blocks(ClusterBlocks.builder()
+                    .addGlobalBlock(STATE_NOT_RECOVERED_BLOCK)
+                    .addGlobalBlock(discoverySettings.getNoMasterBlock()))
+                .nodes(DiscoveryNodes.builder().add(getLocalNode()).localNodeId(getLocalNode().getId()))
+                .build();
+            applierState = initialState;
+            clusterApplier.setInitialState(initialState);
+        }
+    }
+
+    @Override
+    public DiscoveryStats stats() {
+        return new DiscoveryStats(new PendingClusterStateStats(0, 0, 0), publicationHandler.stats());
+    }
+
+    @Override
+    public void startInitialJoin() {
+        synchronized (mutex) {
+            becomeCandidate("startInitialJoin");
+        }
+
+        if (isInitialConfigurationSet() == false) {
+            clusterBootstrapService.start();
+        }
+    }
+
+    @Override
+    protected void doStop() {
+        configuredHostsResolver.stop();
+        clusterBootstrapService.stop();
+    }
+
+    @Override
+    protected void doClose() {
+    }
+
+    public void invariant() {
+        synchronized (mutex) {
+            final Optional<DiscoveryNode> peerFinderLeader = peerFinder.getLeader();
+            assert peerFinder.getCurrentTerm() == getCurrentTerm();
+            assert followersChecker.getFastResponseState().term == getCurrentTerm() : followersChecker.getFastResponseState();
+            assert followersChecker.getFastResponseState().mode == getMode() : followersChecker.getFastResponseState();
+            assert (applierState.nodes().getMasterNodeId() == null) == applierState.blocks().hasGlobalBlock(NO_MASTER_BLOCK_ID);
+            assert preVoteCollector.getPreVoteResponse().equals(getPreVoteResponse())
+                : preVoteCollector + " vs " + getPreVoteResponse();
+
+            assert lagDetector.getTrackedNodes().contains(getLocalNode()) == false : lagDetector.getTrackedNodes();
+            assert followersChecker.getKnownFollowers().equals(lagDetector.getTrackedNodes())
+                : followersChecker.getKnownFollowers() + " vs " + lagDetector.getTrackedNodes();
+
+            if (mode == Mode.LEADER) {
+                final boolean becomingMaster = getStateForMasterService().term() != getCurrentTerm();
+
+                assert coordinationState.get().electionWon();
+                assert lastKnownLeader.isPresent() && lastKnownLeader.get().equals(getLocalNode());
+                assert joinAccumulator instanceof JoinHelper.LeaderJoinAccumulator;
+                assert peerFinderLeader.equals(lastKnownLeader) : peerFinderLeader;
+                assert electionScheduler == null : electionScheduler;
+                assert prevotingRound == null : prevotingRound;
+                assert becomingMaster || getStateForMasterService().nodes().getMasterNodeId() != null : getStateForMasterService();
+                assert leaderChecker.leader() == null : leaderChecker.leader();
+                assert getLocalNode().equals(applierState.nodes().getMasterNode()) ||
+                    (applierState.nodes().getMasterNodeId() == null && applierState.term() < getCurrentTerm());
+                assert preVoteCollector.getLeader() == getLocalNode() : preVoteCollector;
+                assert clusterFormationFailureHelper.isRunning() == false;
+
+                final boolean activePublication = currentPublication.map(CoordinatorPublication::isActiveForCurrentLeader).orElse(false);
+                if (becomingMaster && activePublication == false) {
+                    // cluster state update task to become master is submitted to MasterService, but publication has not started yet
+                    assert followersChecker.getKnownFollowers().isEmpty() : followersChecker.getKnownFollowers();
+                } else {
+                    final ClusterState lastPublishedState;
+                    if (activePublication) {
+                        // active publication in progress: followersChecker is up-to-date with nodes that we're actively publishing to
+                        lastPublishedState = currentPublication.get().publishedState();
+                    } else {
+                        // no active publication: followersChecker is up-to-date with the nodes of the latest publication
+                        lastPublishedState = coordinationState.get().getLastAcceptedState();
+                    }
+                    final Set<DiscoveryNode> lastPublishedNodes = new HashSet<>();
+                    lastPublishedState.nodes().forEach(lastPublishedNodes::add);
+                    assert lastPublishedNodes.remove(getLocalNode()); // followersChecker excludes local node
+                    assert lastPublishedNodes.equals(followersChecker.getKnownFollowers()) :
+                        lastPublishedNodes + " != " + followersChecker.getKnownFollowers();
+                }
+
+                assert becomingMaster || activePublication ||
+                    coordinationState.get().getLastAcceptedConfiguration().equals(coordinationState.get().getLastCommittedConfiguration())
+                    : coordinationState.get().getLastAcceptedConfiguration() + " != "
+                    + coordinationState.get().getLastCommittedConfiguration();
+            } else if (mode == Mode.FOLLOWER) {
+                assert coordinationState.get().electionWon() == false : getLocalNode() + " is FOLLOWER so electionWon() should be false";
+                assert lastKnownLeader.isPresent() && (lastKnownLeader.get().equals(getLocalNode()) == false);
+                assert joinAccumulator instanceof JoinHelper.FollowerJoinAccumulator;
+                assert peerFinderLeader.equals(lastKnownLeader) : peerFinderLeader;
+                assert electionScheduler == null : electionScheduler;
+                assert prevotingRound == null : prevotingRound;
+                assert getStateForMasterService().nodes().getMasterNodeId() == null : getStateForMasterService();
+                assert leaderChecker.currentNodeIsMaster() == false;
+                assert lastKnownLeader.equals(Optional.of(leaderChecker.leader()));
+                assert followersChecker.getKnownFollowers().isEmpty();
+                assert lastKnownLeader.get().equals(applierState.nodes().getMasterNode()) ||
+                    (applierState.nodes().getMasterNodeId() == null &&
+                        (applierState.term() < getCurrentTerm() || applierState.version() < getLastAcceptedState().version()));
+                assert currentPublication.map(Publication::isCommitted).orElse(true);
+                assert preVoteCollector.getLeader().equals(lastKnownLeader.get()) : preVoteCollector;
+                assert clusterFormationFailureHelper.isRunning() == false;
+            } else {
+                assert mode == Mode.CANDIDATE;
+                assert joinAccumulator instanceof JoinHelper.CandidateJoinAccumulator;
+                assert peerFinderLeader.isPresent() == false : peerFinderLeader;
+                assert prevotingRound == null || electionScheduler != null;
+                assert getStateForMasterService().nodes().getMasterNodeId() == null : getStateForMasterService();
+                assert leaderChecker.currentNodeIsMaster() == false;
+                assert leaderChecker.leader() == null : leaderChecker.leader();
+                assert followersChecker.getKnownFollowers().isEmpty();
+                assert applierState.nodes().getMasterNodeId() == null;
+                assert currentPublication.map(Publication::isCommitted).orElse(true);
+                assert preVoteCollector.getLeader() == null : preVoteCollector;
+                assert clusterFormationFailureHelper.isRunning();
+            }
+        }
+    }
+
+    public boolean isInitialConfigurationSet() {
+        return getStateForMasterService().getLastAcceptedConfiguration().isEmpty() == false;
+    }
+
+    /**
+     * Sets the initial configuration by resolving the given {@link BootstrapConfiguration} to concrete nodes. This method is safe to call
+     * more than once, as long as each call's bootstrap configuration resolves to the same set of nodes.
+     *
+     * @param bootstrapConfiguration A description of the nodes that should form the initial configuration.
+     * @return whether this call successfully set the initial configuration - if false, the cluster has already been bootstrapped.
+     */
+    public boolean setInitialConfiguration(final BootstrapConfiguration bootstrapConfiguration) {
+        final List<DiscoveryNode> selfAndDiscoveredPeers = new ArrayList<>();
+        selfAndDiscoveredPeers.add(getLocalNode());
+        getFoundPeers().forEach(selfAndDiscoveredPeers::add);
+        final VotingConfiguration votingConfiguration = bootstrapConfiguration.resolve(selfAndDiscoveredPeers);
+        return setInitialConfiguration(votingConfiguration);
+    }
+
+    /**
+     * Sets the initial configuration to the given {@link VotingConfiguration}. This method is safe to call
+     * more than once, as long as the argument to each call is the same.
+     *
+     * @param votingConfiguration The nodes that should form the initial configuration.
+     * @return whether this call successfully set the initial configuration - if false, the cluster has already been bootstrapped.
+     */
+    public boolean setInitialConfiguration(final VotingConfiguration votingConfiguration) {
+        synchronized (mutex) {
+            final ClusterState currentState = getStateForMasterService();
+
+            if (isInitialConfigurationSet()) {
+                return false;
+            }
+
+            if (mode != Mode.CANDIDATE) {
+                throw new CoordinationStateRejectedException("Cannot set initial configuration in mode " + mode);
+            }
+
+            final List<DiscoveryNode> knownNodes = new ArrayList<>();
+            knownNodes.add(getLocalNode());
+            peerFinder.getFoundPeers().forEach(knownNodes::add);
+            if (votingConfiguration.hasQuorum(knownNodes.stream().map(DiscoveryNode::getId).collect(Collectors.toList())) == false) {
+                throw new CoordinationStateRejectedException("not enough nodes discovered to form a quorum in the initial configuration " +
+                    "[knownNodes=" + knownNodes + ", " + votingConfiguration + "]");
+            }
+
+            logger.info("setting initial configuration to {}", votingConfiguration);
+            final CoordinationMetaData coordinationMetaData = CoordinationMetaData.builder(currentState.coordinationMetaData())
+                .lastAcceptedConfiguration(votingConfiguration)
+                .lastCommittedConfiguration(votingConfiguration)
+                .build();
+
+            MetaData.Builder metaDataBuilder = MetaData.builder(currentState.metaData());
+            // automatically generate a UID for the metadata if we need to
+            metaDataBuilder.generateClusterUuidIfNeeded(); // TODO generate UUID in bootstrapping tool?
+            metaDataBuilder.coordinationMetaData(coordinationMetaData);
+
+            coordinationState.get().setInitialState(ClusterState.builder(currentState).metaData(metaDataBuilder).build());
+            preVoteCollector.update(getPreVoteResponse(), null); // pick up the change to last-accepted version
+            startElectionScheduler();
+            return true;
+        }
+    }
+
+    // Package-private for testing
+    ClusterState improveConfiguration(ClusterState clusterState) {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+
+        final Set<DiscoveryNode> liveNodes = StreamSupport.stream(clusterState.nodes().spliterator(), false)
+            .filter(this::hasJoinVoteFrom).filter(discoveryNode -> isZen1Node(discoveryNode) == false).collect(Collectors.toSet());
+        final VotingConfiguration newConfig = reconfigurator.reconfigure(liveNodes,
+            clusterState.getVotingConfigExclusions().stream().map(VotingConfigExclusion::getNodeId).collect(Collectors.toSet()),
+            clusterState.getLastAcceptedConfiguration());
+        if (newConfig.equals(clusterState.getLastAcceptedConfiguration()) == false) {
+            assert coordinationState.get().joinVotesHaveQuorumFor(newConfig);
+            return ClusterState.builder(clusterState).metaData(MetaData.builder(clusterState.metaData())
+                .coordinationMetaData(CoordinationMetaData.builder(clusterState.coordinationMetaData())
+                    .lastAcceptedConfiguration(newConfig).build())).build();
+        }
+        return clusterState;
+    }
+
+    private AtomicBoolean reconfigurationTaskScheduled = new AtomicBoolean();
+
     private void scheduleReconfigurationIfNeeded() {
         assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
         assert mode == Mode.LEADER : mode;
@@ -445,182 +752,464 @@ public class Coordinator extends AbstractComponent implements Discovery {
             });
         }
     }
+
+    // for tests
+    boolean hasJoinVoteFrom(DiscoveryNode node) {
+        return coordinationState.get().containsJoinVoteFor(node);
+    }
+
+    private void handleJoin(Join join) {
+        synchronized (mutex) {
+            ensureTermAtLeast(getLocalNode(), join.getTerm()).ifPresent(this::handleJoin);
+
+            if (coordinationState.get().electionWon()) {
+                // If we have already won the election then the actual join does not matter for election purposes, so swallow any exception
+                final boolean isNewJoin = handleJoinIgnoringExceptions(join);
+
+                // If we haven't completely finished becoming master then there's already a publication scheduled which will, in turn,
+                // schedule a reconfiguration if needed. It's benign to schedule a reconfiguration anyway, but it might fail if it wins the
+                // race against the election-winning publication and log a big error message, which we can prevent by checking this here:
+                final boolean establishedAsMaster = mode == Mode.LEADER && getLastAcceptedState().term() == getCurrentTerm();
+                if (isNewJoin && establishedAsMaster && publicationInProgress() == false) {
+                    scheduleReconfigurationIfNeeded();
+                }
+            } else {
+                coordinationState.get().handleJoin(join); // this might fail and bubble up the exception
+            }
+        }
+    }
+
     /**
-     * 获取最后被接受的集群状态。
-     * 此方法返回协调状态中最后被接受的集群状态。
-     *
-     * @return 最后被接受的集群状态。
+     * @return true iff the join was from a new node and was successfully added
      */
+    private boolean handleJoinIgnoringExceptions(Join join) {
+        try {
+            return coordinationState.get().handleJoin(join);
+        } catch (CoordinationStateRejectedException e) {
+            logger.debug(new ParameterizedMessage("failed to add {} - ignoring", join), e);
+            return false;
+        }
+    }
+
     public ClusterState getLastAcceptedState() {
-        // 进入同步块以确保线程安全。
         synchronized (mutex) {
             return coordinationState.get().getLastAcceptedState();
         }
     }
 
-    /**
-     * 处理节点加入请求，忽略可能的异常。
-     *
-     * @param join 加入请求。
-     * @return 如果加入请求来自新节点，并且已成功添加，则返回true。
-     */
-    private boolean handleJoinIgnoringExceptions(Join join) {
-        try {
-            // 处理加入请求。
-            return coordinationState.get().handleJoin(join);
-        } catch (Exception e) {
-            // 如果处理加入请求失败，记录调试日志并忽略。
-            logger.debug("failed to add {} - ignoring", join, e);
-            return false;
-        }
+    @Nullable
+    public ClusterState getApplierState() {
+        return applierState;
     }
-    /**
-     * 确保当前任期至少达到目标任期，如果不是，则加入领导者。
-     *
-     * @param sourceNode 触发任期更新的源节点。
-     * @param targetTerm 目标任期。
-     * @return 如果任期更新导致加入领导者，则返回包含Join对象的Optional；如果当前任期已满足或更高，则返回空的Optional。
-     */
-    private Optional<Join> ensureTermAtLeast(DiscoveryNode sourceNode, long targetTerm) {
-        // 断言当前线程持有协调器的互斥锁。
-        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
-        // 如果当前任期小于目标任期，则创建一个新的StartJoinRequest并加入领导者。
-        if (getCurrentTerm() < targetTerm) {
-            return Optional.of(joinLeaderInTerm(new StartJoinRequest(sourceNode, targetTerm)));
-        }
-        // 如果当前任期已经满足或高于目标任期，则返回空的Optional。
-        return Optional.empty();
+
+    private List<DiscoveryNode> getDiscoveredNodes() {
+        final List<DiscoveryNode> nodes = new ArrayList<>();
+        nodes.add(getLocalNode());
+        peerFinder.getFoundPeers().forEach(nodes::add);
+        return nodes;
     }
-    /**
-     * 加入指定任期中的领导者。
-     * 此方法处理加入请求，并更新节点状态以反映新的任期和加入信息。
-     *
-     * @param startJoinRequest 包含领导者节点和目标任期的开始加入请求。
-     * @return 返回一个Join对象，包含加入操作的结果。
-     */
-    private Join joinLeaderInTerm(StartJoinRequest startJoinRequest) {
-        // 进入同步块以确保线程安全。
+
+    ClusterState getStateForMasterService() {
         synchronized (mutex) {
-            // 记录日志，显示正在加入的领导者节点和任期。
-            logger.debug("joinLeaderInTerm: for [{}] with term {}", startJoinRequest.getSourceNode(), startJoinRequest.getTerm());
-
-            // 处理开始加入请求，并获取Join对象。
-            final Join join = coordinationState.get().handleStartJoin(startJoinRequest);
-
-            // 更新lastJoin为当前的Join对象。
-            lastJoin = Optional.of(join);
-
-            // 将peerFinder中的当前任期设置为最新的任期。
-            peerFinder.setCurrentTerm(getCurrentTerm());
-
-            // 检查当前模式是否不是候选人模式，如果不是，则变为候选人模式。
-            if (mode != Mode.CANDIDATE) {
-                becomeCandidate("joinLeaderInTerm"); // 这会更新followersChecker和preVoteCollector
-            } else {
-                // 如果已经是候选人模式，则更新快速响应状态和预投票收集器。
-                followersChecker.updateFastResponseState(getCurrentTerm(), mode);
-                preVoteCollector.update(getPreVoteResponse(), null);
+            // expose last accepted cluster state as base state upon which the master service
+            // speculatively calculates the next cluster state update
+            final ClusterState clusterState = coordinationState.get().getLastAcceptedState();
+            if (mode != Mode.LEADER || clusterState.term() != getCurrentTerm()) {
+                // the master service checks if the local node is the master node in order to fail execution of the state update early
+                return clusterStateWithNoMasterBlock(clusterState);
             }
-
-            // 返回Join对象，包含加入领导者的结果。
-            return join;
-
+            return clusterState;
         }
     }
-    /**
-     * 将当前节点状态设置为候选人。
-     *
-     * @param method 触发成为候选人状态的方法名称，用于日志记录。
-     */
-    void becomeCandidate(String method) {
-        // 断言当前线程持有协调器的互斥锁。
-        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
 
-        // 记录日志，显示当前方法、任期、之前和最后已知的领导者模式。
-        logger.debug("{}: coordinator becoming CANDIDATE in term {} (was {}, lastKnownLeader was [{}])",
-                method, getCurrentTerm(), mode, lastKnownLeader);
+    private ClusterState clusterStateWithNoMasterBlock(ClusterState clusterState) {
+        if (clusterState.nodes().getMasterNodeId() != null) {
+            // remove block if it already exists before adding new one
+            assert clusterState.blocks().hasGlobalBlock(NO_MASTER_BLOCK_ID) == false :
+                "NO_MASTER_BLOCK should only be added by Coordinator";
+            final ClusterBlocks clusterBlocks = ClusterBlocks.builder().blocks(clusterState.blocks()).addGlobalBlock(
+                discoverySettings.getNoMasterBlock()).build();
+            final DiscoveryNodes discoveryNodes = new DiscoveryNodes.Builder(clusterState.nodes()).masterNodeId(null).build();
+            return ClusterState.builder(clusterState).blocks(clusterBlocks).nodes(discoveryNodes).build();
+        } else {
+            return clusterState;
+        }
+    }
 
-        // 检查当前模式是否不是候选人模式，如果不是，则执行状态转换逻辑。
-        if (mode != Mode.CANDIDATE) {
-            // 记录之前的模式。
-            final Mode prevMode = mode;
-            // 设置当前模式为候选人。
-            mode = Mode.CANDIDATE;
+    @Override
+    public void publish(ClusterChangedEvent clusterChangedEvent, ActionListener<Void> publishListener, AckListener ackListener) {
+        try {
+            synchronized (mutex) {
+                assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
 
-            // 取消任何活跃的发布操作。
-            cancelActivePublication("become candidate: " + method);
+                if (mode != Mode.LEADER) {
+                    logger.debug(() -> new ParameterizedMessage("[{}] failed publication as not currently leading",
+                        clusterChangedEvent.source()));
+                    publishListener.onFailure(new FailedToCommitClusterStateException("node stepped down as leader during publication"));
+                    return;
+                }
 
-            // 关闭现有的加入累加器并创建一个新的候选人加入累加器。
-            joinAccumulator.close(mode);
-            joinAccumulator = joinHelper.new CandidateJoinAccumulator();
+                if (currentPublication.isPresent()) {
+                    assert false : "[" + currentPublication.get() + "] in progress, cannot start new publication";
+                    logger.warn(() -> new ParameterizedMessage("[{}] failed publication as already publication in progress",
+                        clusterChangedEvent.source()));
+                    publishListener.onFailure(new FailedToCommitClusterStateException("publication " + currentPublication.get() +
+                        " already in progress"));
+                    return;
+                }
 
-            // 激活peerFinder，使用最后接受的集群状态中的节点列表。
-            peerFinder.activate(coordinationState.get().getLastAcceptedState().nodes());
+                // there is no equals on cluster state, so we just serialize it to XContent and compare JSON representation
+                assert clusterChangedEvent.previousState() == coordinationState.get().getLastAcceptedState() ||
+                    Strings.toString(clusterChangedEvent.previousState()).equals(
+                        Strings.toString(clusterStateWithNoMasterBlock(coordinationState.get().getLastAcceptedState())))
+                    : Strings.toString(clusterChangedEvent.previousState()) + " vs "
+                    + Strings.toString(clusterStateWithNoMasterBlock(coordinationState.get().getLastAcceptedState()));
 
-            // 启动集群形成失败帮助器。
-            clusterFormationFailureHelper.start();
+                final ClusterState clusterState = clusterChangedEvent.state();
 
-            // 如果当前任期是向后兼容的任期，则激活发现服务升级。
-            if (getCurrentTerm() == ZEN1_BWC_TERM) {
-                discoveryUpgradeService.activate(lastKnownLeader, coordinationState.get().getLastAcceptedState());
-            }
+                assert getLocalNode().equals(clusterState.getNodes().get(getLocalNode().getId())) :
+                    getLocalNode() + " should be in published " + clusterState;
 
-            // 更新leaderChecker为没有当前节点，并将领导者设置为null。
-            leaderChecker.setCurrentNodes(DiscoveryNodes.EMPTY_NODES);
-            leaderChecker.updateLeader(null);
+                final PublishRequest publishRequest = coordinationState.get().handleClientValue(clusterState);
+                final PublicationTransportHandler.PublicationContext publicationContext =
+                    publicationHandler.newPublicationContext(clusterChangedEvent);
+                final CoordinatorPublication publication = new CoordinatorPublication(publishRequest, publicationContext,
+                    new ListenableFuture<>(), ackListener, publishListener);
+                currentPublication = Optional.of(publication);
 
-            // 清除followersChecker中的当前节点并更新快速响应状态。
-            followersChecker.clearCurrentNodes();
-            followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+                transportService.getThreadPool().schedule(publishTimeout, Names.GENERIC, new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mutex) {
+                            publication.onTimeout();
+                        }
+                    }
 
-            // 清除lagDetector跟踪的节点。
-            lagDetector.clearTrackedNodes();
-
-            // 如果之前是领导者模式，则清理主服务。
-            if (prevMode == Mode.LEADER) {
-                cleanMasterService();
-            }
-
-            // 如果应用者状态有主节点ID，则更新应用者状态为没有主节点，并应用新的集群状态。
-            if (applierState.nodes().getMasterNodeId() != null) {
-                applierState = clusterStateWithNoMasterBlock(applierState);
-                clusterApplier.onNewClusterState("becoming candidate: " + method, () -> applierState, (source, e) -> {
+                    @Override
+                    public String toString() {
+                        return "scheduled timeout for " + publication;
+                    }
                 });
+
+                final DiscoveryNodes publishNodes = publishRequest.getAcceptedState().nodes();
+                leaderChecker.setCurrentNodes(publishNodes);
+                followersChecker.setCurrentNodes(publishNodes);
+                lagDetector.setTrackedNodes(publishNodes);
+                publication.start(followersChecker.getFaultyNodes());
+            }
+        } catch (Exception e) {
+            logger.debug(() -> new ParameterizedMessage("[{}] publishing failed", clusterChangedEvent.source()), e);
+            publishListener.onFailure(new FailedToCommitClusterStateException("publishing failed", e));
+        }
+    }
+
+    private <T> ActionListener<T> wrapWithMutex(ActionListener<T> listener) {
+        return new ActionListener<T>() {
+            @Override
+            public void onResponse(T t) {
+                synchronized (mutex) {
+                    listener.onResponse(t);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                synchronized (mutex) {
+                    listener.onFailure(e);
+                }
+            }
+        };
+    }
+
+    private void cancelActivePublication() {
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+        if (currentPublication.isPresent()) {
+            currentPublication.get().onTimeout();
+        }
+    }
+
+    public enum Mode {
+        CANDIDATE, LEADER, FOLLOWER
+    }
+
+    private class CoordinatorPeerFinder extends PeerFinder {
+
+        CoordinatorPeerFinder(Settings settings, TransportService transportService, TransportAddressConnector transportAddressConnector,
+                              ConfiguredHostsResolver configuredHostsResolver) {
+            super(settings, transportService, transportAddressConnector, configuredHostsResolver);
+        }
+
+        @Override
+        protected void onActiveMasterFound(DiscoveryNode masterNode, long term) {
+            synchronized (mutex) {
+                ensureTermAtLeast(masterNode, term);
+                joinHelper.sendJoinRequest(masterNode, joinWithDestination(lastJoin, masterNode, term));
             }
         }
 
-        // 更新预投票收集器。
-        preVoteCollector.update(getPreVoteResponse(), null);
+        @Override
+        protected void onFoundPeersUpdated() {
+            final Iterable<DiscoveryNode> foundPeers;
+            synchronized (mutex) {
+                foundPeers = getFoundPeers();
+                if (mode == Mode.CANDIDATE) {
+                    final CoordinationState.VoteCollection expectedVotes = new CoordinationState.VoteCollection();
+                    foundPeers.forEach(expectedVotes::addVote);
+                    expectedVotes.addVote(Coordinator.this.getLocalNode());
+                    final ClusterState lastAcceptedState = coordinationState.get().getLastAcceptedState();
+                    final boolean foundQuorum = CoordinationState.isElectionQuorum(expectedVotes, lastAcceptedState);
+
+                    if (foundQuorum) {
+                        if (electionScheduler == null) {
+                            startElectionScheduler();
+                        }
+                    } else {
+                        closePrevotingAndElectionScheduler();
+                    }
+                }
+            }
+
+            for (final ActionListener<Iterable<DiscoveryNode>> discoveredNodesListener : discoveredNodesListeners) {
+                discoveredNodesListener.onResponse(foundPeers);
+            }
+        }
     }
-    /**
-     * 获取本地节点信息。
-     * 此方法不要求同步，因为假设transportService的本地节点获取是线程安全的。
-     *
-     * @return 本地节点信息。
-     */
-    DiscoveryNode getLocalNode() {
-        Node localNode = masterService.state().nodes().getLocalNode();
-        return new DiscoveryNode(localNode.id(),localNode.address());
+
+    private void startElectionScheduler() {
+        assert electionScheduler == null : electionScheduler;
+
+        if (getLocalNode().isMasterNode() == false) {
+            return;
+        }
+
+        final TimeValue gracePeriod = TimeValue.ZERO; // TODO variable grace period
+        electionScheduler = electionSchedulerFactory.startElectionScheduler(gracePeriod, new Runnable() {
+            @Override
+            public void run() {
+                synchronized (mutex) {
+                    if (mode == Mode.CANDIDATE) {
+                        if (prevotingRound != null) {
+                            prevotingRound.close();
+                        }
+                        final ClusterState lastAcceptedState = coordinationState.get().getLastAcceptedState();
+                        final List<DiscoveryNode> discoveredNodes
+                            = getDiscoveredNodes().stream().filter(n -> isZen1Node(n) == false).collect(Collectors.toList());
+                        prevotingRound = preVoteCollector.start(lastAcceptedState, discoveredNodes);
+                    }
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "scheduling of new prevoting round";
+            }
+        });
     }
+
+    public Releasable withDiscoveryListener(ActionListener<Iterable<DiscoveryNode>> listener) {
+        discoveredNodesListeners.add(listener);
+        return () -> {
+            boolean removed = discoveredNodesListeners.remove(listener);
+            assert removed : listener;
+        };
+    }
+
+    public Iterable<DiscoveryNode> getFoundPeers() {
+        // TODO everyone takes this and adds the local node. Maybe just add the local node here?
+        return peerFinder.getFoundPeers();
+    }
+
     class CoordinatorPublication extends Publication {
 
-        // 发布请求，包含要发布的集群状态信息。
-        private  PublishRequest publishRequest;
-        // 本地节点确认事件的ListenableFuture。
-        private  ListenableFuture<Void> localNodeAckEvent;
-        // 确认监听器。
-        private  AckListener ackListener;
-        // 发布操作的ActionListener。
-        private  ActionListener<Void> publishListener;
-        // 发布上下文。
-        private  PublicationTransportHandler.PublicationContext publicationContext;
-        // 计划的可取消任务。
-        private  ThreadPool scheduledCancellable;
+        private final PublishRequest publishRequest;
+        private final ListenableFuture<Void> localNodeAckEvent;
+        private final AckListener ackListener;
+        private final ActionListener<Void> publishListener;
+        private final PublicationTransportHandler.PublicationContext publicationContext;
 
-        // 存储在当前节点接受自身状态之前收到的其他节点的加入请求。
-        private  List<Join> receivedJoins = new ArrayList<>();
-        // 标记是否已处理收到的加入请求。
+        // We may not have accepted our own state before receiving a join from another node, causing its join to be rejected (we cannot
+        // safely accept a join whose last-accepted term/version is ahead of ours), so store them up and process them at the end.
+        private final List<Join> receivedJoins = new ArrayList<>();
         private boolean receivedJoinsProcessed;
 
+        CoordinatorPublication(PublishRequest publishRequest, PublicationTransportHandler.PublicationContext publicationContext,
+                               ListenableFuture<Void> localNodeAckEvent, AckListener ackListener, ActionListener<Void> publishListener) {
+            super(publishRequest,
+                new AckListener() {
+                    @Override
+                    public void onCommit(TimeValue commitTime) {
+                        ackListener.onCommit(commitTime);
+                    }
+
+                    @Override
+                    public void onNodeAck(DiscoveryNode node, Exception e) {
+                        // acking and cluster state application for local node is handled specially
+                        if (node.equals(getLocalNode())) {
+                            synchronized (mutex) {
+                                if (e == null) {
+                                    localNodeAckEvent.onResponse(null);
+                                } else {
+                                    localNodeAckEvent.onFailure(e);
+                                }
+                            }
+                        } else {
+                            ackListener.onNodeAck(node, e);
+                            if (e == null) {
+                                lagDetector.setAppliedVersion(node, publishRequest.getAcceptedState().version());
+                            }
+                        }
+                    }
+                },
+                transportService.getThreadPool()::relativeTimeInMillis);
+            this.publishRequest = publishRequest;
+            this.publicationContext = publicationContext;
+            this.localNodeAckEvent = localNodeAckEvent;
+            this.ackListener = ackListener;
+            this.publishListener = publishListener;
+        }
+
+        private void removePublicationAndPossiblyBecomeCandidate(String reason) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+
+            assert currentPublication.get() == this;
+            currentPublication = Optional.empty();
+            logger.debug("publication ended unsuccessfully: {}", this);
+
+            // check if node has not already switched modes (by bumping term)
+            if (isActiveForCurrentLeader()) {
+                becomeCandidate(reason);
+            }
+        }
+
+        boolean isActiveForCurrentLeader() {
+            // checks if this publication can still influence the mode of the current publication
+            return mode == Mode.LEADER && publishRequest.getAcceptedState().term() == getCurrentTerm();
+        }
+
+        @Override
+        protected void onCompletion(boolean committed) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+
+            localNodeAckEvent.addListener(new ActionListener<Void>() {
+                @Override
+                public void onResponse(Void ignore) {
+                    assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+                    assert committed;
+
+                    receivedJoins.forEach(CoordinatorPublication.this::handleAssociatedJoin);
+                    assert receivedJoinsProcessed == false;
+                    receivedJoinsProcessed = true;
+
+                    clusterApplier.onNewClusterState(CoordinatorPublication.this.toString(), () -> applierState,
+                        new ClusterApplyListener() {
+                            @Override
+                            public void onFailure(String source, Exception e) {
+                                synchronized (mutex) {
+                                    removePublicationAndPossiblyBecomeCandidate("clusterApplier#onNewClusterState");
+                                }
+                                ackListener.onNodeAck(getLocalNode(), e);
+                                publishListener.onFailure(e);
+                            }
+
+                            @Override
+                            public void onSuccess(String source) {
+                                synchronized (mutex) {
+                                    assert currentPublication.get() == CoordinatorPublication.this;
+                                    currentPublication = Optional.empty();
+                                    logger.debug("publication ended successfully: {}", CoordinatorPublication.this);
+                                    // trigger term bump if new term was found during publication
+                                    updateMaxTermSeen(getCurrentTerm());
+
+                                    if (mode == Mode.LEADER) {
+                                        scheduleReconfigurationIfNeeded();
+                                    }
+                                    lagDetector.startLagDetector(publishRequest.getAcceptedState().version());
+                                }
+                                ackListener.onNodeAck(getLocalNode(), null);
+                                publishListener.onResponse(null);
+                            }
+                        });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+                    removePublicationAndPossiblyBecomeCandidate("Publication.onCompletion(false)");
+
+                    final FailedToCommitClusterStateException exception = new FailedToCommitClusterStateException("publication failed", e);
+                    ackListener.onNodeAck(getLocalNode(), exception); // other nodes have acked, but not the master.
+                    publishListener.onFailure(exception);
+                }
+            }, EsExecutors.newDirectExecutorService(), transportService.getThreadPool().getThreadContext());
+        }
+
+        private void handleAssociatedJoin(Join join) {
+            if (join.getTerm() == getCurrentTerm() && hasJoinVoteFrom(join.getSourceNode()) == false) {
+                logger.trace("handling {}", join);
+                handleJoin(join);
+            }
+        }
+
+        @Override
+        protected boolean isPublishQuorum(CoordinationState.VoteCollection votes) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+            return coordinationState.get().isPublishQuorum(votes);
+        }
+
+        @Override
+        protected Optional<ApplyCommitRequest> handlePublishResponse(DiscoveryNode sourceNode,
+                                                                     PublishResponse publishResponse) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+            assert getCurrentTerm() >= publishResponse.getTerm();
+            return coordinationState.get().handlePublishResponse(sourceNode, publishResponse);
+        }
+
+        @Override
+        protected void onJoin(Join join) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+            if (receivedJoinsProcessed) {
+                // a late response may arrive after the state has been locally applied, meaning that receivedJoins has already been
+                // processed, so we have to handle this late response here.
+                handleAssociatedJoin(join);
+            } else {
+                receivedJoins.add(join);
+            }
+        }
+
+        @Override
+        protected void onMissingJoin(DiscoveryNode discoveryNode) {
+            assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+            // The remote node did not include a join vote in its publish response. We do not persist joins, so it could be that the remote
+            // node voted for us and then rebooted, or it could be that it voted for a different node in this term. If we don't have a copy
+            // of a join from this node then we assume the latter and bump our term to obtain a vote from this node.
+            if (hasJoinVoteFrom(discoveryNode) == false) {
+                final long term = publishRequest.getAcceptedState().term();
+                logger.debug("onMissingJoin: no join vote from {}, bumping term to exceed {}", discoveryNode, term);
+                updateMaxTermSeen(term + 1);
+            }
+        }
+
+        @Override
+        protected void sendPublishRequest(DiscoveryNode destination, PublishRequest publishRequest,
+                                          ActionListener<PublishWithJoinResponse> responseActionListener) {
+            publicationContext.sendPublishRequest(destination, publishRequest, wrapWithMutex(responseActionListener));
+        }
+
+        @Override
+        protected void sendApplyCommit(DiscoveryNode destination, ApplyCommitRequest applyCommit,
+                                       ActionListener<Empty> responseActionListener) {
+            publicationContext.sendApplyCommit(destination, applyCommit, wrapWithMutex(responseActionListener));
+        }
+    }
+
+    // TODO: only here temporarily for BWC development, remove once complete
+    public static Settings.Builder addZen1Attribute(boolean isZen1Node, Settings.Builder builder) {
+        return builder.put("node.attr.zen1", isZen1Node);
+    }
+
+    // TODO: only here temporarily for BWC development, remove once complete
+    public static boolean isZen1Node(DiscoveryNode discoveryNode) {
+        return discoveryNode.getVersion().before(Version.V_7_0_0) ||
+            (Booleans.isTrue(discoveryNode.getAttributes().getOrDefault("zen1", "false")));
     }
 }

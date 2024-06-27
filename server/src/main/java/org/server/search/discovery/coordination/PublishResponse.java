@@ -18,11 +18,17 @@
  */
 package org.server.search.discovery.coordination;
 
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.io.stream.Writeable;
+
+import java.io.IOException;
+
 /**
  * Response to a {@link PublishRequest}, carrying the term and version of the request.
  * Typically wrapped in a {@link PublishWithJoinResponse}.
  */
-public class PublishResponse{
+public class PublishResponse implements Writeable {
 
     private final long term;
     private final long version;
@@ -33,6 +39,16 @@ public class PublishResponse{
 
         this.term = term;
         this.version = version;
+    }
+
+    public PublishResponse(StreamInput in) throws IOException {
+        this(in.readLong(), in.readLong());
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeLong(term);
+        out.writeLong(version);
     }
 
     public long getTerm() {

@@ -19,21 +19,32 @@
 
 package org.server.search.discovery;
 
-/**
- * A pluggable module allowing to implement discovery of other nodes, publishing of the cluster
- * state to all nodes, electing a master of the cluster that raises cluster state change
- * events.
- */
-public interface Discovery extends LifecycleComponent, ClusterStatePublisher {
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.rest.RestStatus;
 
-    /**
-     * @return stats about the discovery
-     */
-    DiscoveryStats stats();
+import java.io.IOException;
 
-    /**
-     * Triggers the first join cycle
-     */
-    void startInitialJoin();
+public class MasterNotDiscoveredException extends ElasticsearchException {
 
+    public MasterNotDiscoveredException() {
+        super("");
+    }
+
+    public MasterNotDiscoveredException(Throwable cause) {
+        super(cause);
+    }
+
+    public MasterNotDiscoveredException(String message) {
+        super(message);
+    }
+
+    @Override
+    public RestStatus status() {
+        return RestStatus.SERVICE_UNAVAILABLE;
+    }
+
+    public MasterNotDiscoveredException(StreamInput in) throws IOException {
+        super(in);
+    }
 }

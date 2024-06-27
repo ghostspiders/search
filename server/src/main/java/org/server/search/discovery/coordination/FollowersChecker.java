@@ -22,10 +22,22 @@ package org.server.search.discovery.coordination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
-import org.server.search.cluster.node.DiscoveryNode;
-import org.server.search.transport.TransportService;
-import org.server.search.util.TimeValue;
-import org.server.search.util.settings.Settings;
+import org.elasticsearch.cluster.ClusterName;
+import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.coordination.Coordinator.Mode;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.util.concurrent.AbstractRunnable;
+import org.elasticsearch.discovery.zen.NodesFaultDetection;
+import org.elasticsearch.threadpool.ThreadPool.Names;
+import org.elasticsearch.transport.*;
+import org.elasticsearch.transport.TransportRequestOptions.Type;
+import org.elasticsearch.transport.TransportResponse.Empty;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -34,58 +46,50 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+import static org.elasticsearch.common.util.concurrent.ConcurrentCollections.newConcurrentMap;
 
 /**
- * FollowersChecker 类负责让领导者检查其追随者是否仍然连接并处于健康状态。如果决定追随者失败，领导者将从集群中移除它。
- * 我们相当宽容，可能在认为追随者有故障之前允许多次检查失败，以允许短暂的网络分区或长时间的GC周期发生，而不会触发节点的移除和随之发生分片重新分配。
+ * The FollowersChecker is responsible for allowing a leader to check that its followers are still connected and healthy. On deciding that a
+ * follower has failed the leader will remove it from the cluster. We are fairly lenient, possibly allowing multiple checks to fail before
+ * considering a follower to be faulty, to allow for a brief network partition or a long GC cycle to occur without triggering the removal of
+ * a node and the consequent shard reallocation.
  */
 public class FollowersChecker {
 
-    // 创建一个Logger实例，用于记录日志信息，与FollowersChecker类关联
     private static final Logger logger = LogManager.getLogger(FollowersChecker.class);
 
-    // 追随者检查操作的名称，用于内部协调和故障检测
     public static final String FOLLOWER_CHECK_ACTION_NAME = "internal:coordination/fault_detection/follower_check";
 
-    // 设置追随者检查间隔时间的配置项，表示发送到每个节点的检查之间的时间
+    // the time between checks sent to each node
     public static final Setting<TimeValue> FOLLOWER_CHECK_INTERVAL_SETTING =
-            Setting.timeSetting("cluster.fault_detection.follower_check.interval",
-                    TimeValue.timeValueMillis(1000), TimeValue.timeValueMillis(100), Setting.Property.NodeScope);
+        Setting.timeSetting("cluster.fault_detection.follower_check.interval",
+            TimeValue.timeValueMillis(1000), TimeValue.timeValueMillis(100), Setting.Property.NodeScope);
 
-    // 设置追随者检查超时时间的配置项，表示每个发送到节点的检查的超时时间
+    // the timeout for each check sent to each node
     public static final Setting<TimeValue> FOLLOWER_CHECK_TIMEOUT_SETTING =
-            Setting.timeSetting("cluster.fault_detection.follower_check.timeout",
-                    TimeValue.timeValueMillis(10000), TimeValue.timeValueMillis(1), Setting.Property.NodeScope);
+        Setting.timeSetting("cluster.fault_detection.follower_check.timeout",
+            TimeValue.timeValueMillis(30000), TimeValue.timeValueMillis(1), Setting.Property.NodeScope);
 
-    // 设置追随者检查失败重试次数的配置项，表示在认为追随者失败之前必须发生的失败检查次数
+    // the number of failed checks that must happen before the follower is considered to have failed.
     public static final Setting<Integer> FOLLOWER_CHECK_RETRY_COUNT_SETTING =
-            Setting.intSetting("cluster.fault_detection.follower_check.retry_count", 3, 1, Setting.Property.NodeScope);
+        Setting.intSetting("cluster.fault_detection.follower_check.retry_count", 3, 1, Setting.Property.NodeScope);
 
-    // 存储集群的设置信息
     private final Settings settings;
 
-    // 追随者检查的时间间隔
     private final TimeValue followerCheckInterval;
-    // 追随者检查的超时时间
     private final TimeValue followerCheckTimeout;
-    // 追随者检查失败的重试次数
     private final int followerCheckRetryCount;
-    // 节点失败时调用的BiConsumer回调接口
     private final BiConsumer<DiscoveryNode, String> onNodeFailure;
-    // 处理请求并更新状态的Consumer回调接口
     private final Consumer<FollowerCheckRequest> handleRequestAndUpdateState;
 
-    // 互斥锁，用于保护写入此状态的同步；读访问不需要同步
-    private final Object mutex = new Object();
-    // 存储对每个追随者节点的检查器的映射，使用concurrentMap以线程安全的方式存储
+    private final Object mutex = new Object(); // protects writes to this state; read access does not need sync
     private final Map<DiscoveryNode, FollowerChecker> followerCheckers = newConcurrentMap();
-    // 存储被认为有故障的节点集合
     private final Set<DiscoveryNode> faultyNodes = new HashSet<>();
 
-    // 传输服务，用于节点间的通信
     private final TransportService transportService;
 
-    // 快速响应状态，volatile关键字确保此状态的更改对所有线程立即可见
     private volatile FastResponseState fastResponseState;
 
     public FollowersChecker(Settings settings, TransportService transportService,
@@ -124,7 +128,7 @@ public class FollowersChecker {
             followerCheckers.keySet().removeIf(isUnknownNode);
             faultyNodes.removeIf(isUnknownNode);
 
-            discoveryNodes.mastersFirstStream().forEach(discoveryNode -> {
+            for (final DiscoveryNode discoveryNode : discoveryNodes) {
                 if (discoveryNode.equals(discoveryNodes.getLocalNode()) == false
                     && followerCheckers.containsKey(discoveryNode) == false
                     && faultyNodes.contains(discoveryNode) == false) {
@@ -133,7 +137,7 @@ public class FollowersChecker {
                     followerCheckers.put(discoveryNode, followerChecker);
                     followerChecker.start();
                 }
-            });
+            }
         }
     }
 
@@ -363,10 +367,9 @@ public class FollowersChecker {
                 public void run() {
                     synchronized (mutex) {
                         if (running() == false) {
-                            logger.trace("{} no longer running, not marking faulty", FollowerChecker.this);
+                            logger.debug("{} condition no longer applies, not marking faulty", discoveryNode);
                             return;
                         }
-                        logger.debug("{} marking node as faulty", FollowerChecker.this);
                         faultyNodes.add(discoveryNode);
                         followerCheckers.remove(discoveryNode);
                     }
@@ -381,7 +384,7 @@ public class FollowersChecker {
         }
 
         private void scheduleNextWakeUp() {
-            transportService.getThreadPool().schedule(new Runnable() {
+            transportService.getThreadPool().schedule(followerCheckInterval, Names.SAME, new Runnable() {
                 @Override
                 public void run() {
                     handleWakeUp();
@@ -391,7 +394,7 @@ public class FollowersChecker {
                 public String toString() {
                     return FollowerChecker.this + "::handleWakeUp";
                 }
-            }, followerCheckInterval, Names.SAME);
+            });
         }
 
         @Override

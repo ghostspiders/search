@@ -16,24 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.server.search.discovery.coordination;
 
-package org.server.search.discovery;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.common.io.stream.StreamInput;
+
+import java.io.IOException;
 
 /**
- * A pluggable module allowing to implement discovery of other nodes, publishing of the cluster
- * state to all nodes, electing a master of the cluster that raises cluster state change
- * events.
+ * Exception thrown if trying to discovery nodes in order to perform cluster bootstrapping, but a cluster is formed before all the required
+ * nodes are discovered.
  */
-public interface Discovery extends LifecycleComponent, ClusterStatePublisher {
+public class ClusterAlreadyBootstrappedException extends ElasticsearchException {
+    public ClusterAlreadyBootstrappedException() {
+        super("node has already joined a bootstrapped cluster, bootstrapping is not required");
+    }
 
-    /**
-     * @return stats about the discovery
-     */
-    DiscoveryStats stats();
-
-    /**
-     * Triggers the first join cycle
-     */
-    void startInitialJoin();
-
+    public ClusterAlreadyBootstrappedException(StreamInput in) throws IOException {
+        super(in);
+    }
 }
