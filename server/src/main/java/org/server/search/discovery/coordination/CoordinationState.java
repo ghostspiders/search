@@ -20,15 +20,8 @@ package org.server.search.discovery.coordination;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.cluster.coordination.CoordinationMetaData.VotingConfiguration;
-import org.elasticsearch.cluster.metadata.MetaData;
-import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.settings.Settings;
 
 import java.util.*;
-
-import static org.elasticsearch.cluster.coordination.Coordinator.ZEN1_BWC_TERM;
 
 /**
  * The core class of the cluster state coordination algorithm, directly implementing the

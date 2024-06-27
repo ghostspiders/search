@@ -18,10 +18,6 @@
  */
 package org.server.search.discovery;
 
-import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.common.util.concurrent.ConcurrentCollections;
-
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;

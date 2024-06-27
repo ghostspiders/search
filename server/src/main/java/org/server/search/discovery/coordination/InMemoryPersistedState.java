@@ -18,7 +18,8 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.elasticsearch.cluster.ClusterState;
+
+import org.server.search.cluster.ClusterState;
 
 public class InMemoryPersistedState implements CoordinationState.PersistedState {
     // TODO add support and tests for behaviour with persistence-layer failures

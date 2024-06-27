@@ -18,8 +18,6 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.elasticsearch.cluster.ClusterState;
-
 import java.util.Objects;
 
 /**

@@ -18,11 +18,7 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.io.stream.StreamInput;
-import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
-import org.elasticsearch.transport.TransportRequest;
+import org.server.search.cluster.node.DiscoveryNode;
 
 import java.io.IOException;
 

@@ -18,10 +18,6 @@
  */
 package org.server.search.discovery.coordination;
 
-import org.elasticsearch.common.io.stream.StreamInput;
-import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.transport.TransportResponse;
-
 import java.io.IOException;
 import java.util.Optional;
 

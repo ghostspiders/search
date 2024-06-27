@@ -19,9 +19,6 @@
 
 package org.server.search.discovery.coordination;
 
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.common.io.stream.StreamInput;
-
 import java.io.IOException;
 
 /**
@@ -31,12 +28,8 @@ import java.io.IOException;
  * asynchronous, distributed nature of the system. They will, for example, naturally happen during
  * leader election, if multiple nodes are trying to become leader at the same time.
  */
-public class CoordinationStateRejectedException extends ElasticsearchException {
+public class CoordinationStateRejectedException extends Exception {
     public CoordinationStateRejectedException(String msg, Object... args) {
-        super(msg, args);
-    }
-
-    public CoordinationStateRejectedException(StreamInput in) throws IOException {
-        super(in);
+        super(msg);
     }
 }

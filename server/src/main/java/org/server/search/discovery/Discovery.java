@@ -19,6 +19,9 @@
 
 package org.server.search.discovery;
 
+import org.server.search.discovery.coordination.ClusterStatePublisher;
+import org.server.search.util.component.LifecycleComponent;
+
 /**
  * A pluggable module allowing to implement discovery of other nodes, publishing of the cluster
  * state to all nodes, electing a master of the cluster that raises cluster state change
