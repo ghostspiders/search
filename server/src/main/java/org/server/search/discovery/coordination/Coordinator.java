@@ -18,6 +18,7 @@
  */
 package org.server.search.discovery.coordination;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.lucene.util.SetOnce;
 import org.server.search.SearchException;
@@ -68,6 +69,9 @@ public class Coordinator extends AbstractComponent implements Discovery {
     private final PeerFinder peerFinder;
     // 上一次加入信息
     private Optional<Join> lastJoin;
+    private Optional<CoordinatorPublication> currentPublication = Optional.empty();
+    private  FollowersChecker followersChecker;
+
     public Coordinator(Settings settings, ThreadPool threadPool, TransportService transportService, TransportClient networkService, DefaultClusterService masterService,
                        ShardsRoutingStrategy allocationService, GatewayService gatewayMetaState) {
         super(settings);
@@ -409,7 +413,6 @@ public class Coordinator extends AbstractComponent implements Discovery {
     /**
      * 检查是否有发布操作正在进行。
      * 需要同步互斥锁来确保线程安全。
-     *
      * @return 如果有发布操作正在进行返回true，否则返回false。
      */
     boolean publicationInProgress() {
@@ -521,7 +524,73 @@ public class Coordinator extends AbstractComponent implements Discovery {
 
             // 返回Join对象，包含加入领导者的结果。
             return join;
+
         }
+    }
+    /**
+     * 将当前节点状态设置为候选人。
+     *
+     * @param method 触发成为候选人状态的方法名称，用于日志记录。
+     */
+    void becomeCandidate(String method) {
+        // 断言当前线程持有协调器的互斥锁。
+        assert Thread.holdsLock(mutex) : "Coordinator mutex not held";
+
+        // 记录日志，显示当前方法、任期、之前和最后已知的领导者模式。
+        logger.debug("{}: coordinator becoming CANDIDATE in term {} (was {}, lastKnownLeader was [{}])",
+                method, getCurrentTerm(), mode, lastKnownLeader);
+
+        // 检查当前模式是否不是候选人模式，如果不是，则执行状态转换逻辑。
+        if (mode != Mode.CANDIDATE) {
+            // 记录之前的模式。
+            final Mode prevMode = mode;
+            // 设置当前模式为候选人。
+            mode = Mode.CANDIDATE;
+
+            // 取消任何活跃的发布操作。
+            cancelActivePublication("become candidate: " + method);
+
+            // 关闭现有的加入累加器并创建一个新的候选人加入累加器。
+            joinAccumulator.close(mode);
+            joinAccumulator = joinHelper.new CandidateJoinAccumulator();
+
+            // 激活peerFinder，使用最后接受的集群状态中的节点列表。
+            peerFinder.activate(coordinationState.get().getLastAcceptedState().nodes());
+
+            // 启动集群形成失败帮助器。
+            clusterFormationFailureHelper.start();
+
+            // 如果当前任期是向后兼容的任期，则激活发现服务升级。
+            if (getCurrentTerm() == ZEN1_BWC_TERM) {
+                discoveryUpgradeService.activate(lastKnownLeader, coordinationState.get().getLastAcceptedState());
+            }
+
+            // 更新leaderChecker为没有当前节点，并将领导者设置为null。
+            leaderChecker.setCurrentNodes(DiscoveryNodes.EMPTY_NODES);
+            leaderChecker.updateLeader(null);
+
+            // 清除followersChecker中的当前节点并更新快速响应状态。
+            followersChecker.clearCurrentNodes();
+            followersChecker.updateFastResponseState(getCurrentTerm(), mode);
+
+            // 清除lagDetector跟踪的节点。
+            lagDetector.clearTrackedNodes();
+
+            // 如果之前是领导者模式，则清理主服务。
+            if (prevMode == Mode.LEADER) {
+                cleanMasterService();
+            }
+
+            // 如果应用者状态有主节点ID，则更新应用者状态为没有主节点，并应用新的集群状态。
+            if (applierState.nodes().getMasterNodeId() != null) {
+                applierState = clusterStateWithNoMasterBlock(applierState);
+                clusterApplier.onNewClusterState("becoming candidate: " + method, () -> applierState, (source, e) -> {
+                });
+            }
+        }
+
+        // 更新预投票收集器。
+        preVoteCollector.update(getPreVoteResponse(), null);
     }
     /**
      * 获取本地节点信息。
@@ -532,5 +601,26 @@ public class Coordinator extends AbstractComponent implements Discovery {
     DiscoveryNode getLocalNode() {
         Node localNode = masterService.state().nodes().getLocalNode();
         return new DiscoveryNode(localNode.id(),localNode.address());
+    }
+    class CoordinatorPublication extends Publication {
+
+        // 发布请求，包含要发布的集群状态信息。
+        private  PublishRequest publishRequest;
+        // 本地节点确认事件的ListenableFuture。
+        private  ListenableFuture<Void> localNodeAckEvent;
+        // 确认监听器。
+        private  AckListener ackListener;
+        // 发布操作的ActionListener。
+        private  ActionListener<Void> publishListener;
+        // 发布上下文。
+        private  PublicationTransportHandler.PublicationContext publicationContext;
+        // 计划的可取消任务。
+        private  ThreadPool scheduledCancellable;
+
+        // 存储在当前节点接受自身状态之前收到的其他节点的加入请求。
+        private  List<Join> receivedJoins = new ArrayList<>();
+        // 标记是否已处理收到的加入请求。
+        private boolean receivedJoinsProcessed;
+
     }
 }
