@@ -18,18 +18,12 @@
  */
 
 package org.server.search.cluster.node;
-
 import cn.hutool.core.util.StrUtil;
 import org.server.search.Version;
-import org.server.search.util.io.Streamable;
 import org.server.search.util.settings.Settings;
 import org.server.search.util.transport.InetSocketTransportAddress;
-import org.server.search.util.transport.TransportAddressSerializers;
+import org.server.search.util.transport.TransportAddress;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -115,7 +109,7 @@ public class DiscoveryNode{
     /**
      * 节点的传输地址，用于节点间的通信。
      */
-    private  InetSocketTransportAddress address;
+    private  TransportAddress address;
 
     /**
      * 节点的属性映射，包含节点特定的配置信息。
@@ -139,7 +133,7 @@ public class DiscoveryNode{
      * @param address          the nodes transport address
      * @param version          the version of the node
      */
-    public DiscoveryNode(final String id, InetSocketTransportAddress address, String version) {
+    public DiscoveryNode(final String id, TransportAddress address, String version) {
         this(id, address, Collections.emptyMap(), EnumSet.allOf(Role.class), version);
     }
 
@@ -158,7 +152,7 @@ public class DiscoveryNode{
      * @param roles            node roles
      * @param version          the version of the node
      */
-    public DiscoveryNode(String id, InetSocketTransportAddress address, Map<String, String> attributes, Set<Role> roles,
+    public DiscoveryNode(String id, TransportAddress address, Map<String, String> attributes, Set<Role> roles,
                          String version) {
         this("", id, address, attributes, roles,version);
     }
@@ -178,9 +172,10 @@ public class DiscoveryNode{
      * @param attributes       node attributes
      * @param roles            node roles
      */
-    public DiscoveryNode(String nodeName, String nodeId, InetSocketTransportAddress address,
+    public DiscoveryNode(String nodeName, String nodeId, TransportAddress address,
                          Map<String, String> attributes, Set<Role> roles,String version) {
-        this(nodeName, nodeId, UUID.randomUUID().toString(), address.address().getHostString(), address.address().getAddress().getHostAddress(), address, attributes,
+        this(nodeName, nodeId, UUID.randomUUID().toString(), ((InetSocketTransportAddress) address).address().getHostString(),
+                ((InetSocketTransportAddress) address).address().getAddress().getHostAddress(), address, attributes,
                 roles,version);
     }
 
@@ -202,7 +197,7 @@ public class DiscoveryNode{
      * @param roles            node roles
      */
     public DiscoveryNode(String nodeName, String nodeId, String ephemeralId, String hostName, String hostAddress,
-                         InetSocketTransportAddress address, Map<String, String> attributes, Set<Role> roles,String version) {
+                         TransportAddress address, Map<String, String> attributes, Set<Role> roles,String version) {
         if (nodeName != null) {
             this.nodeName = nodeName.intern();
         } else {
@@ -277,7 +272,7 @@ public class DiscoveryNode{
     /**
      * The address that the node can be communicated with.
      */
-    public InetSocketTransportAddress getAddress() {
+    public TransportAddress getAddress() {
         return address;
     }
 
@@ -390,11 +385,6 @@ public class DiscoveryNode{
             sb.append(attributes);
         }
         return sb.toString();
-    }
-    public static DiscoveryNode readNode(DataInput in) throws IOException, ClassNotFoundException {
-        DiscoveryNode node = new DiscoveryNode();
-        node.readFrom(in);
-        return node;
     }
 
     /**
