@@ -22,17 +22,15 @@ package org.server.search.discovery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.util.SetOnce;
+import org.server.search.util.settings.Settings;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static org.elasticsearch.discovery.zen.UnicastZenPing.DISCOVERY_ZEN_PING_UNICAST_CONCURRENT_CONNECTS_SETTING;
-
-public class UnicastConfiguredHostsResolver extends AbstractLifecycleComponent implements ConfiguredHostsResolver {
+public class UnicastConfiguredHostsResolver implements lifecycleComponent,ConfiguredHostsResolver {
     private static final Logger logger = LogManager.getLogger(UnicastConfiguredHostsResolver.class);
 
     private final Settings settings;

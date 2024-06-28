@@ -22,9 +22,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.lucene.util.SetOnce;
+import org.server.search.SearchException;
 import org.server.search.action.ActionListener;
 import org.server.search.cluster.ClusterChangedEvent;
+import org.server.search.cluster.ClusterState;
+import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.discovery.Discovery;
+import org.server.search.discovery.DiscoverySettings;
+import org.server.search.discovery.PeerFinder;
+import org.server.search.discovery.UnicastConfiguredHostsResolver;
+import org.server.search.transport.TransportService;
+import org.server.search.util.TimeValue;
+import org.server.search.util.component.Lifecycle;
+import org.server.search.util.component.LifecycleComponent;
+import org.server.search.util.lease.Releasable;
+import org.server.search.util.settings.Settings;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 
-public class Coordinator extends LifecycleComponent implements Discovery {
+public class Coordinator implements Discovery,LifecycleComponent {
 
     public static final long ZEN1_BWC_TERM = 0;
 
@@ -66,9 +78,7 @@ public class Coordinator extends LifecycleComponent implements Discovery {
     private final LeaderChecker leaderChecker;
     private final FollowersChecker followersChecker;
     private final ClusterApplier clusterApplier;
-    @Nullable
     private Releasable electionScheduler;
-    @Nullable
     private Releasable prevotingRound;
     private long maxTermSeen;
     private final Reconfigurator reconfigurator;
@@ -889,6 +899,26 @@ public class Coordinator extends LifecycleComponent implements Discovery {
         if (currentPublication.isPresent()) {
             currentPublication.get().onTimeout();
         }
+    }
+
+    @Override
+    public Lifecycle.State lifecycleState() {
+        return null;
+    }
+
+    @Override
+    public Object start() throws Exception {
+        return null;
+    }
+
+    @Override
+    public Object stop() throws SearchException, InterruptedException {
+        return null;
+    }
+
+    @Override
+    public void close() throws SearchException, InterruptedException {
+
     }
 
     public enum Mode {

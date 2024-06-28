@@ -195,4 +195,8 @@ public class TransportService extends AbstractComponent implements LifecycleComp
     public void connectToNode(DiscoveryNode node) throws ConnectTransportException {
 
     }
+
+    public DiscoveryNode getLocalNode() {
+        return null;
+    }
 }

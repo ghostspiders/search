@@ -18,9 +18,6 @@
  */
 
 package org.server.search.discovery;
-
-
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
