@@ -42,6 +42,7 @@ import static org.server.search.util.settings.ImmutableSettings.*;
 
 public class Bootstrap {
     private Server server;
+
     private void setup(boolean addShutdownHook){
         Tuple<Settings, Environment> tuple = InternalSettingsPrepare.prepareSettings(EMPTY_SETTINGS, true);
         try {
