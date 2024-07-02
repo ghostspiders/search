@@ -20,6 +20,8 @@ package org.server.search.discovery.coordination;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.server.search.cluster.node.DiscoveryNode;
+import org.server.search.util.settings.Settings;
 
 import java.util.*;
 
@@ -41,7 +43,7 @@ public class CoordinationState {
     private boolean startedJoinSinceLastReboot;
     private boolean electionWon;
     private long lastPublishedVersion;
-    private VotingConfiguration lastPublishedConfiguration;
+    private CoordinationMetaData.VotingConfiguration lastPublishedConfiguration;
     private VoteCollection publishVotes;
 
     public CoordinationState(Settings settings, DiscoveryNode localNode, PersistedState persistedState) {

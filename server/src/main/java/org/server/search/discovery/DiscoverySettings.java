@@ -19,6 +19,9 @@
 
 package org.server.search.discovery;
 
+import org.server.search.util.TimeValue;
+import org.server.search.util.settings.Settings;
+
 import java.util.EnumSet;
 
 /**

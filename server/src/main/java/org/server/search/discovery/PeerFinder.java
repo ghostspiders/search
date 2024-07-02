@@ -26,6 +26,8 @@ import org.apache.lucene.util.SetOnce;
 import org.server.search.cluster.node.DiscoveryNode;
 import org.server.search.cluster.node.DiscoveryNodes;
 import org.server.search.discovery.coordination.PeersResponse;
+import org.server.search.transport.TransportException;
+import org.server.search.transport.TransportResponseHandler;
 import org.server.search.transport.TransportService;
 import org.server.search.util.TimeValue;
 import org.server.search.util.settings.Settings;
@@ -428,29 +430,9 @@ public abstract class PeerFinder {
             final String actionName;
             final TransportRequest transportRequest;
             final TransportResponseHandler<?> transportResponseHandler;
-            if (isZen1Node(discoveryNode)) {
-                actionName = UnicastZenPing.ACTION_NAME;
-                transportRequest = new UnicastZenPing.UnicastPingRequest(1, ZenDiscovery.PING_TIMEOUT_SETTING.get(settings),
-                    new ZenPing.PingResponse(createDiscoveryNodeWithImpossiblyHighId(getLocalNode()), null,
-                        ClusterName.CLUSTER_NAME_SETTING.get(settings), ClusterState.UNKNOWN_VERSION));
-                transportResponseHandler = peersResponseHandler.wrap(ucResponse -> {
-                    Optional<DiscoveryNode> optionalMasterNode = Arrays.stream(ucResponse.pingResponses)
-                        .filter(pr -> discoveryNode.equals(pr.node()) && discoveryNode.equals(pr.master()))
-                        .map(ZenPing.PingResponse::node)
-                        .findFirst();
-                    List<DiscoveryNode> discoveredNodes = new ArrayList<>();
-                    if (optionalMasterNode.isPresent() == false) {
-                        Arrays.stream(ucResponse.pingResponses).map(PingResponse::master).filter(Objects::nonNull)
-                            .forEach(discoveredNodes::add);
-                        Arrays.stream(ucResponse.pingResponses).map(PingResponse::node).forEach(discoveredNodes::add);
-                    }
-                    return new PeersResponse(optionalMasterNode, discoveredNodes, 0L);
-                }, UnicastZenPing.UnicastPingResponse::new);
-            } else {
-                actionName = REQUEST_PEERS_ACTION_NAME;
-                transportRequest = new PeersRequest(getLocalNode(), knownNodes);
-                transportResponseHandler = peersResponseHandler;
-            }
+            actionName = REQUEST_PEERS_ACTION_NAME;
+            transportRequest = new PeersRequest(getLocalNode(), knownNodes);
+            transportResponseHandler = peersResponseHandler;
             transportService.sendRequest(discoveryNode, actionName,
                 transportRequest,
                 TransportRequestOptions.builder().withTimeout(requestPeersTimeout).build(),

@@ -21,11 +21,16 @@ package org.server.search.discovery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.server.search.cluster.node.DiscoveryNode;
+import org.server.search.transport.TransportService;
+import org.server.search.util.TimeValue;
+import org.server.search.util.settings.Settings;
+import org.server.search.util.transport.TransportAddress;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 
-public class HandshakingTransportAddressConnector implements TransportAddressConnector {
+public class HandshakingTransportAddressConnector implements PeerFinder.TransportAddressConnector {
 
     private static final Logger logger = LogManager.getLogger(HandshakingTransportAddressConnector.class);
 

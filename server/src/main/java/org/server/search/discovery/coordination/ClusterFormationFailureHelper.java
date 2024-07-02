@@ -20,6 +20,9 @@ package org.server.search.discovery.coordination;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.server.search.threadpool.ThreadPool;
+import org.server.search.util.TimeValue;
+import org.server.search.util.settings.Settings;
 
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +42,6 @@ public class ClusterFormationFailureHelper {
     private final Supplier<ClusterFormationState> clusterFormationStateSupplier;
     private final ThreadPool threadPool;
     private final TimeValue clusterFormationWarningTimeout;
-    @Nullable // if no warning is scheduled
     private volatile WarningScheduler warningScheduler;
 
     public ClusterFormationFailureHelper(Settings settings, Supplier<ClusterFormationState> clusterFormationStateSupplier,

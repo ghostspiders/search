@@ -19,6 +19,8 @@
 package org.server.search.discovery.coordination;
 
 
+import org.server.search.cluster.node.DiscoveryNode;
+
 import java.io.IOException;
 
 /**

@@ -22,16 +22,24 @@ package org.server.search.discovery.single;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.server.search.SearchException;
+import org.server.search.action.ActionListener;
+import org.server.search.cluster.ClusterChangedEvent;
+import org.server.search.cluster.ClusterName;
+import org.server.search.cluster.ClusterState;
+import org.server.search.discovery.Discovery;
+import org.server.search.discovery.MasterService;
+import org.server.search.transport.TransportService;
+import org.server.search.util.component.Lifecycle;
+import org.server.search.util.component.LifecycleComponent;
+import org.server.search.util.settings.Settings;
 
 
 import java.util.Objects;
-
-import static org.elasticsearch.gateway.GatewayService.STATE_NOT_RECOVERED_BLOCK;
-
 /**
  * A discovery implementation where the only member of the cluster is the local node.
  */
-public class SingleNodeDiscovery extends AbstractLifecycleComponent implements Discovery {
+public class SingleNodeDiscovery implements Discovery, LifecycleComponent {
     private static final Logger logger = LogManager.getLogger(SingleNodeDiscovery.class);
 
     private final ClusterName clusterName;
@@ -120,4 +128,23 @@ public class SingleNodeDiscovery extends AbstractLifecycleComponent implements D
 
     }
 
+    @Override
+    public Lifecycle.State lifecycleState() {
+        return null;
+    }
+
+    @Override
+    public Object start() throws Exception {
+        return null;
+    }
+
+    @Override
+    public Object stop() throws SearchException, InterruptedException {
+        return null;
+    }
+
+    @Override
+    public void close() throws SearchException, InterruptedException {
+
+    }
 }

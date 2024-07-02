@@ -21,6 +21,10 @@ package org.server.search.discovery.coordination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.server.search.transport.TransportService;
+import org.server.search.util.TimeValue;
+import org.server.search.util.settings.Settings;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +48,6 @@ public class ClusterBootstrapService {
 
     private final int initialMasterNodeCount;
     private final List<String> initialMasterNodes;
-    @Nullable
     private final TimeValue unconfiguredBootstrapTimeout;
     private final TransportService transportService;
     private volatile boolean running;
