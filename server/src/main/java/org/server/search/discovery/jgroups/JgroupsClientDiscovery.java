@@ -133,18 +133,31 @@ public class JgroupsClientDiscovery extends AbstractComponent implements Discove
         return this.lifecycle.state();
     }
 
-    @Override public Discovery start() throws Exception {
+    @Override
+    public Discovery start() throws Exception {
+        // 尝试将生命周期状态移动到已启动。如果已经是启动状态，则直接返回当前对象。
         if (!lifecycle.moveToStarted()) {
             return this;
         }
+
+        // 设置通道的接收器为当前实例，以便能够接收来自通道的消息。
         channel.setReceiver(this);
+
         try {
+            // 尝试连接到集群。这里 clusterName.value() 应该是集群的名称或地址。
             channel.connect(clusterName.value());
         } catch (ChannelException e) {
+            // 如果连接失败，抛出一个 DiscoveryException 异常，提供错误信息和原始异常。
             throw new DiscoveryException("Failed to connect to cluster [" + clusterName.value() + "]", e);
         }
+
+        // 根据需要连接到主节点，这可能是为了获取集群状态或同步信息。
         connectTillMasterIfNeeded();
+
+        // 如果需要，发送初始状态事件。这可能用于通知其他节点当前节点的状态或信息。
         sendInitialStateEventIfNeeded();
+
+        // 方法执行成功，返回当前 Discovery 对象。
         return this;
     }
 

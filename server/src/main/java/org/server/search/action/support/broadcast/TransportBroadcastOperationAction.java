@@ -88,20 +88,28 @@ public abstract class TransportBroadcastOperationAction<Request extends Broadcas
 
     private class AsyncBroadcastAction {
 
+        // 声明一个私有且不可变的 Request 对象，存储请求的相关信息。
         private final Request request;
 
+        // 声明一个私有且不可变的 ActionListener 对象，用于异步处理响应或异常。
         private final ActionListener<Response> listener;
 
+        // 声明一个私有且不可变的 Nodes 对象，可能包含集群节点的相关信息。
         private final Nodes nodes;
 
+        // 声明一个私有且不可变的 GroupShardsIterator 对象，用于迭代索引的分片。
         private final GroupShardsIterator shardsIts;
 
+        // 声明一个整型变量，表示预期的操作数量。
         private final int expectedOps;
 
+        // 声明一个原子整型变量，用于以线程安全的方式计数完成的操作数量。
         private final AtomicInteger counterOps = new AtomicInteger();
 
+        // 声明另一个原子整型变量，可能用于跟踪索引过程中的特定计数。
         private final AtomicInteger indexCounter = new AtomicInteger();
 
+        // 声明一个原子引用数组，用于以线程安全的方式存储每个分片的响应。
         private final AtomicReferenceArray shardsResponses;
 
         private AsyncBroadcastAction(Request request, ActionListener<Response> listener) {
