@@ -63,12 +63,7 @@ public class QueryPhase implements SearchPhase {
             if (searchContext.sort() != null) {
                 topDocs = searchContext.searcher().search(query,  searchContext.from() + searchContext.size(), searchContext.sort());
             } else {
-                Analyzer analyzer = new StandardAnalyzer();
-                QueryParser parser = new QueryParser("field1", analyzer);
-                Query query2 = parser.parse("value112");
-
-                MatchAllDocsQuery matchAllQuery = new MatchAllDocsQuery();
-                topDocs = searchContext.searcher().search(query2, searchContext.from() + searchContext.size());
+                topDocs = searchContext.searcher().search(query, searchContext.from() + searchContext.size());
             }
             searchContext.queryResult().topDocs(topDocs);
         } catch (Exception e) {
@@ -77,25 +72,5 @@ public class QueryPhase implements SearchPhase {
 
         facetsPhase.execute(searchContext);
     }
-    {
-        "query": {
-        "bool": {
-            "must": {
-                "term": {
-                    "field1": "value112"
-                }
-            },
-            "mustNot": {
-                "term": {
-                    "field1": "production"
-                }
-            },
-            "should": {
-                "term": {
-                    "field1": "env1"
-                }
-            }
-        }
-    }
-    }
+
 }
