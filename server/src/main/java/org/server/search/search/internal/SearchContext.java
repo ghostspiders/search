@@ -42,50 +42,70 @@ import java.io.IOException;
  
 public class SearchContext implements Releasable {
 
+    // 唯一标识符
     private final long id;
 
+    // 搜索请求的原始JSON源字符串
     private final String source;
 
+    // 搜索引擎搜索器，用于执行搜索操作
     private final Engine.Searcher engineSearcher;
 
+    // 索引服务，提供与索引相关的操作和管理
     private final IndexService indexService;
 
+    // 上下文索引搜索器，封装了对索引的搜索能力
     private final ContextIndexSearcher searcher;
 
+    // 分布式频率筛选（DFS）搜索结果，用于收集文档频率信息
     private final DfsSearchResult dfsResult;
 
+    // 查询搜索结果，包含查询阶段的结果数据
     private final QuerySearchResult queryResult;
 
+    // 获取搜索结果，包含获取阶段的结果数据
     private final FetchSearchResult fetchResult;
 
+    // 搜索操作的超时时间
     private final TimeValue timeout;
 
+    // 查询提升因子，用于影响搜索结果的相关性得分
     private final float queryBoost;
 
-
+    // 滚动搜索对象，用于实现搜索结果的滚动加载
     private Scroll scroll;
 
+    // 是否对搜索结果进行解释，提供额外的执行信息
     private boolean explain;
 
+    // 要检索的特定字段名称数组
     private String[] fieldNames;
 
+    // 搜索结果的起始位置，默认为-1，表示无特定起始位置
     private int from = -1;
 
+    // 搜索结果的数量，默认为-1，表示使用默认大小
     private int size = -1;
 
+    // 要搜索的索引类型数组
     private String[] types;
 
+    // 搜索结果的排序参数
     private Sort sort;
 
+    // 查询解析器名称，用于指定使用哪个解析器来解析查询
     private String queryParserName;
 
+    // 搜索查询对象，包含实际的查询逻辑
     private Query query;
 
+    // 要加载的文档ID数组
     private int[] docIdsToLoad;
 
+    // 搜索上下文的聚合面值，用于收集和计算聚合数据
     private SearchContextFacets facets;
 
-
+    // 标记查询是否已经被重写，例如通过查询重写器优化查询
     private boolean queryRewritten;
 
     public SearchContext(long id, SearchShardTarget shardTarget, TimeValue timeout, float queryBoost, String source,

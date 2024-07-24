@@ -59,6 +59,13 @@ public class QueryPhase implements SearchPhase {
             if (searchContext.sort() != null) {
                 topDocs = searchContext.searcher().search(query,  searchContext.from() + searchContext.size(), searchContext.sort());
             } else {
+                Analyzer analyzer = new StandardAnalyzer();
+                IndexReader reader = DirectoryReader.open(directory);
+                IndexSearcher searcher = new IndexSearcher(reader);
+
+                QueryParser parser = new QueryParser("title", analyzer);
+                Query query = parser.parse("Lucene");
+
                 topDocs = searchContext.searcher().search(query, searchContext.from() + searchContext.size());
             }
             searchContext.queryResult().topDocs(topDocs);
@@ -67,5 +74,26 @@ public class QueryPhase implements SearchPhase {
         }
 
         facetsPhase.execute(searchContext);
+    }
+    {
+        "query": {
+        "bool": {
+            "must": {
+                "term": {
+                    "field1": "value112"
+                }
+            },
+            "mustNot": {
+                "term": {
+                    "field1": "production"
+                }
+            },
+            "should": {
+                "term": {
+                    "field1": "env1"
+                }
+            }
+        }
+    }
     }
 }
