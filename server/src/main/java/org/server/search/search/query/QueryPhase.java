@@ -21,6 +21,10 @@ package org.server.search.search.query;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.server.search.index.mapper.DocumentMapper;
 import org.server.search.search.SearchParseElement;
@@ -60,13 +64,11 @@ public class QueryPhase implements SearchPhase {
                 topDocs = searchContext.searcher().search(query,  searchContext.from() + searchContext.size(), searchContext.sort());
             } else {
                 Analyzer analyzer = new StandardAnalyzer();
-                IndexReader reader = DirectoryReader.open(directory);
-                IndexSearcher searcher = new IndexSearcher(reader);
+                QueryParser parser = new QueryParser("field1", analyzer);
+                Query query2 = parser.parse("value112");
 
-                QueryParser parser = new QueryParser("title", analyzer);
-                Query query = parser.parse("Lucene");
-
-                topDocs = searchContext.searcher().search(query, searchContext.from() + searchContext.size());
+                MatchAllDocsQuery matchAllQuery = new MatchAllDocsQuery();
+                topDocs = searchContext.searcher().search(query2, searchContext.from() + searchContext.size());
             }
             searchContext.queryResult().topDocs(topDocs);
         } catch (Exception e) {
@@ -74,26 +76,5 @@ public class QueryPhase implements SearchPhase {
         }
 
         facetsPhase.execute(searchContext);
-    }
-    {
-        "query": {
-        "bool": {
-            "must": {
-                "term": {
-                    "field1": "value112"
-                }
-            },
-            "mustNot": {
-                "term": {
-                    "field1": "production"
-                }
-            },
-            "should": {
-                "term": {
-                    "field1": "env1"
-                }
-            }
-        }
-    }
     }
 }
