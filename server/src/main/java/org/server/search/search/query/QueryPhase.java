@@ -77,4 +77,25 @@ public class QueryPhase implements SearchPhase {
 
         facetsPhase.execute(searchContext);
     }
+    {
+        "query": {
+        "bool": {
+            "must": {
+                "term": {
+                    "field1": "value112"
+                }
+            },
+            "mustNot": {
+                "term": {
+                    "field1": "production"
+                }
+            },
+            "should": {
+                "term": {
+                    "field1": "env1"
+                }
+            }
+        }
+    }
+    }
 }
