@@ -36,8 +36,6 @@ import org.server.search.transport.*;
 /**
  * An encapsulation of {@link SearchService} operations exposed through
  * transport.
- *
- * 
  */
 public class SearchServiceTransportAction {
 
