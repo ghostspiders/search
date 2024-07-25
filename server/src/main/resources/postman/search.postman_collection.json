@@ -426,13 +426,13 @@
 			"response": []
 		},
 		{
-			"name": "search搜索",
+			"name": "search查询",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{}",
+					"raw": "{\n    \"query\": {\n        \"bool\": {\n            \"must\": {\n                \"term\": {\n                    \"_source\": \"value112\"\n                }\n            },\n            \"mustNot\": {\n                \"term\": {\n                    \"_source\": \"production\"\n                }\n            },\n            \"should\": {\n                \"term\": {\n                    \"_source\": \"value112\"\n                }\n            }\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
