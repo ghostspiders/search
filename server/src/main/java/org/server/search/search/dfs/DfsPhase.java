@@ -21,14 +21,17 @@ package org.server.search.search.dfs;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.QueryVisitor;
 import org.server.search.search.SearchParseElement;
 import org.server.search.search.SearchPhase;
 import org.server.search.search.internal.SearchContext;
 import org.server.search.util.gnu.trove.THashSet;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
- 
+
 public class DfsPhase implements SearchPhase {
 
     @Override public Map<String, ? extends SearchParseElement> parseElements() {
@@ -43,7 +46,7 @@ public class DfsPhase implements SearchPhase {
             // 创建一个线程安全的集合来存储查询中提取的词项
             THashSet<Term> termsSet = new THashSet<Term>();
             // 从查询中提取所有词项，并将它们添加到termsSet中
-            context.query().extractTerms(termsSet);
+            context.query().visit(QueryVisitor.termCollector(termsSet));
             // 将termsSet转换为Term数组
             Term[] terms = termsSet.toArray(new Term[termsSet.size()]);
             // 使用SearchContext中的搜索器获取每个词项在整个索引中的文档频率
